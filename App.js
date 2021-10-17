@@ -1,10 +1,20 @@
 import React from "react";
 import { Text } from "react-native";
 import { LogBox } from "react-native";
-
+import { createBottomTabNavigator } from "react-navigation-tabs";
+import {
+  AntDesign,
+  Ionicons,
+  Entypo,
+  MaterialCommunityIcons,
+  Octicons,
+} from "@expo/vector-icons";
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import firebase from "firebase";
+import AlbumsRoute from "./screens/MessageScreen";
+import MusicRoute from "./screens/NotificationScreen";
+import RecentRoute from "./screens/ProfileScreen";
 
 LogBox.ignoreAllLogs(true);
 
@@ -32,10 +42,65 @@ import HomeScreen from "./screens/HomeScreen";
 import LoadingScreen from "./screens/LoadingScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import LoginScreen from "./screens/LoginScreen";
+import MessageScreen from "./screens/MessageScreen";
+import NotificationScreen from "./screens/NotificationScreen";
+import ProfileScreen from "./screens/ProfileScreen";
+
+const AppTabNavigator = createBottomTabNavigator(
+  {
+    Home: {
+      screen: HomeScreen,
+      navigationOptions: {
+        tabBarIcon: ({ tintColor }) => (
+          <Entypo name="home" size={24} color={tintColor} />
+        ),
+      },
+    },
+    Message: {
+      screen: MessageScreen,
+      navigationOptions: {
+        tabBarIcon: ({ tintColor }) => (
+          <MaterialCommunityIcons
+            name="message-processing"
+            size={24}
+            color={tintColor}
+          />
+        ),
+      },
+    },
+    Notification: {
+      screen: NotificationScreen,
+      navigationOptions: {
+        tabBarIcon: ({ tintColor }) => (
+          <Octicons name="bell" size={24} color={tintColor} />
+        ),
+      },
+    },
+    Profile: {
+      screen: ProfileScreen,
+      navigationOptions: {
+        tabBarIcon: ({ tintColor }) => (
+          <Ionicons name="person" size={24} color={tintColor} />
+        ),
+      },
+    },
+  },
+  {
+    tabBarOptions: {
+      activeTintColor: "#65a84d",
+      inactiveTintColor: "161F3D",
+      showLabel: true,
+      style: { borderTopColor: "#A9A9A9", borderTopWidth: 1 },
+    },
+  }
+);
+
+/*
 
 const AppStack = createStackNavigator({
   Home: HomeScreen,
 });
+*/
 
 const AuthStack = createStackNavigator({
   Login: LoginScreen,
@@ -46,7 +111,7 @@ export default createAppContainer(
   createSwitchNavigator(
     {
       Loading: LoadingScreen,
-      App: AppStack,
+      App: AppTabNavigator,
       Auth: AuthStack,
     },
     {

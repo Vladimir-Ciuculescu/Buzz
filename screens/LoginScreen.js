@@ -148,8 +148,6 @@ export default class LoginScreen extends React.Component {
               style={styles.greeting}
             >{`Hello partner, \n Welcome back !`}</Text>
 
-            <Text>{this.state.user}</Text>
-
             <View style={styles.form}>
               <View>
                 <TextInput
