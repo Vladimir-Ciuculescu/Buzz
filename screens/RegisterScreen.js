@@ -6,14 +6,17 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
   Alert,
   Image,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 
+import { TextInput, HelperText } from "react-native-paper";
+import { AntDesign } from "@expo/vector-icons";
 export default class RegisterScreen extends React.Component {
   state = {
     firstName: "",
@@ -21,154 +24,317 @@ export default class RegisterScreen extends React.Component {
     email: "",
     password: "",
     repeatPassword: "",
+    visiblePassword: true,
+    visibleRepeatPassword: true,
     registerError: "",
     existAccountLoading: false,
     createAccountLoading: false,
+    firstNameError: "",
+    lastNameError: "",
+    emailError: "",
+    passwordError: "",
+    repeatPasswordError: "",
   };
 
   register = async () => {
     const { firstName, lastName, email, password, repeatPassword } = this.state;
 
-    var existentAccount = false;
-    this.setState({ existAccountLoading: true });
-    this.setState({ createAccountLoading: true });
+    var validateAllFields = true;
 
-    const accounts = await firebase.firestore().collection("accounts").get();
+    //Validate First Name
 
-    this.setState({ existAccountLoading: false });
-
-    for (const doc of accounts.docs) {
-      if (email === doc.data().email && password === doc.data().password) {
-        existentAccount = true;
+    if (this.state.firstName === "") {
+      validateAllFields = false;
+      this.setState({ firstNameError: "This field cannot be empty" });
+    } else if (this.state.firstName !== "") {
+      if (/^[a-zA-Z]+$/.test(this.state.firstName) === false) {
+        validateAllFields = false;
+        this.setState({
+          firstNameError: "The first name can contain only letters",
+        });
+      } else {
+        this.setState({ firstNameError: "" });
       }
     }
 
-    if (existentAccount === true) {
-      this.setState({ registerError: "This account already exists !" });
+    //Validate Second Name
+
+    if (this.state.lastName === "") {
+      validateAllFields = false;
+      this.setState({ lastNameError: "This field cannot be empty" });
+    } else if (this.state.lastName !== "") {
+      if (/^[a-zA-Z]+$/.test(this.state.lastName) === false) {
+        validateAllFields = false;
+        this.setState({
+          lastNameError: "The last name can contain only letters",
+        });
+      } else {
+        this.setState({ lastNameError: "" });
+      }
+    }
+
+    //Validate email
+
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@vspartners\.us$/;
+
+    if (this.state.email === "") {
+      validateAllFields = false;
+      this.setState({ emailError: "This field cannot be empty " });
+    } else if (this.state.email !== "") {
+      if (emailRegex.test(this.state.email) === false) {
+        this.setState({
+          emailError: "Your email addres should have @vspartners.us !",
+        });
+        validateAllFields = false;
+      } else {
+        this.setState({ emailError: "" });
+      }
+    }
+
+    //Validate Password
+
+    if (this.state.password === "") {
+      validateAllFields = false;
+      this.setState({ passwordError: "The password cannot be empty !" });
+    } else if (this.state.password !== "") {
+      if (/^([a-zA-Z0-9]{6,})$/.test(this.state.password) === false) {
+        validateAllFields = false;
+        this.setState({
+          passwordError: "The password must have at least 6 characters",
+        });
+      } else {
+        this.setState({ passwordError: "" });
+      }
+    }
+
+    //Validate Repeat Password
+
+    if (this.state.repeatPassword === "") {
+      validateAllFields = false;
+      this.setState({ repeatPasswordError: "The password cannot be empty !" });
+    } else if (this.state.repeatPassword !== "") {
+      if (/^([a-zA-Z0-9]{6,})$/.test(this.state.repeatPassword) === false) {
+        validateAllFields = false;
+        this.setState({
+          repeatPasswordError: "The password must have at least 6 characters",
+        });
+      } else {
+        this.setState({ repeatPasswordError: "" });
+      }
+    }
+
+    if (validateAllFields) {
+      var existentAccount = false;
+      this.setState({ existAccountLoading: true });
+      this.setState({ createAccountLoading: true });
+
+      const accounts = await firebase.firestore().collection("accounts").get();
+
+      this.setState({ existAccountLoading: false });
+
+      for (const doc of accounts.docs) {
+        if (email === doc.data().email && password === doc.data().password) {
+          existentAccount = true;
+        }
+      }
+
+      if (existentAccount === true) {
+        this.setState({ registerError: "This account already exists !" });
+        this.setState({ firstName: "" });
+        this.setState({ lastName: "" });
+        this.setState({ email: "" });
+        this.setState({ password: "" });
+        this.setState({ repeatPassword: "" });
+      } else {
+        const fullName = lastName + " " + firstName;
+        firebase.firestore().collection("accounts").doc(fullName).set({
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          password: password,
+        });
+        this.setState({ createAccountLoading: false });
+        Alert.alert("Success", "Account succesfully created", [
+          {
+            text: "OK",
+            onPress: () => this.props.navigation.navigate("Login"),
+          },
+        ]);
+      }
     } else {
-      const fullName = lastName + " " + firstName;
-      firebase.firestore().collection("accounts").doc(fullName).set({
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        password: password,
-      });
-      this.setState({ createAccountLoading: false });
-      Alert.alert("Success", "Account succesfully created", [
-        {
-          text: "OK",
-          onPress: () => this.props.navigation.navigate("Login"),
-        },
-      ]);
+      return;
     }
   };
 
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView>
-          <Image
-            source={require("../assets/green_circle.png.png")}
-            style={styles.greenCircle}
-          ></Image>
-          <Image
-            source={require("../assets/Yellow_icon.svg.png")}
-            style={styles.yellowCircle}
-          ></Image>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView>
+            <Image
+              source={require("../assets/green_circle.png.png")}
+              style={styles.greenCircle}
+            ></Image>
+            <Image
+              source={require("../assets/Yellow_icon.svg.png")}
+              style={styles.yellowCircle}
+            ></Image>
 
-          <Text style={styles.registerMessage}>Register account</Text>
+            <Text style={styles.registerMessage}>Register account</Text>
 
-          <View style={styles.form}>
-            <View>
-              <Text>First Name</Text>
-              <TextInput
-                underlineColorAndroid="transparent"
-                style={styles.input}
-                onChangeText={(firstName) => this.setState({ firstName })}
-                value={this.state.firstName}
-              ></TextInput>
+            <View style={styles.form}>
+              <View>
+                <TextInput
+                  theme={{
+                    colors: {
+                      primary: "#258e25",
+                      underlineColor: "transparent",
+                    },
+                  }}
+                  mode="outlined"
+                  label="First name"
+                  underlineColorAndroid="transparent"
+                  onChangeText={(firstName) => this.setState({ firstName })}
+                  value={this.state.firstName}
+                ></TextInput>
+                <HelperText type="error">
+                  {this.state.firstNameError}
+                </HelperText>
+              </View>
+
+              <View style={{ marginTop: 10 }}>
+                <TextInput
+                  theme={{
+                    colors: {
+                      primary: "#258e25",
+                      underlineColor: "transparent",
+                    },
+                  }}
+                  mode="outlined"
+                  label="Last name"
+                  underlineColorAndroid="transparent"
+                  onChangeText={(lastName) => this.setState({ lastName })}
+                  value={this.state.lastName}
+                ></TextInput>
+                <HelperText type="error">{this.state.lastNameError}</HelperText>
+              </View>
+
+              <View style={{ marginTop: 10 }}>
+                <TextInput
+                  theme={{
+                    colors: {
+                      primary: "#258e25",
+                      underlineColor: "transparent",
+                    },
+                  }}
+                  mode="outlined"
+                  label="Email "
+                  underlineColorAndroid="transparent"
+                  onChangeText={(email) => this.setState({ email })}
+                  value={this.state.email}
+                  right={<TextInput.Icon name="email" />}
+                />
+                <HelperText type="error">{this.state.emailError}</HelperText>
+              </View>
+
+              <View style={{ marginTop: 10 }}>
+                <TextInput
+                  theme={{
+                    colors: {
+                      primary: "#258e25",
+                      underlineColor: "transparent",
+                    },
+                  }}
+                  mode="outlined"
+                  label="Password"
+                  underlineColorAndroid="transparent"
+                  onChangeText={(password) => this.setState({ password })}
+                  value={this.state.password}
+                  secureTextEntry={this.state.visiblePassword}
+                  right={
+                    <TextInput.Icon
+                      name={this.state.visiblePassword ? "eye-off" : "eye"}
+                      onPress={() =>
+                        this.setState({
+                          visiblePassword: !this.state.visiblePassword,
+                        })
+                      }
+                    />
+                  }
+                ></TextInput>
+                <HelperText type="error">{this.state.passwordError}</HelperText>
+              </View>
+
+              <View style={{ marginTop: 10 }}>
+                <TextInput
+                  theme={{
+                    colors: {
+                      primary: "#258e25",
+                      underlineColor: "transparent",
+                    },
+                  }}
+                  mode="outlined"
+                  label="Repeat password"
+                  underlineColorAndroid="transparent"
+                  onChangeText={(repeatPassword) =>
+                    this.setState({ repeatPassword })
+                  }
+                  value={this.state.repeatPassword}
+                  secureTextEntry={this.state.visibleRepeatPassword}
+                  right={
+                    <TextInput.Icon
+                      name={
+                        this.state.visibleRepeatPassword ? "eye-off" : "eye"
+                      }
+                      onPress={() =>
+                        this.setState({
+                          visibleRepeatPassword:
+                            !this.state.visibleRepeatPassword,
+                        })
+                      }
+                    />
+                  }
+                ></TextInput>
+                <HelperText type="error">
+                  {this.state.repeatPasswordError}
+                </HelperText>
+              </View>
             </View>
 
-            <View>
-              <Text style={{ marginTop: 32 }}>Last Name</Text>
-              <TextInput
-                underlineColorAndroid="transparent"
-                style={styles.input}
-                onChangeText={(lastName) => this.setState({ lastName })}
-                value={this.state.lastName}
-              ></TextInput>
-            </View>
-
-            <View style={{ marginTop: 32 }}>
-              <Text>Email Address</Text>
-              <TextInput
-                placeholder="Your email address should have @vspartners.us"
-                underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                style={styles.input}
-                onChangeText={(email) => this.setState({ email })}
-                value={this.state.email}
-              ></TextInput>
-            </View>
-
-            <View style={{ marginTop: 32 }}>
-              <Text>Password</Text>
-              <TextInput
-                underlineColorAndroid="transparent"
-                secureTextEntry
-                autoCapitalize="none"
-                style={styles.input}
-                onChangeText={(password) => this.setState({ password })}
-                value={this.state.password}
-              ></TextInput>
-            </View>
-
-            <View style={{ marginTop: 32 }}>
-              <Text>Repat Password</Text>
-              <TextInput
-                underlineColorAndroid="transparent"
-                secureTextEntry
-                autoCapitalize="none"
-                style={styles.input}
-                onChangeText={(repeatPassword) =>
-                  this.setState({ repeatPassword })
-                }
-                value={this.state.repeatPassword}
-              ></TextInput>
-            </View>
-          </View>
-
-          <View style={styles.existentAccountError}>
-            <Text style={{ color: "#ff0000" }}>{this.state.registerError}</Text>
-          </View>
-
-          <View>
-            <TouchableOpacity
-              style={styles.registerButton}
-              onPress={() => this.register()}
-            >
-              {this.state.existAccountLoading ? (
-                <ActivityIndicator color="white"></ActivityIndicator>
-              ) : (
-                <Text style={{ color: "#FFF" }}>Create account</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-
-          <View>
-            <TouchableOpacity
-              style={{ alignSelf: "center", marginTop: 22, marginBottom: 20 }}
-              onPress={() => this.props.navigation.navigate("Login")}
-            >
-              <Text>
-                Already have an account ?,{" "}
-                <Text style={{ color: "#258e25", fontWeight: "700" }}>
-                  Login here
-                </Text>
+            <View style={styles.existentAccountError}>
+              <Text style={{ color: "#ff0000" }}>
+                {this.state.registerError}
               </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+            </View>
+
+            <View>
+              <TouchableOpacity
+                style={styles.registerButton}
+                onPress={() => this.register()}
+              >
+                {this.state.existAccountLoading ? (
+                  <ActivityIndicator color="white"></ActivityIndicator>
+                ) : (
+                  <Text style={{ color: "#FFF" }}>Create account</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+
+            <View>
+              <TouchableOpacity
+                style={{ alignSelf: "center", marginTop: 22, marginBottom: 20 }}
+                onPress={() => this.props.navigation.navigate("Login")}
+              >
+                <Text>
+                  Already have an account ?,{" "}
+                  <Text style={{ color: "#258e25", fontWeight: "700" }}>
+                    Login here
+                  </Text>
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </TouchableWithoutFeedback>
       </View>
     );
   }
@@ -179,23 +345,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   registerMessage: {
-    marginTop: 32,
+    marginTop: -20,
     fontSize: 28,
     fontWeight: "400",
     textAlign: "center",
     marginTop: 150,
+    marginBottom: 20,
   },
   form: {
     marginBottom: 48,
     marginHorizontal: 30,
   },
-  input: {
-    borderBottomColor: "#258e25",
-    borderBottomWidth: 2,
-    height: 50,
-    fontSize: 15,
-    color: "#258e25",
-  },
+
   registerButton: {
     marginHorizontal: 30,
     backgroundColor: "#258e25",

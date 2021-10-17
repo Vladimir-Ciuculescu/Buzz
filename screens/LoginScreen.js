@@ -5,14 +5,17 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   ActivityIndicator,
   StatusBar,
   LayoutAnimation,
   Image,
   ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
+
+import { TextInput, HelperText } from "react-native-paper";
 
 /*
 import { NavigationContainer, NavigationContext } from "react-navigation";
@@ -21,129 +24,191 @@ import { useNavigation } from "@react-navigation/native";
 */
 
 export default class LoginScreen extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: "",
+      password: "",
+      loginLoading: false,
+      inexistentAccountError: "",
+      visiblePassword: true,
+      statusColor: "#65a84d",
+      emailError: "",
+      passwordError: "",
+    };
+  }
 
-  state = {
-    email: "",
-    password: "",
-    loginLoading: false,
-    inexistentAccountError: "",
+  ToRegister = () => {
+    this.setState({ email: "" });
+    this.setState({ password: "" });
+    this.setState({ emailError: "" });
+    this.setState({ passwordError: "" });
+    this.props.navigation.navigate("Register");
   };
 
   handleLogin = async () => {
     const { email, password } = this.state;
 
+    var validateAllFields = true;
+
     var existentAccount = false;
 
-    this.setState({ loginLoading: true });
+    //Validate email
 
-    const query = await firebase.firestore().collection("accounts").get();
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@vspartners\.us$/;
 
-    for (const doc of query.docs) {
-      if (email === doc.data().email && password === doc.data().password) {
-        existentAccount = true;
+    if (this.state.email === "") {
+      validateAllFields = false;
+      this.setState({ emailError: "This field cannot be empty " });
+    } else if (this.state.email !== "") {
+      if (emailRegex.test(this.state.email) === false) {
+        this.setState({ emailError: "Invalid vsp address" });
+        validateAllFields = false;
+      } else {
+        this.setState({ emailError: "" });
       }
     }
 
-    this.setState({ loginLoading: false });
+    //Validate password
 
-    if (existentAccount === true) {
-      this.setState({
-        inexistentAccountError: "",
-      });
-      this.props.navigation.navigate("Home");
+    if (this.state.password === "") {
+      this.setState({ passwordError: "This field cannot be empty" });
+      validateAllFields = false;
     } else {
-      this.setState({
-        inexistentAccountError: "This account does not exist !",
-      });
+      this.setState({ passwordError: "" });
+    }
+
+    if (validateAllFields) {
+      this.setState({ loginLoading: true });
+      const query = await firebase.firestore().collection("accounts").get();
+
+      for (const doc of query.docs) {
+        if (email === doc.data().email && password === doc.data().password) {
+          existentAccount = true;
+        }
+      }
+
+      this.setState({ loginLoading: false });
+
+      if (existentAccount === true) {
+        this.setState({
+          inexistentAccountError: "",
+        });
+        this.props.navigation.navigate("Home");
+      } else {
+        this.setState({
+          inexistentAccountError: "This account does not exist !",
+          statusColor: "#ff0000",
+        });
+      }
+    } else {
+      return;
     }
   };
 
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView>
-          <StatusBar barStyle="light-content"></StatusBar>
-          <Image
-            source={require("../assets/green_circle.png.png")}
-            style={styles.greenCircle}
-          ></Image>
-          <Image
-            source={require("../assets/Yellow_icon.svg.png")}
-            style={styles.yellowCircle}
-          ></Image>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView>
+            <StatusBar barStyle="light-content"></StatusBar>
 
-          <Image
-            source={require("../assets/vsp2.png")}
-            style={styles.logo}
-          ></Image>
+            <View style={styles.greenCircle}></View>
 
-          <Text
-            style={styles.greeting}
-          >{`Hello partner, \n Welcome back !`}</Text>
+            <View style={styles.yellowCircle}></View>
 
-          <View style={styles.form}>
+            <Image
+              source={require("../assets/vsp2.png")}
+              style={styles.logo}
+            ></Image>
+
+            <Text
+              style={styles.greeting}
+            >{`Hello partner, \n Welcome back !`}</Text>
+
+            <View style={styles.form}>
+              <View>
+                <TextInput
+                  theme={{
+                    colors: {
+                      primary: "#258e25",
+                      underlineColor: "transparent",
+                    },
+                  }}
+                  mode="outlined"
+                  label="Email address"
+                  onChangeText={(email) => this.setState({ email })}
+                  value={this.state.email}
+                  right={<TextInput.Icon name="email" />}
+                />
+                <HelperText type="error">{this.state.emailError}</HelperText>
+              </View>
+
+              <View>
+                <TextInput
+                  theme={{
+                    colors: {
+                      primary: "#258e25",
+                      underlineColor: "transparent",
+                    },
+                  }}
+                  mode="outlined"
+                  label="Password"
+                  onChangeText={(password) => this.setState({ password })}
+                  value={this.state.password}
+                  secureTextEntry={this.state.visiblePassword}
+                  right={
+                    <TextInput.Icon
+                      name={this.state.visiblePassword ? "eye-off" : "eye"}
+                      onPress={() =>
+                        this.setState({
+                          visiblePassword: !this.state.visiblePassword,
+                        })
+                      }
+                    />
+                  }
+                />
+                <HelperText type="error">{this.state.passwordError}</HelperText>
+              </View>
+            </View>
+
+            <View style={styles.errorMessage}>
+              <HelperText type="error" style={{ fontSize: 20 }}>
+                {this.state.inexistentAccountError}
+              </HelperText>
+            </View>
+
             <View>
-              <Text>Email address</Text>
-              <TextInput
-                underlineColorAndroid="transparent"
-                style={styles.input}
-                onChangeText={(email) => this.setState({ email })}
-                value={this.state.email}
-              ></TextInput>
+              <TouchableOpacity
+                style={styles.loginButton}
+                onPress={() => this.handleLogin()}
+              >
+                {this.state.loginLoading ? (
+                  <ActivityIndicator
+                    color="#FFF"
+                    size="large"
+                  ></ActivityIndicator>
+                ) : (
+                  <Text style={{ color: "#FFF" }}>Login</Text>
+                )}
+              </TouchableOpacity>
             </View>
 
-            <View style={{ marginTop: 32 }}>
-              <Text>Password</Text>
-              <TextInput
-                underlineColorAndroid="transparent"
-                secureTextEntry
-                autoCapitalize="none"
-                style={styles.input}
-                onChangeText={(password) => this.setState({ password })}
-                value={this.state.password}
-              ></TextInput>
-            </View>
-          </View>
-
-          <View style={styles.errorMessage}>
-            <Text style={{ color: "#ff0000" }}>
-              {this.state.inexistentAccountError}
-            </Text>
-          </View>
-
-          <View>
-            <TouchableOpacity
-              style={styles.loginButton}
-              onPress={() => this.handleLogin()}
-            >
-              {this.state.loginLoading ? (
-                <ActivityIndicator
-                  color="#FFF"
-                  size="large"
-                ></ActivityIndicator>
-              ) : (
-                <Text style={{ color: "#FFF" }}>Login</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-
-          <View>
-            <TouchableOpacity
-              style={{ alignSelf: "center", marginTop: 32 }}
-              onPress={() => this.props.navigation.navigate("Register")}
-            >
-              <Text>
-                New to Buzz ?,{" "}
-                <Text style={{ color: "#258e25", fontWeight: "700" }}>
-                  Sign Up here !
+            <View>
+              <TouchableOpacity
+                style={{ alignSelf: "center", marginTop: 32, marginBottom: 20 }}
+                onPress={() => this.ToRegister()}
+              >
+                <Text>
+                  New to Buzz ?,{" "}
+                  <Text style={{ color: "#258e25", fontWeight: "700" }}>
+                    Sign Up here !
+                  </Text>
                 </Text>
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </TouchableWithoutFeedback>
       </View>
     );
   }
@@ -154,7 +219,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   greeting: {
-    marginTop: 360,
+    marginTop: 330,
+    marginBottom: 30,
     fontSize: 28,
     fontWeight: "400",
     textAlign: "center",
@@ -180,28 +246,32 @@ const styles = StyleSheet.create({
   },
   errorMessage: {
     alignItems: "center",
-    marginTop: -20,
+    marginTop: -70,
     marginBottom: 20,
   },
-  greenCircle: {
-    width: 500,
-    height: 500,
-    position: "absolute",
-    zIndex: -3,
-    marginLeft: 100,
-    marginTop: -350,
-  },
-  yellowCircle: {
-    width: 400,
-    height: 400,
-    position: "absolute",
-    zIndex: -3,
-    marginLeft: -180,
-    marginTop: -330,
-  },
+
   logo: {
     position: "absolute",
     alignSelf: "center",
     marginTop: 100,
+  },
+  yellowCircle: {
+    height: 400,
+    width: 400,
+    backgroundColor: "#ffe96b",
+    borderRadius: 200,
+    position: "absolute",
+    marginLeft: -180,
+    marginTop: -290,
+  },
+  greenCircle: {
+    backgroundColor: "#65a84d",
+    borderRadius: 200,
+    width: 400,
+    height: 400,
+    position: "absolute",
+    zIndex: -3,
+    marginLeft: 100,
+    marginTop: -310,
   },
 });
