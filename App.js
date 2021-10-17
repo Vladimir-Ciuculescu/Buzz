@@ -6,6 +6,8 @@ import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import firebase from "firebase";
 
+LogBox.ignoreAllLogs(true);
+
 const firebaseConfig = {
   apiKey: "AIzaSyBiGTaFqnFoT2aj5KkvgoAr422VsVgMKtA",
   authDomain: "wadwad-60664.firebaseapp.com",
