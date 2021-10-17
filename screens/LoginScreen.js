@@ -13,7 +13,9 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
   Keyboard,
+  TextPropTypes,
 } from "react-native";
+import { AsyncStorage } from "react-native";
 
 import { TextInput, HelperText } from "react-native-paper";
 
@@ -26,7 +28,10 @@ import { useNavigation } from "@react-navigation/native";
 export default class LoginScreen extends React.Component {
   constructor(props) {
     super(props);
+    this.getData();
     this.state = {
+      user: "",
+      token: "",
       email: "",
       password: "",
       loginLoading: false,
@@ -44,6 +49,20 @@ export default class LoginScreen extends React.Component {
     this.setState({ emailError: "" });
     this.setState({ passwordError: "" });
     this.props.navigation.navigate("Register");
+  };
+
+  getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem("token");
+      const user = await AsyncStorage.getItem("user");
+
+      if (value !== null) {
+        this.setState({ token: value });
+      }
+      if (user !== null) {
+        this.setState({ user: user });
+      }
+    } catch (e) {}
   };
 
   handleLogin = async () => {
@@ -94,6 +113,9 @@ export default class LoginScreen extends React.Component {
         this.setState({
           inexistentAccountError: "",
         });
+        this.setState({ token: "abc123" });
+        await AsyncStorage.setItem("user", this.state.email);
+        await AsyncStorage.setItem("token", "abc123");
         this.props.navigation.navigate("Home");
       } else {
         this.setState({
@@ -125,6 +147,8 @@ export default class LoginScreen extends React.Component {
             <Text
               style={styles.greeting}
             >{`Hello partner, \n Welcome back !`}</Text>
+
+            <Text>{this.state.user}</Text>
 
             <View style={styles.form}>
               <View>

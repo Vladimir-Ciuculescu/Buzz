@@ -36,6 +36,10 @@ export default class RegisterScreen extends React.Component {
     repeatPasswordError: "",
   };
 
+  ToLogin = () => {
+    this.props.navigation.navigate("Login");
+  };
+
   register = async () => {
     const { firstName, lastName, email, password, repeatPassword } = this.state;
 
@@ -146,8 +150,7 @@ export default class RegisterScreen extends React.Component {
         this.setState({ password: "" });
         this.setState({ repeatPassword: "" });
       } else {
-        const fullName = lastName + " " + firstName;
-        firebase.firestore().collection("accounts").doc(fullName).set({
+        firebase.firestore().collection("accounts").doc(this.state.email).set({
           firstName: firstName,
           lastName: lastName,
           email: email,
@@ -323,7 +326,7 @@ export default class RegisterScreen extends React.Component {
             <View>
               <TouchableOpacity
                 style={{ alignSelf: "center", marginTop: 22, marginBottom: 20 }}
-                onPress={() => this.props.navigation.navigate("Login")}
+                onPress={() => this.ToLogin()}
               >
                 <Text>
                   Already have an account ?,{" "}

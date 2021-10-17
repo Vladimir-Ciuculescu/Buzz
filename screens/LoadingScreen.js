@@ -1,16 +1,12 @@
 import React from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import firebase from "firebase";
+import * as firebase from "firebase";
+import { AsyncStorage } from "react-native";
 
 export default class LoadingScreen extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
-    firebase.auth().onAuthStateChanged((user) => {
-      this.props.navigation.navigate(user ? "App" : "Auth");
-    });
+    const user = AsyncStorage.getItem("user");
+    this.props.navigation.navigate(user ? "App" : "Auth");
   }
 
   render() {
