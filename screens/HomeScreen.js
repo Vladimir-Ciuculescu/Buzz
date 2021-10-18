@@ -48,7 +48,10 @@ export default class HomeScreen extends React.Component {
               this.setState({ visible: false });
             },
           }}
+          style={{ backgroundColor: "#258e25" }}
+          theme={{ colors: { accent: "white" } }}
           onDismiss={() => this.setState({ visible: false })}
+          duration={2000}
         >
           Logged in as {this.state.user}
         </Snackbar>

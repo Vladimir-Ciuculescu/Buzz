@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Text, View } from "react-native";
 
-export default class MusicRoute extends Component {
+export default class NotificatiionScreen extends Component {
   render() {
     return (
       <View>

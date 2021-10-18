@@ -12,9 +12,17 @@ import {
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import firebase from "firebase";
-import AlbumsRoute from "./screens/MessageScreen";
-import MusicRoute from "./screens/NotificationScreen";
-import RecentRoute from "./screens/ProfileScreen";
+import { Button } from "react-native-paper";
+
+//screens
+import HomeScreen from "./screens/HomeScreen";
+import LoadingScreen from "./screens/LoadingScreen";
+import RegisterScreen from "./screens/RegisterScreen";
+import LoginScreen from "./screens/LoginScreen";
+import MessageScreen from "./screens/MessageScreen";
+import NotificationScreen from "./screens/NotificationScreen";
+import ProfileScreen from "./screens/ProfileScreen";
+import PostScreen from "./screens/PostScreen";
 
 LogBox.ignoreAllLogs(true);
 
@@ -37,63 +45,97 @@ if (!firebase.apps.length) {
   firebase.app();
 }
 
-//screens
-import HomeScreen from "./screens/HomeScreen";
-import LoadingScreen from "./screens/LoadingScreen";
-import RegisterScreen from "./screens/RegisterScreen";
-import LoginScreen from "./screens/LoginScreen";
-import MessageScreen from "./screens/MessageScreen";
-import NotificationScreen from "./screens/NotificationScreen";
-import ProfileScreen from "./screens/ProfileScreen";
-
-const AppTabNavigator = createBottomTabNavigator(
+const AppContainer = createStackNavigator(
   {
-    Home: {
-      screen: HomeScreen,
-      navigationOptions: {
-        tabBarIcon: ({ tintColor }) => (
-          <Entypo name="home" size={24} color={tintColor} />
-        ),
+    default: createBottomTabNavigator(
+      {
+        Home: {
+          screen: HomeScreen,
+          navigationOptions: {
+            tabBarIcon: ({ tintColor }) => (
+              <Entypo name="home" size={24} color={tintColor} />
+            ),
+          },
+        },
+        Message: {
+          screen: MessageScreen,
+          navigationOptions: {
+            tabBarIcon: ({ tintColor }) => (
+              <MaterialCommunityIcons
+                name="message-processing"
+                size={24}
+                color={tintColor}
+              />
+            ),
+          },
+        },
+
+        Post: {
+          screen: PostScreen,
+          navigationOptions: {
+            tabBarIcon: ({ tintColor }) => (
+              <AntDesign
+                name="pluscircle"
+                size={48}
+                color="#65a84d"
+                style={{
+                  shadowColor: "#E9446A",
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowRadius: 10,
+                  shadowOpacity: 0.3,
+                }}
+              />
+            ),
+          },
+        },
+
+        Notification: {
+          screen: NotificationScreen,
+          navigationOptions: {
+            tabBarIcon: ({ tintColor }) => (
+              <Octicons name="bell" size={24} color={tintColor} />
+            ),
+          },
+        },
+        Profile: {
+          screen: ProfileScreen,
+          navigationOptions: {
+            tabBarIcon: ({ tintColor }) => (
+              <Ionicons name="person" size={24} color={tintColor} />
+            ),
+          },
+        },
       },
-    },
-    Message: {
-      screen: MessageScreen,
-      navigationOptions: {
-        tabBarIcon: ({ tintColor }) => (
-          <MaterialCommunityIcons
-            name="message-processing"
-            size={24}
-            color={tintColor}
-          />
-        ),
-      },
-    },
-    Notification: {
-      screen: NotificationScreen,
-      navigationOptions: {
-        tabBarIcon: ({ tintColor }) => (
-          <Octicons name="bell" size={24} color={tintColor} />
-        ),
-      },
-    },
-    Profile: {
-      screen: ProfileScreen,
-      navigationOptions: {
-        tabBarIcon: ({ tintColor }) => (
-          <Ionicons name="person" size={24} color={tintColor} />
-        ),
-      },
+      {
+        defaultNavigationOptions: {
+          tabBarOnPress: ({ navigation, defaultHandler }) => {
+            if (navigation.state.key === "Post") {
+              navigation.navigate("postModal");
+            } else {
+              defaultHandler();
+            }
+          },
+        },
+        tabBarOptions: {
+          activeTintColor: "#008ae6",
+          inactiveTintColor: "#161F3D",
+          showLabel: false,
+          style: { borderTopColor: "#A9A9A9", borderTopWidth: 1, height: 60 },
+        },
+      }
+    ),
+    postModal: {
+      screen: PostScreen,
     },
   },
   {
-    tabBarOptions: {
-      activeTintColor: "#008ae6",
-      inactiveTintColor: "#161F3D",
-      showLabel: true,
-      style: { borderTopColor: "#A9A9A9", borderTopWidth: 1 },
-    },
+    mode: "modal",
+    headerMode: "none",
   }
 );
+
+//const AppTabNavigator =
+//);
 
 /*
 
@@ -111,7 +153,7 @@ export default createAppContainer(
   createSwitchNavigator(
     {
       Loading: LoadingScreen,
-      App: AppTabNavigator,
+      App: AppContainer,
       Auth: AuthStack,
     },
     {
