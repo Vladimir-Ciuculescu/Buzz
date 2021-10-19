@@ -25,7 +25,7 @@ export default class ProfileScreen extends Component {
       user: "",
       email: "",
       avatar: "",
-      toggleEditProfile: true,
+      toggleEditProfile: false,
       avatar: null,
     };
   }

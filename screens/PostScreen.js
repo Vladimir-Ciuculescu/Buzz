@@ -8,29 +8,36 @@ import {
   SafeAreaView,
   Image,
   TextInput,
+  ImageBackground,
+  PermissionsAndroid,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { CardList } from "react-native-card-list";
-import {
-  Card,
-  CardTitle,
-  CardContent,
-  CardAction,
-  CardButton,
-  CardImage,
-} from "react-native-cards";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
-const PostTypes = [
-  {
-    id: 1,
-    title: "Taking lunch",
-    picture:
-      "https://images.theconversation.com/files/410720/original/file-20210712-46002-1ku5one.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=1200&h=1200.0&fit=crop",
-    content: <Text>Order food</Text>,
-  },
-];
+import Constants from "expo-constants";
+import * as Permissions from "expo-permissions";
+import Camera from "expo-camera";
+
+const image = {
+  uri: "https://belgrade-free-walking-tour.com/wp-content/uploads/2016/04/Fotolia_4887928_Subscription_Monthly_M-1.jpg",
+};
 
 export default class PostScreen extends React.Component {
+  state = {
+    text: "",
+    image: null,
+  };
+
+  componentDidMount() {
+    this.getPhotoPermission();
+  }
+
+  getPhotoPermission = async () => {
+    if (Constants.platform.android) {
+      //const { status } = await Permissions.askAsync(Permissions.CAMERA);
+      const { status } = await Camera.requestCameraPermissionsAsync();
+    }
+  };
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -44,15 +51,48 @@ export default class PostScreen extends React.Component {
           </TouchableOpacity>
         </View>
         <View>
-          <Text>What kind of post do you want to make ?</Text>
-          <Card style={styles.cardOption}>
-            <CardImage
+          <View style={{ flexDirection: "row" }}>
+            <Image
               source={{
-                uri: "https://images.theconversation.com/files/410720/original/file-20210712-46002-1ku5one.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=1200&h=1200.0&fit=crop",
+                uri: "https://cdn.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png",
               }}
-              title="Order food"
-            />
-          </Card>
+              style={styles.avatar}
+            ></Image>
+            <TextInput
+              placeholder="What do you want to share with others ?"
+              multiline={true}
+              autoFocus={true}
+              numberOfLines={4}
+              style={styles.question}
+            ></TextInput>
+          </View>
+
+          <TouchableOpacity
+            style={styles.photo}
+            onPress={this.getPhotoPermission}
+          >
+            <FontAwesome name="camera" size={24} color="D8D9DB" />
+          </TouchableOpacity>
+
+          <ImageBackground
+            source={image}
+            style={styles.image}
+            imageStyle={{ borderRadius: 20 }}
+            resizeMode="cover"
+          >
+            <View
+              style={{
+                position: "absolute",
+                paddingTop: 10,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "white", fontSize: 20, opacity: 1 }}>
+                Carting
+              </Text>
+            </View>
+          </ImageBackground>
         </View>
       </SafeAreaView>
     );
@@ -72,10 +112,30 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#D8D9DB",
   },
+  question: {
+    fontSize: 15,
+  },
   cardOption: {
     paddingHorizontal: 20,
     height: 330,
     width: 330,
     alignSelf: "center",
+  },
+  image: {
+    flex: 1,
+    width: 100,
+    height: 100,
+  },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    marginRight: 16,
+    marginLeft: 20,
+    marginTop: 20,
+  },
+  photo: {
+    alignItems: "flex-end",
+    marginHorizontal: 12,
   },
 });

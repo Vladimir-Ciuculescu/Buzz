@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import * as firebase from "firebase";
 import { AsyncStorage } from "react-native";
+import Fire from "../Fire";
 
 export default class LoadingScreen extends React.Component {
   componentDidMount() {
