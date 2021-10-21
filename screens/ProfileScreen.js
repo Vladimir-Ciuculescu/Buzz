@@ -8,8 +8,9 @@ import {
   Modal,
   TouchableOpacity,
   Image,
+  Alert,
 } from "react-native";
-import { Avatar, Button, Caption, Title } from "react-native-paper";
+import { Avatar, Button, Caption, TextInput, Title } from "react-native-paper";
 import firebase from "firebase";
 import firetore from "firebase/firestore";
 import { Feather, AntDesign, Ionicons } from "@expo/vector-icons";
@@ -18,6 +19,7 @@ import UserPermission from "../utilities/UserPersmission";
 import * as ImagePicker from "expo-image-picker";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
+import { color } from "react-native-reanimated";
 export default class ProfileScreen extends Component {
   constructor(props) {
     super(props);
@@ -31,15 +33,24 @@ export default class ProfileScreen extends Component {
     };
   }
 
-  PickAvatar = async () => {
-    /*
-    if (Constants.platform.android) {
-      const { status } = await Permissions.askAsync(
-        Permissions.CAMERA_ROLL
-      );
-      alert(status);
-    }*/
+  Logout = async () => {
+    Alert.alert("Logout", "Are you sure you want to log out ?", [
+      {
+        text: "No",
+        style: "default",
+      },
+      {
+        text: "Yes",
+        style: "destructive",
+        onPress: async () => {
+          await AsyncStorage.removeItem("user");
+          this.props.navigation.navigate("Login");
+        },
+      },
+    ]);
+  };
 
+  PickAvatar = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -54,7 +65,6 @@ export default class ProfileScreen extends Component {
   getUser = async () => {
     const user = await AsyncStorage.getItem("user");
     this.setState({ email: user });
-    console.log(user);
     const query = firebase.firestore().collection("accounts").doc(user).get();
     const firstName = (await query).data().firstName;
     const lastName = (await query).data().lastName;
@@ -131,6 +141,9 @@ export default class ProfileScreen extends Component {
             <Image source={{ uri: this.state.avatar }} />
             <TouchableOpacity onPress={this.PickAvatar}>
               <Text style={{ color: "#65a84d" }}>Choose a profile picture</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => this.Logout()}>
+              <Text style={{ color: "#ff0000" }}>Log out</Text>
             </TouchableOpacity>
           </View>
         </Modal>

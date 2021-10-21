@@ -5,9 +5,9 @@ import { AsyncStorage } from "react-native";
 import Fire from "../Fire";
 
 export default class LoadingScreen extends React.Component {
-  componentDidMount() {
-    const user = AsyncStorage.getItem("user");
-    this.props.navigation.navigate(user ? "Auth" : "App");
+  async componentDidMount() {
+    const user = await AsyncStorage.getItem("user");
+    this.props.navigation.navigate(user !== null ? "App" : "Auth");
   }
 
   render() {

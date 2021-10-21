@@ -8,16 +8,17 @@ import {
   SafeAreaView,
   Image,
   TextInput,
-  ImageBackground,
-  PermissionsAndroid,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import Fire from "../Fire";
 
 import Constants from "expo-constants";
-import * as Permissions from "expo-permissions";
-import { Camera } from "expo-camera";
-//import { Permissions } from "expo";
-import { RNCamera } from "react-native-camera";
+
+const firebase = require("firebase");
+require("firebase/firestore");
 
 const image = {
   uri: "https://belgrade-free-walking-tour.com/wp-content/uploads/2016/04/Fotolia_4887928_Subscription_Monthly_M-1.jpg",
@@ -27,6 +28,7 @@ export default class PostScreen extends React.Component {
   state = {
     text: "",
     image: null,
+    loadingPost: false,
   };
 
   componentDidMount() {
@@ -41,6 +43,36 @@ export default class PostScreen extends React.Component {
     }
   };
 
+  handlePost = async () => {
+    this.setState({ loadingPost: true });
+    await Fire.shared.addPost({
+      text: this.state.text.trim(),
+      localUri: this.state.image,
+    });
+
+    this.setState({ text: "", image: null });
+
+    this.setState({ loadingPost: false });
+
+    Alert.alert("Success", "Post succesfully uploaded", [
+      {
+        text: "OK",
+        onPress: () => this.props.navigation.goBack(),
+      },
+    ]);
+  };
+
+  pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+    });
+    if (!result.cancelled) {
+      this.setState({ image: result.uri });
+    }
+  };
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -49,9 +81,13 @@ export default class PostScreen extends React.Component {
             <Ionicons name="md-arrow-back" size={24} color="black"></Ionicons>
           </TouchableOpacity>
           <Text style={{}}>Add a new Post</Text>
-          <TouchableOpacity>
-            <Text style={{ fontWeight: "800" }}>Post</Text>
-          </TouchableOpacity>
+          {this.state.loadingPost ? (
+            <ActivityIndicator color="green"></ActivityIndicator>
+          ) : (
+            <TouchableOpacity onPress={this.handlePost}>
+              <Text style={{ fontWeight: "800" }}>Post</Text>
+            </TouchableOpacity>
+          )}
         </View>
         <View>
           <View style={{ flexDirection: "row" }}>
@@ -67,35 +103,27 @@ export default class PostScreen extends React.Component {
               autoFocus={true}
               numberOfLines={4}
               style={styles.question}
+              onChangeText={(text) => this.setState({ text })}
+              value={this.state.text}
             ></TextInput>
           </View>
 
-          <TouchableOpacity
-            style={styles.photo}
-            onPress={this.getPhotoPermission}
-          >
+          <TouchableOpacity style={styles.photo} onPress={this.pickImage}>
             <FontAwesome name="camera" size={24} color="#D8D9DB" />
           </TouchableOpacity>
-
-          <ImageBackground
-            source={image}
-            style={styles.image}
-            imageStyle={{ borderRadius: 20 }}
-            resizeMode="cover"
+          <View
+            style={{
+              alignContent: "center",
+              alignItems: "center",
+              alignSelf: "center",
+              marginTop: 30,
+            }}
           >
-            <View
-              style={{
-                position: "absolute",
-                paddingTop: 10,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ color: "white", fontSize: 20, opacity: 1 }}>
-                Carting
-              </Text>
-            </View>
-          </ImageBackground>
+            <Image
+              source={{ uri: this.state.image }}
+              style={{ height: 200, width: 330 }}
+            ></Image>
+          </View>
         </View>
       </SafeAreaView>
     );
@@ -124,11 +152,7 @@ const styles = StyleSheet.create({
     width: 330,
     alignSelf: "center",
   },
-  image: {
-    flex: 1,
-    width: 100,
-    height: 100,
-  },
+
   avatar: {
     width: 48,
     height: 48,
