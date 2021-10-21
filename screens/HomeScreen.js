@@ -60,12 +60,6 @@ export default class HomeScreen extends React.Component {
             Go back
           </Text>
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.goBack}>
-          <Text onPress={() => this.props.navigation.navigate("Login")}>
-            Go back
-          </Text>
-        </TouchableOpacity>
       </View>
     );
   }

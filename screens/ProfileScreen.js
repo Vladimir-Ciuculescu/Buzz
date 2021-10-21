@@ -16,7 +16,8 @@ import { Feather, AntDesign, Ionicons } from "@expo/vector-icons";
 import EditProfileModal from "./EditProfileModal";
 import UserPermission from "../utilities/UserPersmission";
 import * as ImagePicker from "expo-image-picker";
-
+import Constants from "expo-constants";
+import * as Permissions from "expo-permissions";
 export default class ProfileScreen extends Component {
   constructor(props) {
     super(props);
@@ -31,7 +32,13 @@ export default class ProfileScreen extends Component {
   }
 
   PickAvatar = async () => {
-    UserPermission.getCameraPermission();
+    /*
+    if (Constants.platform.android) {
+      const { status } = await Permissions.askAsync(
+        Permissions.CAMERA_ROLL
+      );
+      alert(status);
+    }*/
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -39,7 +46,7 @@ export default class ProfileScreen extends Component {
       aspect: [4, 3],
     });
 
-    if (result.cancelled) {
+    if (!result.cancelled) {
       this.setState({ avatar: result.uri });
     }
   };
@@ -157,7 +164,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingTop: 10,
+    paddingTop: 50,
     paddingBottom: 10,
     borderBottomColor: "gray",
     borderBottomWidth: 1,

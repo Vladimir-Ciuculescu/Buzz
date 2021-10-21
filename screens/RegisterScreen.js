@@ -13,6 +13,7 @@ import {
   Image,
   TouchableWithoutFeedback,
   Keyboard,
+  KeyboardAvoidingView,
 } from "react-native";
 
 import { TextInput, HelperText } from "react-native-paper";
@@ -132,6 +133,10 @@ export default class RegisterScreen extends React.Component {
       this.setState({ existAccountLoading: true });
       this.setState({ createAccountLoading: true });
 
+      await firebase
+        .auth()
+        .createUserWithEmailAndPassword(this.state.email, this.state.password);
+
       const accounts = await firebase.firestore().collection("accounts").get();
 
       this.setState({ existAccountLoading: false });
@@ -171,7 +176,11 @@ export default class RegisterScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : null}
+        style={styles.container}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : null}
+      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView>
             <Image
@@ -338,7 +347,7 @@ export default class RegisterScreen extends React.Component {
             </View>
           </ScrollView>
         </TouchableWithoutFeedback>
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }

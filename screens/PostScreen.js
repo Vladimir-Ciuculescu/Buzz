@@ -15,7 +15,9 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
-import Camera from "expo-camera";
+import { Camera } from "expo-camera";
+//import { Permissions } from "expo";
+import { RNCamera } from "react-native-camera";
 
 const image = {
   uri: "https://belgrade-free-walking-tour.com/wp-content/uploads/2016/04/Fotolia_4887928_Subscription_Monthly_M-1.jpg",
@@ -34,7 +36,8 @@ export default class PostScreen extends React.Component {
   getPhotoPermission = async () => {
     if (Constants.platform.android) {
       //const { status } = await Permissions.askAsync(Permissions.CAMERA);
-      const { status } = await Camera.requestCameraPermissionsAsync();
+      //const { status } = await Camera.requestPermissionsAsync();
+      //alert(status);
     }
   };
 
@@ -71,7 +74,7 @@ export default class PostScreen extends React.Component {
             style={styles.photo}
             onPress={this.getPhotoPermission}
           >
-            <FontAwesome name="camera" size={24} color="D8D9DB" />
+            <FontAwesome name="camera" size={24} color="#D8D9DB" />
           </TouchableOpacity>
 
           <ImageBackground
