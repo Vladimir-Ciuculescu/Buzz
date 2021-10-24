@@ -20,10 +20,6 @@ import Constants from "expo-constants";
 const firebase = require("firebase");
 require("firebase/firestore");
 
-const image = {
-  uri: "https://belgrade-free-walking-tour.com/wp-content/uploads/2016/04/Fotolia_4887928_Subscription_Monthly_M-1.jpg",
-};
-
 export default class PostScreen extends React.Component {
   state = {
     text: "",
@@ -75,7 +71,7 @@ export default class PostScreen extends React.Component {
 
   render() {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
             <Ionicons name="md-arrow-back" size={24} color="black"></Ionicons>
@@ -125,7 +121,8 @@ export default class PostScreen extends React.Component {
             ></Image>
           </View>
         </View>
-      </SafeAreaView>
+        <View />
+      </View>
     );
   }
 }

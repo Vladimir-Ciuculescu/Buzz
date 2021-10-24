@@ -109,10 +109,7 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Feed</Text>
-          <TouchableOpacity onPress={console.log(this.state.post)}>
-            <Text>Show</Text>
-          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Buzz</Text>
         </View>
 
         <FlatList
@@ -150,11 +147,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#EFECF4",
   },
   header: {
-    paddingTop: 64,
+    paddingTop: 44,
     paddingBottom: 16,
     backgroundColor: "#FFF",
-    alignItems: "center",
-    justifyContent: "center",
+    paddingLeft: 30,
     borderBottomWidth: 1,
     borderBottomColor: "#EBECF4",
     shadowColor: "#454D65",

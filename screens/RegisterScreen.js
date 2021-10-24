@@ -164,6 +164,8 @@ export default class RegisterScreen extends React.Component {
             email: email,
             password: password,
             userId: "",
+            avatar: "",
+            phoneNumber: null,
           });
 
         //Create firebase user with email and password

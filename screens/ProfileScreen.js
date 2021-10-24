@@ -6,20 +6,23 @@ import {
   AsyncStorage,
   StyleSheet,
   Modal,
-  TouchableOpacity,
   Image,
   Alert,
+  TextInput,
+  Keyboard,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  ActivityIndicator,
 } from "react-native";
-import { Avatar, Button, Caption, TextInput, Title } from "react-native-paper";
+import { Picker } from "@react-native-picker/picker";
+import DropDownPicker from "react-native-dropdown-picker";
+import { Avatar, Button, Caption, Title } from "react-native-paper";
 import firebase from "firebase";
 import firetore from "firebase/firestore";
 import { Feather, AntDesign, Ionicons } from "@expo/vector-icons";
-import EditProfileModal from "./EditProfileModal";
-import UserPermission from "../utilities/UserPersmission";
 import * as ImagePicker from "expo-image-picker";
-import Constants from "expo-constants";
-import * as Permissions from "expo-permissions";
-import { color } from "react-native-reanimated";
+import Fire from "../Fire";
+
 export default class ProfileScreen extends Component {
   constructor(props) {
     super(props);
@@ -28,8 +31,13 @@ export default class ProfileScreen extends Component {
       user: "",
       email: "",
       avatar: "",
-      toggleEditProfile: false,
+      toggleEditProfile: true,
       avatar: null,
+      firstName: "",
+      lastName: "",
+      phoneNumber: null,
+      country: "uk",
+      loadingEditProfile: false,
     };
   }
 
@@ -58,8 +66,33 @@ export default class ProfileScreen extends Component {
     });
 
     if (!result.cancelled) {
+      //this.setState({ avatar: result.uri });
       this.setState({ avatar: result.uri });
     }
+  };
+
+  updateProfile = async () => {
+    console.log(this.state.user);
+    this.setState({ loadingEditProfile: true });
+
+    await Fire.shared.addAvatar({
+      localUri: this.state.avatar,
+      user: this.state.email,
+    });
+
+    await firebase
+      .firestore()
+      .collection("accounts")
+      .doc(this.state.email)
+      .update({
+        firstName: this.state.firstName,
+        lastName: this.state.lastName,
+        phoneNumber: this.state.phoneNumber,
+      });
+
+    this.setState({ loadingEditProfile: false });
+
+    this.setState({ toggleEditProfile: false });
   };
 
   getUser = async () => {
@@ -70,11 +103,16 @@ export default class ProfileScreen extends Component {
     const lastName = (await query).data().lastName;
     const fullName = firstName + " " + lastName;
     this.setState({ user: fullName });
+    this.setState({ firstName: firstName });
+    this.setState({ lastName: lastName });
   };
 
   render() {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Profile</Text>
+        </View>
         <View style={styles.accountHeader}>
           <View style={{ flexDirection: "row" }}>
             <Avatar.Image
@@ -112,52 +150,136 @@ export default class ProfileScreen extends Component {
           Edit Profile
         </Button>
         <Modal animationType="slide" visible={this.state.toggleEditProfile}>
-          <View style={styles.headerSection}>
-            <TouchableOpacity
-              onPress={() => this.setState({ toggleEditProfile: false })}
-            >
-              <Text style={{ fontSize: 16 }}>Cancel</Text>
-            </TouchableOpacity>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View>
+              <View style={styles.headerSection}>
+                <TouchableOpacity
+                  onPress={() => this.setState({ toggleEditProfile: false })}
+                >
+                  <Text style={{ fontSize: 16 }}>Cancel</Text>
+                </TouchableOpacity>
 
-            <Text style={{ fontSize: 16, fontWeight: "700" }}>
-              Edit Profile
-            </Text>
+                <Text style={{ fontSize: 16, fontWeight: "700" }}>
+                  Edit Profile
+                </Text>
 
-            <TouchableOpacity
-              onPress={() => this.setState({ toggleEditProfile: false })}
-            >
-              <Text
-                style={{ fontSize: 16, color: "#65a84d", fontWeight: "700" }}
-              >
-                Done
-              </Text>
-            </TouchableOpacity>
-          </View>
+                <TouchableOpacity onPress={() => this.updateProfile()}>
+                  {this.state.loadingEditProfile ? (
+                    <ActivityIndicator color="green"></ActivityIndicator>
+                  ) : (
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: "#65a84d",
+                        fontWeight: "700",
+                      }}
+                    >
+                      Done
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </View>
 
-          <View style={styles.photoSection}>
-            <TouchableOpacity style={styles.avatar}>
-              <Ionicons name="person-circle-outline" size={70} color="black" />
-            </TouchableOpacity>
-            <Image source={{ uri: this.state.avatar }} />
-            <TouchableOpacity onPress={this.PickAvatar}>
-              <Text style={{ color: "#65a84d" }}>Choose a profile picture</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => this.Logout()}>
-              <Text style={{ color: "#ff0000" }}>Log out</Text>
-            </TouchableOpacity>
-          </View>
+              <View style={styles.photoSection}>
+                <TouchableOpacity style={styles.avatar}>
+                  {this.state.avatar ? (
+                    <Image
+                      source={{ uri: this.state.avatar }}
+                      style={{ height: 100, width: 100, borderRadius: 50 }}
+                    />
+                  ) : (
+                    <Image
+                      source={require("./../assets/profile.png")}
+                      style={{ height: 100, width: 100 }}
+                    />
+                  )}
+                </TouchableOpacity>
+                <Image source={{ uri: this.state.avatar }} />
+                <TouchableOpacity onPress={this.PickAvatar}>
+                  <Text style={{ color: "#65a84d" }}>
+                    Choose a profile picture
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.firstNameSection}>
+                <Text
+                  style={{ color: "#A9A9A9", paddingBottom: 10, fontSize: 18 }}
+                >
+                  First Name
+                </Text>
+                <TextInput
+                  style={styles.changeTextInput}
+                  value={this.state.firstName}
+                  placeholder="First Name"
+                  onChangeText={(e) => this.setState({ firstName: e })}
+                />
+              </View>
+
+              <View style={styles.lastNameSection}>
+                <Text
+                  style={{ color: "#A9A9A9", paddingBottom: 10, fontSize: 18 }}
+                >
+                  Second Name
+                </Text>
+                <TextInput
+                  style={styles.changeTextInput}
+                  value={this.state.lastName}
+                  placeholder="Second Name"
+                  onChangeText={(e) => this.setState({ secondName: e })}
+                />
+              </View>
+
+              <View style={styles.phoneNumber}>
+                <Text
+                  style={{ color: "#A9A9A9", paddingBottom: 10, fontSize: 18 }}
+                >
+                  Phone number
+                </Text>
+                <TextInput
+                  style={styles.changeTextInput}
+                  value={this.state.phoneNumber}
+                  keyboardType="numeric"
+                  onChangeText={(e) => this.setState({ phoneNumber: e })}
+                />
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
         </Modal>
-      </SafeAreaView>
+      </View>
     );
   }
 }
+
+/*
+<TouchableOpacity onPress={() => this.Logout()}>
+              <Text style={{ color: "#ff0000" }}>Log out</Text>
+            </TouchableOpacity>
+*/
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  header: {
+    paddingTop: 44,
+    paddingBottom: 16,
+    backgroundColor: "#FFF",
+    paddingLeft: 30,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EBECF4",
+    shadowColor: "#454D65",
+    shadowOffset: { height: 5 },
+    shadowRadius: 15,
+    shadowOpacity: 0.2,
+    zIndex: 10,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "500",
+  },
   accountHeader: {
-    marginTop: 60,
+    marginTop: 20,
     marginLeft: 20,
   },
   captionSection: {
@@ -185,5 +307,31 @@ const styles = StyleSheet.create({
   photoSection: {
     alignItems: "center",
     marginTop: 20,
+  },
+  firstNameSection: {
+    paddingHorizontal: 20,
+    marginTop: 40,
+  },
+  lastNameSection: {
+    paddingHorizontal: 20,
+    marginTop: 40,
+  },
+  phoneNumber: {
+    paddingHorizontal: 20,
+    marginTop: 40,
+  },
+  role: {
+    paddingHorizontal: 20,
+    marginTop: 40,
+  },
+  changeTextInput: {
+    color: "#000000",
+    borderBottomColor: "gray",
+    borderBottomWidth: 1,
+    fontSize: 18,
+    paddingBottom: 7,
+  },
+  picker: {
+    marginTop: -80,
   },
 });

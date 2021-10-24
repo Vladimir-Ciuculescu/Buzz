@@ -36,6 +36,24 @@ class Fire {
     });
   };
 
+  addAvatar = async ({ localUri, user }) => {
+    const remoteUri = await this.uploadPhotoAsync(localUri);
+    return new Promise((res, rej) => {
+      this.firestore
+        .collection("accounts")
+        .doc(user)
+        .update({
+          avatar: remoteUri,
+        })
+        .then((ref) => {
+          res(ref);
+        })
+        .catch((error) => {
+          rej(error);
+        });
+    });
+  };
+
   uploadPhotoAsync = async (uri) => {
     const path = `photos/${this.uid}/${Date.now()}.jpg`;
 
