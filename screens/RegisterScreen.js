@@ -13,10 +13,12 @@ import {
   Image,
   TouchableWithoutFeedback,
   Keyboard,
+  KeyboardAvoidingView,
 } from "react-native";
 
 import { TextInput, HelperText } from "react-native-paper";
-import { AntDesign } from "@expo/vector-icons";
+
+var userId;
 export default class RegisterScreen extends React.Component {
   state = {
     firstName: "",
@@ -44,6 +46,7 @@ export default class RegisterScreen extends React.Component {
     const { firstName, lastName, email, password, repeatPassword } = this.state;
 
     var validateAllFields = true;
+    var USERID;
 
     //Validate First Name
 
@@ -129,6 +132,7 @@ export default class RegisterScreen extends React.Component {
 
     if (validateAllFields) {
       var existentAccount = false;
+
       this.setState({ existAccountLoading: true });
       this.setState({ createAccountLoading: true });
 
@@ -150,12 +154,40 @@ export default class RegisterScreen extends React.Component {
         this.setState({ password: "" });
         this.setState({ repeatPassword: "" });
       } else {
-        firebase.firestore().collection("accounts").doc(this.state.email).set({
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-          password: password,
-        });
+        await firebase
+          .firestore()
+          .collection("accounts")
+          .doc(this.state.email)
+          .set({
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
+            userId: "",
+            avatar: "",
+            phoneNumber: null,
+          });
+
+        //Create firebase user with email and password
+        await firebase
+          .auth()
+          .createUserWithEmailAndPassword(
+            this.state.email,
+            this.state.password
+          );
+
+        firebase.auth().onAuthStateChanged((user) => {});
+
+        const userId = firebase.auth().currentUser.uid;
+
+        await firebase
+          .firestore()
+          .collection("accounts")
+          .doc(this.state.email)
+          .update({
+            userId: userId,
+          });
+
         this.setState({ createAccountLoading: false });
         Alert.alert("Success", "Account succesfully created", [
           {
@@ -163,6 +195,8 @@ export default class RegisterScreen extends React.Component {
             onPress: () => this.props.navigation.navigate("Login"),
           },
         ]);
+
+        //Also create document object with the user info
       }
     } else {
       return;
@@ -171,7 +205,11 @@ export default class RegisterScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : null}
+        style={styles.container}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : null}
+      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView>
             <Image
@@ -338,7 +376,7 @@ export default class RegisterScreen extends React.Component {
             </View>
           </ScrollView>
         </TouchableWithoutFeedback>
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }

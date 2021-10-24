@@ -14,16 +14,20 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TextPropTypes,
+  KeyboardAvoidingView,
+  Button,
+  Platform,
 } from "react-native";
 import { AsyncStorage } from "react-native";
 
-import { TextInput, HelperText } from "react-native-paper";
+import { HelperText, TextInput } from "react-native-paper";
 
 /*
 import { NavigationContainer, NavigationContext } from "react-navigation";
 import { createStackNavigator } from "react-navigation";
 import { useNavigation } from "@react-navigation/native";
 */
+const keyboardVerticalOffset = Platform.OS === "ios" ? 40 : 0;
 
 export default class LoginScreen extends React.Component {
   constructor(props) {
@@ -130,7 +134,11 @@ export default class LoginScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : null}
+        style={styles.container}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : null}
+      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView>
             <StatusBar barStyle="light-content"></StatusBar>
@@ -218,7 +226,11 @@ export default class LoginScreen extends React.Component {
 
             <View>
               <TouchableOpacity
-                style={{ alignSelf: "center", marginTop: 32, marginBottom: 20 }}
+                style={{
+                  alignSelf: "center",
+                  marginTop: 32,
+                  marginBottom: 20,
+                }}
                 onPress={() => this.ToRegister()}
               >
                 <Text>
@@ -231,7 +243,7 @@ export default class LoginScreen extends React.Component {
             </View>
           </ScrollView>
         </TouchableWithoutFeedback>
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }

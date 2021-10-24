@@ -2,11 +2,12 @@ import React from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import * as firebase from "firebase";
 import { AsyncStorage } from "react-native";
+import Fire from "../Fire";
 
 export default class LoadingScreen extends React.Component {
-  componentDidMount() {
-    const user = AsyncStorage.getItem("user");
-    this.props.navigation.navigate(user ? "App" : "Auth");
+  async componentDidMount() {
+    const user = await AsyncStorage.getItem("user");
+    this.props.navigation.navigate(user !== null ? "App" : "Auth");
   }
 
   render() {
