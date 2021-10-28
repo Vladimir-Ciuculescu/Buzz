@@ -169,7 +169,9 @@ export default class LoginScreen extends React.Component {
                   label="Email address"
                   onChangeText={(email) => this.setState({ email })}
                   value={this.state.email}
-                  right={<TextInput.Icon name="email" />}
+                  right={
+                    <TextInput.Icon forceTextInputFocus={false} name="email" />
+                  }
                 />
                 <HelperText type="error">{this.state.emailError}</HelperText>
               </View>
@@ -189,6 +191,7 @@ export default class LoginScreen extends React.Component {
                   secureTextEntry={this.state.visiblePassword}
                   right={
                     <TextInput.Icon
+                      forceTextInputFocus={false}
                       name={this.state.visiblePassword ? "eye-off" : "eye"}
                       onPress={() =>
                         this.setState({
