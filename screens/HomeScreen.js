@@ -16,7 +16,7 @@ import moment from "moment";
 import { NavigationContainer, NavigationContext } from "react-navigation";
 import { createStackNavigator } from "react-navigation";
 import { useNavigation } from "@react-navigation/native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Directions, TouchableOpacity } from "react-native-gesture-handler";
 import firebase from "firebase";
 import firetore from "firebase/firestore";
 
@@ -37,6 +37,7 @@ export default class HomeScreen extends React.Component {
     firebase
       .firestore()
       .collection("posts")
+      .orderBy("timestamp", "desc")
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
@@ -52,6 +53,7 @@ export default class HomeScreen extends React.Component {
         });
       });
     //this.setState({ posts: posts });
+    //Sort the posts
   };
 
   getUser = async () => {
