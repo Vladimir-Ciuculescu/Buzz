@@ -295,6 +295,7 @@ export default class RegisterScreen extends React.Component {
                   right={
                     <TextInput.Icon
                       name={this.state.visiblePassword ? "eye-off" : "eye"}
+                      forceTextInputFocus={false}
                       onPress={() =>
                         this.setState({
                           visiblePassword: !this.state.visiblePassword,
@@ -327,6 +328,7 @@ export default class RegisterScreen extends React.Component {
                       name={
                         this.state.visibleRepeatPassword ? "eye-off" : "eye"
                       }
+                      forceTextInputFocus={false}
                       onPress={() =>
                         this.setState({
                           visibleRepeatPassword:

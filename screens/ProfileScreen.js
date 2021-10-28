@@ -31,7 +31,7 @@ export default class ProfileScreen extends Component {
       user: "",
       email: "",
       avatar: "",
-      toggleEditProfile: true,
+      toggleEditProfile: false,
       avatar: null,
       firstName: "",
       lastName: "",
@@ -102,9 +102,11 @@ export default class ProfileScreen extends Component {
     const firstName = (await query).data().firstName;
     const lastName = (await query).data().lastName;
     const fullName = firstName + " " + lastName;
+    const avatar = (await query).data().avatar;
     this.setState({ user: fullName });
     this.setState({ firstName: firstName });
     this.setState({ lastName: lastName });
+    this.setState({ avatar: avatar });
   };
 
   render() {
