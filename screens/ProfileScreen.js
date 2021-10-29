@@ -117,12 +117,7 @@ export default class ProfileScreen extends Component {
         </View>
         <View style={styles.accountHeader}>
           <View style={{ flexDirection: "row" }}>
-            <Avatar.Image
-              source={{
-                uri: "https://api,adorable.io/avatars/80/abott@adorable.png",
-              }}
-              size={80}
-            />
+            <Avatar.Image source={{ uri: this.state.avatar }} size={80} />
             <View style={styles.captionSection}>
               <Title style={{ fontSize: 24, marginTop: 15 }}>
                 {this.state.user}
@@ -151,6 +146,11 @@ export default class ProfileScreen extends Component {
         >
           Edit Profile
         </Button>
+
+        <TouchableOpacity onPress={() => this.Logout()}>
+          <Text style={{ color: "#ff0000" }}>Log out</Text>
+        </TouchableOpacity>
+
         <Modal animationType="slide" visible={this.state.toggleEditProfile}>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View>
@@ -254,9 +254,7 @@ export default class ProfileScreen extends Component {
 }
 
 /*
-<TouchableOpacity onPress={() => this.Logout()}>
-              <Text style={{ color: "#ff0000" }}>Log out</Text>
-            </TouchableOpacity>
+
 */
 
 const styles = StyleSheet.create({

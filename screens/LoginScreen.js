@@ -139,6 +139,11 @@ export default class LoginScreen extends React.Component {
         style={styles.container}
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : null}
       >
+        <StatusBar
+          translucent
+          backgroundColor="#5E8D48"
+          barStyle="light-content"
+        />
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView>
             <StatusBar barStyle="light-content"></StatusBar>
