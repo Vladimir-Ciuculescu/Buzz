@@ -17,8 +17,11 @@ import {
   KeyboardAvoidingView,
   Button,
   Platform,
+  Alert,
 } from "react-native";
 import { AsyncStorage } from "react-native";
+import Constants from "expo-constants";
+import * as Notifications from "expo-notifications";
 
 import { HelperText, TextInput } from "react-native-paper";
 
@@ -35,7 +38,7 @@ export default class LoginScreen extends React.Component {
     this.getData();
     this.state = {
       user: "",
-      token: "",
+      deviceToken: "",
       email: "",
       password: "",
       loginLoading: false,
@@ -47,12 +50,50 @@ export default class LoginScreen extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.registerForPushNotificationsAsync().then((token) => {
+      this.setState({ deviceToken: token });
+    });
+  }
+
   ToRegister = () => {
     this.setState({ email: "" });
     this.setState({ password: "" });
     this.setState({ emailError: "" });
     this.setState({ passwordError: "" });
     this.props.navigation.navigate("Register");
+  };
+
+  registerForPushNotificationsAsync = async () => {
+    let token;
+    if (Constants.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        alert("Failed to get push token for push notification!");
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      this.setState({ deviceToken: token });
+    } else {
+      alert("Must use physical device for Push Notifications");
+    }
+
+    if (Platform.OS === "android") {
+      Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#FF231F7C",
+      });
+    }
+
+    return token;
   };
 
   getData = async () => {
@@ -118,9 +159,20 @@ export default class LoginScreen extends React.Component {
           inexistentAccountError: "",
         });
         this.setState({ token: "abc123" });
+
         await AsyncStorage.setItem("user", this.state.email);
         await AsyncStorage.setItem("token", "abc123");
         this.props.navigation.navigate("Home");
+
+        if (this.state.deviceToken) {
+          await firebase
+            .firestore()
+            .collection("accounts")
+            .doc(this.state.email)
+            .update({
+              deviceToken: this.state.deviceToken,
+            });
+        }
       } else {
         this.setState({
           inexistentAccountError: "This account does not exist !",
@@ -139,6 +191,11 @@ export default class LoginScreen extends React.Component {
         style={styles.container}
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : null}
       >
+        <StatusBar
+          translucent
+          backgroundColor="#5E8D48"
+          barStyle="light-content"
+        />
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView>
             <StatusBar barStyle="light-content"></StatusBar>
@@ -242,6 +299,7 @@ export default class LoginScreen extends React.Component {
                     Sign Up here !
                   </Text>
                 </Text>
+                <Text>{this.state.deviceToken}</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>

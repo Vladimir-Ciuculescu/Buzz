@@ -27,6 +27,7 @@ export default class HomeScreen extends React.Component {
     this.state = {
       visible: true,
       user: "",
+      loadingRefresh: false,
       posts: [],
     };
     this.getPosts();
@@ -34,6 +35,8 @@ export default class HomeScreen extends React.Component {
   }
 
   getPosts = async () => {
+    this.setState({ loadingRefresh: true });
+    this.setState({ posts: [] });
     firebase
       .firestore()
       .collection("posts")
@@ -52,8 +55,8 @@ export default class HomeScreen extends React.Component {
           });
         });
       });
-    //this.setState({ posts: posts });
-    //Sort the posts
+
+    this.setState({ loadingRefresh: false });
   };
 
   getUser = async () => {
@@ -68,7 +71,7 @@ export default class HomeScreen extends React.Component {
   renderPost = (post) => {
     return (
       <View style={styles.feedItem}>
-        <Image source={post.avatar} style={styles.avatar} />
+        <Image style={styles.avatar} />
         <View style={{ flex: 1 }}>
           <View
             style={{
@@ -120,6 +123,8 @@ export default class HomeScreen extends React.Component {
           renderItem={({ item }) => this.renderPost(item)}
           keyExtractor={(item) => item.id}
           showsHorizontalScrollIndicator={false}
+          refreshing={this.state.loadingRefresh}
+          onRefresh={this.getPosts}
         ></FlatList>
       </View>
     );

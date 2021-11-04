@@ -23,7 +23,7 @@ class Fire {
         .collection("posts")
         .add({
           text,
-          uid: this.uid,
+          uid: 5,
           timestamp: this.timestamp,
           image: remoteUri,
         })

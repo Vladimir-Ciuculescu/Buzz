@@ -1,8 +1,8 @@
 Arguments: 
-  /snap/node/5485/bin/node /snap/node/5485/bin/yarn.js global dir
+  /snap/node/5485/bin/node /snap/node/5485/bin/yarn.js add @react-native-community/picker
 
 PATH: 
-  /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+  /home/vladi/go/bin:/home/vladi/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin
 
 Yarn version: 
   1.22.15
@@ -19,10 +19,10 @@ Trace:
       at SyncWriteStream._write (internal/fs/sync_write_stream.js:24:3)
       at writeOrBuffer (internal/streams/writable.js:358:12)
       at SyncWriteStream.Writable.write (internal/streams/writable.js:303:10)
-      at ConsoleReporter._log (/snap/node/5485/lib/cli.js:96906:17)
-      at ConsoleReporter.log (/snap/node/5485/lib/cli.js:96894:10)
-      at dir (/snap/node/5485/lib/cli.js:36299:14)
-      at Object.<anonymous> (/snap/node/5485/lib/cli.js:25983:25)
+      at Object.clearLine (readline.js:1384:17)
+      at clearLine (/snap/node/5485/lib/cli.js:49838:12)
+      at ConsoleReporter.warn (/snap/node/5485/lib/cli.js:96927:43)
+      at Add.<anonymous> (/snap/node/5485/lib/cli.js:7266:23)
       at Generator.next (<anonymous>)
       at step (/snap/node/5485/lib/cli.js:310:30)
 
@@ -38,32 +38,39 @@ npm manifest:
     "dependencies": {
       "@react-native-async-storage/async-storage": "~1.15.0",
       "@react-native-firebase/firestore": "^12.9.1",
+      "@react-native-picker/picker": "^1.16.1",
       "@react-navigation/native": "^6.0.6",
       "expo": "~42.0.1",
       "expo-camera": "^11.2.2",
       "expo-constants": "^11.0.2",
       "expo-image-picker": "^10.2.3",
       "expo-location": "^12.1.2",
+      "expo-notifications": "^0.12.3",
       "expo-permissions": "^12.1.1",
       "expo-splash-screen": "~0.11.2",
       "expo-status-bar": "~1.0.4",
       "expo-updates": "~0.8.1",
       "firebase": "^8.2.3",
+      "moment": "^2.29.1",
+      "momentum": "^4.0.0",
       "react": "16.13.1",
       "react-dom": "16.13.1",
-      "react-native": "~0.63.4",
+      "react-native": "^0.63.4",
       "react-native-camera": "^4.2.1",
       "react-native-card-list": "^0.1.0",
       "react-native-cards": "^1.1.4",
+      "react-native-dropdown-picker": "^5.2.0",
       "react-native-gesture-handler": "^1.10.3",
       "react-native-imaged-carousel-card": "^0.1.1",
       "react-native-paper": "^4.9.2",
       "react-native-permissions": "^3.1.0",
+      "react-native-phone-input": "^1.2.0",
+      "react-native-picker-select": "^8.0.4",
       "react-native-reanimated": "^2.2.3",
       "react-native-screens": "^3.4.0",
       "react-native-unimodules": "0.14.10",
       "react-native-vector-icons": "^8.1.0",
-      "react-native-web": "~0.13.12",
+      "react-native-web": "^0.13.18",
       "react-navigation": "^4.4.4",
       "react-navigation-stack": "^2.10.4",
       "react-navigation-tabs": "^2.11.1"
