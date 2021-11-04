@@ -26,7 +26,7 @@ import Fire from "../Fire";
 export default class ProfileScreen extends Component {
   constructor(props) {
     super(props);
-    this.getUser();
+    //this.getUser();
     this.state = {
       user: "",
       email: "",
@@ -39,6 +39,10 @@ export default class ProfileScreen extends Component {
       country: "uk",
       loadingEditProfile: false,
     };
+  }
+
+  componentWillMount() {
+    this.getUser();
   }
 
   Logout = async () => {
