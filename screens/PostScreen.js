@@ -14,6 +14,7 @@ import {
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import Fire from "../Fire";
+import ImageResizer from "react-native-image-resizer";
 
 import Constants from "expo-constants";
 
@@ -25,6 +26,8 @@ export default class PostScreen extends React.Component {
     text: "",
     image: null,
     loadingPost: false,
+    mode: "contain",
+    onlyScaleDown: false,
   };
 
   componentDidMount() {
@@ -62,7 +65,7 @@ export default class PostScreen extends React.Component {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [16, 9],
+      aspect: [4, 4],
     });
     if (!result.cancelled) {
       this.setState({ image: result.uri });
