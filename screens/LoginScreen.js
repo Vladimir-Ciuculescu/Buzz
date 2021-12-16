@@ -110,6 +110,7 @@ export default class LoginScreen extends React.Component {
 
   handleLogin = async () => {
     const { email, password } = this.state;
+    let userId = "";
 
     var validateAllFields = true;
 
@@ -147,6 +148,7 @@ export default class LoginScreen extends React.Component {
       for (const doc of query.docs) {
         if (email === doc.data().email && password === doc.data().password) {
           existentAccount = true;
+          userId = doc.data().userId;
         }
       }
 
@@ -158,6 +160,7 @@ export default class LoginScreen extends React.Component {
         });
         this.setState({ token: "abc123" });
 
+        await AsyncStorage.setItem("userId", userId);
         await AsyncStorage.setItem("user", this.state.email);
         await AsyncStorage.setItem("token", "abc123");
         this.props.navigation.navigate("Home");
@@ -297,7 +300,6 @@ export default class LoginScreen extends React.Component {
                     Sign Up here !
                   </Text>
                 </Text>
-                <Text>{this.state.deviceToken}</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>

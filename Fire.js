@@ -8,6 +8,7 @@ const firebaseConfig = {
   measurementId: "G-CLNTYEKDL3",
 };
 
+import { AsyncStorage } from "react-native";
 import firebase from "firebase";
 
 class Fire {
@@ -18,12 +19,14 @@ class Fire {
   addPost = async ({ text, localUri }) => {
     const remoteUri = await this.uploadPhotoAsync(localUri);
 
+    const userId = await AsyncStorage.getItem("userId");
+
     return new Promise((res, rej) => {
       this.firestore
         .collection("posts")
         .add({
           text,
-          uid: 5,
+          uid: userId,
           timestamp: this.timestamp,
           image: remoteUri,
         })

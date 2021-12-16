@@ -42,11 +42,29 @@ export default class RegisterScreen extends React.Component {
     this.props.navigation.navigate("Login");
   };
 
+  capitalizeFirstLetter = (e) => {
+    switch (e) {
+      case "firstName":
+        const { firstName } = this.state;
+
+        this.setState({
+          firstName: firstName.charAt(0).toUpperCase() + firstName.slice(1),
+        });
+        break;
+      case "lastName":
+        const { lastName } = this.state;
+
+        this.setState({
+          lastName: lastName.charAt(0).toUpperCase() + lastName.slice(1),
+        });
+        break;
+    }
+  };
+
   register = async () => {
     const { firstName, lastName, email, password, repeatPassword } = this.state;
 
     var validateAllFields = true;
-    var USERID;
 
     //Validate First Name
 
@@ -233,6 +251,7 @@ export default class RegisterScreen extends React.Component {
                     },
                   }}
                   mode="outlined"
+                  onBlur={() => this.capitalizeFirstLetter("firstName")}
                   label="First name"
                   underlineColorAndroid="transparent"
                   onChangeText={(firstName) => this.setState({ firstName })}
@@ -253,6 +272,7 @@ export default class RegisterScreen extends React.Component {
                   }}
                   mode="outlined"
                   label="Last name"
+                  onBlur={() => this.capitalizeFirstLetter("lastName")}
                   underlineColorAndroid="transparent"
                   onChangeText={(lastName) => this.setState({ lastName })}
                   value={this.state.lastName}
@@ -365,7 +385,11 @@ export default class RegisterScreen extends React.Component {
 
             <View>
               <TouchableOpacity
-                style={{ alignSelf: "center", marginTop: 22, marginBottom: 20 }}
+                style={{
+                  alignSelf: "center",
+                  marginTop: 32,
+                  marginBottom: 80,
+                }}
                 onPress={() => this.ToLogin()}
               >
                 <Text>
