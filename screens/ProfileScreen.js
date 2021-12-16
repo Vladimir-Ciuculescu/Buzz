@@ -147,13 +147,6 @@ export default class ProfileScreen extends Component {
             ></View>
           </View>
         )}
-        renderContentBackground={() => (
-          <Image
-            source={{
-              uri: "https://engineering.fb.com/wp-content/uploads/2016/04/yearinreview.jpg",
-            }}
-          />
-        )}
         parallaxHeaderHeight={250}
       >
         <View>
@@ -325,21 +318,6 @@ export default class ProfileScreen extends Component {
           </View>
         </View>
       </ParallaxScrollView>
-
-      /*
-      <ParallaxScroll
-        renderHeader={({ animatedValue }) => <Text>wadawf</Text>}
-        headerHeight={50}
-        isHeaderFixed={false}
-        parallaxHeight={250}
-        renderParallaxBackground={({ animatedValue }) => <Text>awdwadwad</Text>}
-        renderParallaxForeground={({ animatedValue }) => <Text>sefesfes</Text>}
-        parallaxBackgroundScrollSpeed={5}
-        parallaxForegroundScrollSpeed={2.5}
-      >
-        <Text>efssg</Text>
-      </ParallaxScroll>
-      */
     );
   }
 }
