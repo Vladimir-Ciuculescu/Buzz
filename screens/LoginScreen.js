@@ -149,6 +149,7 @@ export default class LoginScreen extends React.Component {
         if (email === doc.data().email && password === doc.data().password) {
           existentAccount = true;
           userId = doc.data().userId;
+          await AsyncStorage.setItem("avatar", doc.data().avatar);
         }
       }
 

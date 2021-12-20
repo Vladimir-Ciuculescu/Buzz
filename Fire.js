@@ -12,14 +12,13 @@ import { AsyncStorage } from "react-native";
 import firebase from "firebase";
 
 class Fire {
-  constructor() {
-    //firebase.initializeApp(firebaseConfig);
-  }
+  constructor() {}
 
   addPost = async ({ text, localUri }) => {
     const remoteUri = await this.uploadPhotoAsync(localUri);
 
     const userId = await AsyncStorage.getItem("userId");
+    const avatar = await AsyncStorage.getItem("avatar");
 
     return new Promise((res, rej) => {
       this.firestore
@@ -29,6 +28,7 @@ class Fire {
           uid: userId,
           timestamp: this.timestamp,
           image: remoteUri,
+          avatar: avatar,
         })
         .then((ref) => {
           res(ref);
@@ -58,7 +58,7 @@ class Fire {
   };
 
   uploadPhotoAsync = async (uri) => {
-    const path = `photos/${this.uid}/${Date.now()}.jpg`;
+    const path = `photos/${Date.now()}.jpg`;
 
     return new Promise(async (res, rej) => {
       const response = await fetch(uri);

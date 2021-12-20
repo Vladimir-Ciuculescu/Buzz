@@ -10,6 +10,7 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  AsyncStorage,
 } from "react-native";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -62,6 +63,7 @@ export default class PostScreen extends React.Component {
   };
 
   pickImage = async () => {
+    const avatar = await AsyncStorage.getItem("avatar");
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,

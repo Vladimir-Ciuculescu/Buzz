@@ -83,6 +83,8 @@ export default class ProfileScreen extends Component {
       user: this.state.email,
     });
 
+    const userId = await AsyncStorage.getItem("userId");
+
     await firebase
       .firestore()
       .collection("accounts")
