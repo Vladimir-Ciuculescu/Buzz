@@ -3,13 +3,7 @@ import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 
 export default class NotificationScreen extends Component {
   render() {
-    return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Notifications</Text>
-        </View>
-      </View>
-    );
+    return <View style={styles.container}></View>;
   }
 }
 

@@ -15,7 +15,6 @@ import {
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import Fire from "../Fire";
-import ImageResizer from "react-native-image-resizer";
 
 import Constants from "expo-constants";
 
@@ -137,7 +136,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    marginTop: 40,
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 32,

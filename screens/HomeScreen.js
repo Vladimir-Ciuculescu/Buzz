@@ -165,10 +165,6 @@ export default class HomeScreen extends React.Component {
   render() {
     return (
       <View style={Style.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Buzz</Text>
-        </View>
-
         <FlatList
           showsVerticalScrollIndicator={false}
           style={styles.feed}

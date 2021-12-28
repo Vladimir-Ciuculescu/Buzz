@@ -56,7 +56,7 @@ export default class ProfileScreen extends Component {
         style: "destructive",
         onPress: async () => {
           await AsyncStorage.removeItem("user");
-          this.props.navigation.navigate("Login");
+          this.props.navigation.navigate("Login", { screen: "LoginScreen" });
         },
       },
     ]);
@@ -140,7 +140,7 @@ export default class ProfileScreen extends Component {
             />
             <View
               style={{
-                backgroundColor: "#f0ff",
+                backgroundColor: "transparent",
                 position: "absolute",
                 opacity: 0.5,
                 width: "100%",
