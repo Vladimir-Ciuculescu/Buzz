@@ -7,7 +7,7 @@ import Fire from "../Fire";
 export default class LoadingScreen extends React.Component {
   async componentDidMount() {
     const user = await AsyncStorage.getItem("user");
-    this.props.navigation.navigate(user !== null ? "App" : "Auth");
+    this.props.navigation.navigate(user !== null ? "App" : "Login");
   }
 
   render() {

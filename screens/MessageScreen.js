@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import React, { useState, useEffect, useRef } from "react";
-import { Text, View, Button, Platform } from "react-native";
+import { Text, View, Button, Platform, StyleSheet } from "react-native";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -61,24 +61,7 @@ export default function App() {
   }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "space-around",
-      }}
-    >
-      <Text>Your expo push token: {expoPushToken}</Text>
-      <View style={{ alignItems: "center", justifyContent: "center" }}>
-        <Text>
-          Title: {notification && notification.request.content.title}{" "}
-        </Text>
-        <Text>Body: {notification && notification.request.content.body}</Text>
-        <Text>
-          Data:{" "}
-          {notification && JSON.stringify(notification.request.content.data)}
-        </Text>
-      </View>
+    <View style={styles.container}>
       <Button
         title="Press to Send Notification"
         onPress={() =>
@@ -119,3 +102,26 @@ async function registerForPushNotificationsAsync() {
 
   return token;
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    paddingTop: 44,
+    paddingBottom: 16,
+    backgroundColor: "#FFF",
+    paddingLeft: 30,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EBECF4",
+    shadowColor: "#454D65",
+    shadowOffset: { height: 5 },
+    shadowRadius: 15,
+    shadowOpacity: 0.2,
+    zIndex: 10,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "500",
+  },
+});

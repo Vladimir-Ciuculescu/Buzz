@@ -149,6 +149,7 @@ export default class LoginScreen extends React.Component {
         if (email === doc.data().email && password === doc.data().password) {
           existentAccount = true;
           userId = doc.data().userId;
+          await AsyncStorage.setItem("avatar", doc.data().avatar);
         }
       }
 
@@ -163,7 +164,7 @@ export default class LoginScreen extends React.Component {
         await AsyncStorage.setItem("userId", userId);
         await AsyncStorage.setItem("user", this.state.email);
         await AsyncStorage.setItem("token", "abc123");
-        this.props.navigation.navigate("Home");
+        this.props.navigation.navigate("App", { screen: "HomeScreen" });
 
         if (this.state.deviceToken) {
           await firebase
@@ -192,11 +193,11 @@ export default class LoginScreen extends React.Component {
         style={styles.container}
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : null}
       >
-        <StatusBar
+        {/* <StatusBar
           translucent
           backgroundColor="#5E8D48"
           barStyle="light-content"
-        />
+        /> */}
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView>
             <StatusBar barStyle="light-content"></StatusBar>

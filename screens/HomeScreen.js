@@ -21,6 +21,7 @@ import {
   Card,
   Title,
   Paragraph,
+  Avatar,
 } from "react-native-paper";
 import { Ionicons, AntDesign, Feather } from "@expo/vector-icons";
 import moment from "moment";
@@ -49,6 +50,17 @@ export default class HomeScreen extends React.Component {
   }
 
   getPosts = async () => {
+    let result;
+    await firebase
+      .firestore()
+      .collection("accounts")
+      .get()
+      .then((snap) => {
+        snap.docs.forEach((doc) => {
+          result = doc.data().userId;
+        });
+      });
+
     this.setState({ loadingRefresh: true });
     this.setState({ posts: [] });
     firebase
@@ -57,13 +69,29 @@ export default class HomeScreen extends React.Component {
       .orderBy("timestamp", "desc")
       .get()
       .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          const post = {
+        let postAvatar, postOwner;
+        querySnapshot.forEach(async (doc) => {
+          await firebase
+            .firestore()
+            .collection("accounts")
+            .where("userId", "==", doc.data().uid)
+            .get()
+            .then((snap) => {
+              snap.docs.forEach((doc) => {
+                postAvatar = doc.data().avatar;
+                postOwner = doc.data().lastName + " " + doc.data().firstName;
+              });
+            });
+
+          let post = {
             image: doc.data().image,
             text: doc.data().text,
             timestamp: doc.data().timestamp,
             uid: doc.data().uid,
+            avatar: postAvatar,
+            postOwner,
           };
+
           this.setState({
             posts: [...this.state.posts, post],
           });
@@ -82,26 +110,20 @@ export default class HomeScreen extends React.Component {
     this.setState({ user: fullName });
   };
 
-  setCurrentPost = (image) => {
-    console.log("imagine", image);
-    this.setState(
-      {
-        currentPost: image,
-        togglePost: true,
-      },
-      () => console.log("link", this.state.currentPost)
-    );
-  };
-
   renderPost = (post) => {
     return (
       <Card style={styles.cardPost}>
         <Card.Content style={{ marginBottom: 10, marginLeft: -10 }}>
           <View style={{ flexDirection: "column" }}>
             <View style={{ flexDirection: "row" }}>
-              <Image style={styles.avatar} />
+              <Avatar.Image
+                size={40}
+                source={{
+                  uri: post.avatar,
+                }}
+              />
               <View style={{ flexDirection: "column", marginLeft: 10 }}>
-                <Text>FAEFAE</Text>
+                <Text>{post.postOwner}</Text>
                 <Text style={styles.timestamp}>
                   {moment(post.timestamp).fromNow()}
                 </Text>
@@ -114,7 +136,7 @@ export default class HomeScreen extends React.Component {
               }}
             >
               <ImageModal
-                isTranslucent={false}
+                isTranslucent={true}
                 resizeMode="contain"
                 imageBackgroundColor="#000000"
                 style={{
@@ -143,11 +165,8 @@ export default class HomeScreen extends React.Component {
   render() {
     return (
       <View style={Style.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Buzz</Text>
-        </View>
-
         <FlatList
+          showsVerticalScrollIndicator={false}
           style={styles.feed}
           data={this.state.posts}
           renderItem={({ item }) => this.renderPost(item)}

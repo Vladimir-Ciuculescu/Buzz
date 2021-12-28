@@ -12,8 +12,10 @@ import {
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import firebase from "firebase";
-import { Button } from "react-native-paper";
-
+import { createBottomTabNavigator as BottomNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator as StackNavigator } from "@react-navigation/stack";
+import { AsyncStorage } from "react-native";
 //screens
 import HomeScreen from "./screens/HomeScreen";
 import LoadingScreen from "./screens/LoadingScreen";
@@ -38,6 +40,81 @@ const firebaseConfig = {
 
 //If no firebase app has been initialized when the component is rendered, initialize it
 // Else use the one initialized already
+
+const Tabs = BottomNavigator();
+
+function MyTabs() {
+  return (
+    <Tabs.Navigator
+      screenOptions={{
+        activeTintColor: "#008ae6",
+        inactiveTintColor: "#161F3D",
+        showLabel: false,
+        style: { borderTopColor: "#A9A9A9", borderTopWidth: 1, height: 60 },
+      }}
+    >
+      <Tabs.Screen
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ tintColor }) => (
+            <Entypo name="home" size={24} color={tintColor} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Messages"
+        component={MessageScreen}
+        options={{
+          tabBarIcon: ({ tintColor }) => (
+            <MaterialCommunityIcons
+              name="message-processing"
+              size={24}
+              color={tintColor}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Post"
+        component={PostScreen}
+        options={{
+          tabBarIcon: ({ tintColor }) => (
+            <AntDesign
+              name="pluscircle"
+              size={35}
+              color="#65a84d"
+              style={{
+                shadowColor: "#E9446A",
+                shadowOffset: { width: 0, height: 0 },
+                shadowRadius: 10,
+                shadowOpacity: 0.3,
+              }}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Notifications"
+        component={NotificationScreen}
+        options={{
+          tabBarIcon: ({ tintColor }) => (
+            <Octicons name="bell" size={24} color={tintColor} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarIcon: ({ tintColor }) => (
+            <Ionicons name="person" size={24} color={tintColor} />
+          ),
+        }}
+      />
+    </Tabs.Navigator>
+  );
+}
 
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -134,30 +211,46 @@ const AppContainer = createStackNavigator(
   }
 );
 
-//const AppTabNavigator =
-//);
-
-/*
-
-const AppStack = createStackNavigator({
-  Home: HomeScreen,
-});
-*/
-
 const AuthStack = createStackNavigator({
   Login: LoginScreen,
   Register: RegisterScreen,
 });
 
+const Stack = StackNavigator();
+
+function MyStacks() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Loading">
+        <Stack.Screen
+          options={{ headerLeft: null }}
+          name="Login"
+          component={LoginScreen}
+        />
+        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="App"
+          component={MyTabs}
+        />
+        <Stack.Screen name="Loading" component={LoadingScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+/*
 export default createAppContainer(
   createSwitchNavigator(
     {
       Loading: LoadingScreen,
-      App: AppContainer,
-      Auth: AuthStack,
+      App: MyTabs,
+      Auth: MyStacks,
     },
     {
       initialRouteName: "Loading",
     }
   )
 );
+*/
+
+export default MyStacks;
