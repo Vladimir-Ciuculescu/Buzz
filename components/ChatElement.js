@@ -1,25 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { ListItem, Avatar } from "react-native-elements";
 import firebase from "firebase";
 
 const ChatElement = ({ id, chatName, avatar, enterChat }) => {
-  const [messages, setMessages] = useState([]);
-
-  useEffect(() => {
-    const getLatestMessage = firebase
-      .firestore()
-      .collection("chats")
-      .doc(id)
-      .collection("messages")
-      .orderBy("timestamp", "asc")
-      .onSnapshot((snapshot) => {
-        setMessages(snapshot.docs.map((doc) => doc.data()));
-      });
-
-    return getLatestMessage;
-  });
-
   return (
     <ListItem onPress={() => enterChat(id, chatName)} key={id} bottomDivider>
       <Avatar
@@ -35,8 +19,7 @@ const ChatElement = ({ id, chatName, avatar, enterChat }) => {
           {chatName}
         </ListItem.Title>
         <ListItem.Subtitle numberOfLines={1} ellipsizeMode="tail">
-          {messages?.[messages.length - 1]?.name}:{" "}
-          {messages?.[messages.length - 1]?.message}
+          nothing for now
         </ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>
@@ -44,5 +27,3 @@ const ChatElement = ({ id, chatName, avatar, enterChat }) => {
 };
 
 export default ChatElement;
-
-const styles = StyleSheet.create({});

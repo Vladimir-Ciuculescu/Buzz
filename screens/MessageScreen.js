@@ -1,4 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+
 import {
   View,
   StyleSheet,
@@ -11,6 +13,7 @@ import {
 } from "react-native";
 import { Avatar } from "react-native-elements";
 import ChatElement from "../components/ChatElement";
+import PublicChatElement from "../components/PublicChatElement";
 import firebase from "firebase";
 import firetore from "firebase/firestore";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -29,54 +32,53 @@ const MessageScreen = ({ navigation }) => {
   const headerHeight = useHeaderHeight();
 
   useEffect(() => {
-    let user;
-    const fetchData = async () => {
-      user = await AsyncStorage.getItem("user");
-      setCurrentUser(user);
-      const query = await firebase
-        .firestore()
-        .collection("accounts")
-        .doc(user)
-        .get();
+    const unsubscribe = navigation.addListener("state", () => {
+      const fetchData = async () => {
+        const user = await AsyncStorage.getItem("user");
+        const avatar = await AsyncStorage.getItem("avatar");
+        setCurrentUser(user);
+        setAvatar(avatar);
+      };
 
-      setAvatar(query.data().avatar);
-    };
-    fetchData();
+      fetchData();
 
-    const fetchUsers = async () => {
-      await firebase
-        .firestore()
-        .collection("accounts")
-        .where("email", "!=", currentUser)
-        .get()
-        .then((snapshot) => {
-          setConversations(
-            snapshot.docs.map((doc) => ({
-              id: doc.id,
-              data: doc.data(),
-            }))
-          );
-        });
-    };
+      const fetchUsers = async () => {
+        await firebase
+          .firestore()
+          .collection("accounts")
+          .where("email", "!=", currentUser)
+          .get()
+          .then((snapshot) => {
+            setConversations(
+              snapshot.docs.map((doc) => ({
+                id: doc.id,
+                data: doc.data(),
+              }))
+            );
+          });
+      };
 
-    fetchUsers();
+      fetchUsers();
 
-    const fetchConversations = async () => {
-      firebase
-        .firestore()
-        .collection("chats")
-        .onSnapshot((snapshot) => {
-          setChannels(
-            snapshot.docs.map((doc) => ({
-              id: doc.id,
-              data: doc.data(),
-            }))
-          );
-        });
-    };
+      const fetchConversations = async () => {
+        firebase
+          .firestore()
+          .collection("chats")
+          .onSnapshot((snapshot) => {
+            setChannels(
+              snapshot.docs.map((doc) => ({
+                id: doc.id,
+                data: doc.data(),
+              }))
+            );
+          });
+      };
 
-    fetchConversations();
-  }, []);
+      fetchConversations();
+    });
+
+    return unsubscribe;
+  }, [navigation, avatar]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -116,7 +118,11 @@ const MessageScreen = ({ navigation }) => {
         </View>
       ),
     });
-  }, [navigation]);
+  }, [navigation, avatar]);
+
+  const enterPublicChat = (id, chatName) => {
+    navigation.navigate("PublicChat", { id, chatName });
+  };
 
   const enterChat = (id, chatName) => {
     navigation.navigate("Chat", { id, chatName });
@@ -132,15 +138,16 @@ const MessageScreen = ({ navigation }) => {
             id={id}
             chatName={firstName + " " + lastName}
             avatar={avatar}
+            enterChat={enterChat}
           />
         ))}
         <Text>Channels</Text>
         {channels.map(({ id, data: { chatName } }) => (
-          <ChatElement
+          <PublicChatElement
             key={id}
             id={id}
             chatName={chatName}
-            enterChat={enterChat}
+            enterPublicChat={enterPublicChat}
             avatar=""
           />
         ))}

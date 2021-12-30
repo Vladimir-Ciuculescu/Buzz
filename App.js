@@ -31,6 +31,8 @@ import PostScreen from "./screens/PostScreen";
 import AddChatScreen from "./screens/AddChatScreen";
 import ModalScreen from "./screens/ModalScreen";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import PublicChatScreen from "./screens/PublicChatScreen";
+import ProfileScreen2 from "./screens/ProfileScreen2";
 import ChatScreen from "./screens/ChatScreen";
 
 LogBox.ignoreAllLogs(true);
@@ -265,6 +267,7 @@ function MyStacks() {
           <Stack.Screen name="Modal" component={PostScreen} />
         </Stack.Group>
         <Stack.Screen name="Chat" component={ChatScreen} />
+        <Stack.Screen name="PublicChat" component={PublicChatScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

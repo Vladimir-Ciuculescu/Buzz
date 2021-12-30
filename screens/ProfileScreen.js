@@ -25,12 +25,10 @@ import Fire from "../Fire";
 import ParallaxScrollView from "react-native-parallax-scroll-view";
 import { Shadow } from "react-native-shadow-2";
 
-const image = { uri: "https://reactjs.org/logo-og.png" };
-
 export default class ProfileScreen extends Component {
   constructor(props) {
     super(props);
-    this.getUser();
+
     this.state = {
       user: "",
       email: "",
@@ -43,6 +41,12 @@ export default class ProfileScreen extends Component {
       country: "uk",
       loadingEditProfile: false,
     };
+  }
+
+  componentDidMount() {
+    this.props.navigation.addListener("state", () => {
+      this.getUser();
+    });
   }
 
   Logout = async () => {
@@ -202,9 +206,9 @@ export default class ProfileScreen extends Component {
               Edit Profile
             </Button>
 
-            <TouchableOpacity onPress={() => this.Logout()}>
-              <Text style={{ color: "#ff0000" }}>Log out</Text>
-            </TouchableOpacity>
+            <Button mode="contained" color="red" onPress={() => this.Logout()}>
+              Log out
+            </Button>
 
             <Modal animationType="slide" visible={this.state.toggleEditProfile}>
               <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
