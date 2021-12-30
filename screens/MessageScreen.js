@@ -78,7 +78,7 @@ const MessageScreen = ({ navigation }) => {
     });
 
     return unsubscribe;
-  }, [navigation, avatar]);
+  }, [navigation, avatar, conversations]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -118,14 +118,14 @@ const MessageScreen = ({ navigation }) => {
         </View>
       ),
     });
-  }, [navigation, avatar]);
+  }, [navigation, avatar, conversations]);
 
   const enterPublicChat = (id, chatName) => {
     navigation.navigate("PublicChat", { id, chatName });
   };
 
-  const enterChat = (id, chatName) => {
-    navigation.navigate("Chat", { id, chatName });
+  const enterChat = (id, chatName, avatar) => {
+    navigation.navigate("Chat", { id, chatName, avatar });
   };
 
   return (

@@ -5,7 +5,11 @@ import firebase from "firebase";
 
 const ChatElement = ({ id, chatName, avatar, enterChat }) => {
   return (
-    <ListItem onPress={() => enterChat(id, chatName)} key={id} bottomDivider>
+    <ListItem
+      onPress={() => enterChat(id, chatName, avatar)}
+      key={id}
+      bottomDivider
+    >
       <Avatar
         rounded
         source={{

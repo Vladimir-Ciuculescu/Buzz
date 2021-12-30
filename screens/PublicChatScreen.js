@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Avatar } from "react-native-elements";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, AntDesign } from "@expo/vector-icons";
 import firebase from "firebase";
 import firetore from "firebase/firestore";
 
@@ -43,6 +43,16 @@ const PublicChatScreen = ({ navigation, route }) => {
       title: "Chat",
       headerBackTitleVisible: false,
       headerTitleAlign: "left",
+      headerLeft: () => (
+        <TouchableOpacity onPress={navigation.goBack}>
+          <AntDesign
+            style={{ marginLeft: 10 }}
+            name="arrowleft"
+            size={24}
+            color="blue"
+          />
+        </TouchableOpacity>
+      ),
       headerTitle: () => (
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Avatar
@@ -51,7 +61,9 @@ const PublicChatScreen = ({ navigation, route }) => {
               uri: "https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png",
             }}
           />
-          <Text>{route.params.chatName}</Text>
+          <Text style={{ marginLeft: 10, fontWeight: "800" }}>
+            {route.params.chatName}
+          </Text>
         </View>
       ),
     });

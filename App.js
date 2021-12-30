@@ -272,19 +272,5 @@ function MyStacks() {
     </NavigationContainer>
   );
 }
-/*
-export default createAppContainer(
-  createSwitchNavigator(
-    {
-      Loading: LoadingScreen,
-      App: MyTabs,
-      Auth: MyStacks,
-    },
-    {
-      initialRouteName: "Loading",
-    }
-  )
-);
-*/
 
 export default MyStacks;

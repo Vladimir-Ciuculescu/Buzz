@@ -39,7 +39,6 @@ const ProfileScreen2 = ({ navigation }) => {
   useEffect(() => {
     const getUser = async () => {
       const user = await AsyncStorage.getItem("user");
-      console.log(user);
       setEmail(user);
       const query = firebase.firestore().collection("accounts").doc(user).get();
       const firstName = (await query).data().firstName;
