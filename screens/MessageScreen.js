@@ -1,127 +1,152 @@
-import Constants from "expo-constants";
-import * as Notifications from "expo-notifications";
-import React, { useState, useEffect, useRef } from "react";
-import { Text, View, Button, Platform, StyleSheet } from "react-native";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import {
+  View,
+  StyleSheet,
+  AsyncStorage,
+  Text,
+  SafeAreaView,
+  ScrollView,
+  Platform,
+  TouchableOpacity,
+} from "react-native";
+import { Avatar } from "react-native-elements";
+import ChatElement from "../components/ChatElement";
+import firebase from "firebase";
+import firetore from "firebase/firestore";
+import { useHeaderHeight } from "@react-navigation/elements";
+import {
+  AntDesign,
+  SimpleLineIcons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
+const MessageScreen = ({ navigation }) => {
+  const [avatar, setAvatar] = useState("");
+  const [conversations, setConversations] = useState([]);
+  const [channels, setChannels] = useState([]);
+  const [currentUser, setCurrentUser] = useState("");
 
-sendPushNotification = async (token) => {
-  const message = {
-    to: token,
-    sound: "default",
-    title: "Original Title",
-    body: "And here is the body!",
-    data: { someData: "goes here" },
-  };
-
-  await fetch("https://exp.host/--/api/v2/push/send", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Accept-encoding": "gzip, deflate",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(message),
-  });
-};
-
-export default function App() {
-  const [expoPushToken, setExpoPushToken] = useState("");
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
+  const headerHeight = useHeaderHeight();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
-    );
+    let user;
+    const fetchData = async () => {
+      user = await AsyncStorage.getItem("user");
+      setCurrentUser(user);
+      const query = await firebase
+        .firestore()
+        .collection("accounts")
+        .doc(user)
+        .get();
 
-    // This listener is fired whenever a notification is received while the app is foregrounded
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
-
-    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {});
-
-    return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
-      );
-      Notifications.removeNotificationSubscription(responseListener.current);
+      setAvatar(query.data().avatar);
     };
+    fetchData();
+
+    const fetchUsers = async () => {
+      await firebase
+        .firestore()
+        .collection("accounts")
+        .where("email", "!=", currentUser)
+        .get()
+        .then((snapshot) => {
+          setConversations(
+            snapshot.docs.map((doc) => ({
+              id: doc.id,
+              data: doc.data(),
+            }))
+          );
+        });
+    };
+
+    fetchUsers();
+
+    const fetchConversations = async () => {
+      firebase
+        .firestore()
+        .collection("chats")
+        .onSnapshot((snapshot) => {
+          setChannels(
+            snapshot.docs.map((doc) => ({
+              id: doc.id,
+              data: doc.data(),
+            }))
+          );
+        });
+    };
+
+    fetchConversations();
   }, []);
 
-  return (
-    <View style={styles.container}>
-      <Button
-        title="Press to Send Notification"
-        onPress={() =>
-          sendPushNotification("ExponentPushToken[KB4w73LiDWi81_LehrBSWe]")
-        }
-      />
-    </View>
-  );
-}
-
-// Can use this function below, OR use Expo's Push Notification Tool-> https://expo.dev/notifications
-
-async function registerForPushNotificationsAsync() {
-  let token;
-  if (Constants.isDevice) {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== "granted") {
-      alert("Failed to get push token for push notification!");
-      return;
-    }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-  }
-
-  if (Platform.OS === "android") {
-    Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#FF231F7C",
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "Chats",
+      headerStyle: {
+        backgroundColor: "#1E90FF",
+        height: Platform.OS === "ios" ? headerHeight : 100,
+      },
+      headerLeft: () => (
+        <View style={{ marginLeft: 20 }}>
+          <Avatar rounded source={{ uri: avatar }} />
+        </View>
+      ),
+      headerRight: () => (
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: 80,
+            marginRight: 20,
+          }}
+        >
+          <TouchableOpacity>
+            <AntDesign name="camerao" size={24} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("AddChat", { screen: "AddChatScreen" })
+            }
+          >
+            <MaterialCommunityIcons
+              name="chat-plus-outline"
+              size={24}
+              color="black"
+            />
+          </TouchableOpacity>
+        </View>
+      ),
     });
-  }
+  }, [navigation]);
 
-  return token;
-}
+  const enterChat = (id, chatName) => {
+    navigation.navigate("Chat", { id, chatName });
+  };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingTop: 44,
-    paddingBottom: 16,
-    backgroundColor: "#FFF",
-    paddingLeft: 30,
-    borderBottomWidth: 1,
-    borderBottomColor: "#EBECF4",
-    shadowColor: "#454D65",
-    shadowOffset: { height: 5 },
-    shadowRadius: 15,
-    shadowOpacity: 0.2,
-    zIndex: 10,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "500",
-  },
-});
+  return (
+    <SafeAreaView>
+      <ScrollView>
+        <Text>Direct messages</Text>
+        {conversations.map(({ id, data: { firstName, lastName, avatar } }) => (
+          <ChatElement
+            key={id}
+            id={id}
+            chatName={firstName + " " + lastName}
+            avatar={avatar}
+          />
+        ))}
+        <Text>Channels</Text>
+        {channels.map(({ id, data: { chatName } }) => (
+          <ChatElement
+            key={id}
+            id={id}
+            chatName={chatName}
+            enterChat={enterChat}
+            avatar=""
+          />
+        ))}
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+export default MessageScreen;

@@ -1,12 +1,15 @@
 import React from "react";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import { LogBox } from "react-native";
 import { createBottomTabNavigator } from "react-navigation-tabs";
+import { StatusBar } from "expo-status-bar";
+
 import {
   AntDesign,
   Ionicons,
   Entypo,
   MaterialCommunityIcons,
+  FontAwesome,
   Octicons,
 } from "@expo/vector-icons";
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
@@ -25,6 +28,10 @@ import MessageScreen from "./screens/MessageScreen";
 import NotificationScreen from "./screens/NotificationScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import PostScreen from "./screens/PostScreen";
+import AddChatScreen from "./screens/AddChatScreen";
+import ModalScreen from "./screens/ModalScreen";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import ChatScreen from "./screens/ChatScreen";
 
 LogBox.ignoreAllLogs(true);
 
@@ -50,6 +57,7 @@ function MyTabs() {
         activeTintColor: "#008ae6",
         inactiveTintColor: "#161F3D",
         showLabel: false,
+        headerTitleAlign: "center",
         style: { borderTopColor: "#A9A9A9", borderTopWidth: 1, height: 60 },
       }}
     >
@@ -75,6 +83,7 @@ function MyTabs() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="Post"
         component={PostScreen}
@@ -93,7 +102,14 @@ function MyTabs() {
             />
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.navigate("Modal", { screen: "ModalScreen" });
+          },
+        })}
       />
+
       <Tabs.Screen
         name="Notifications"
         component={NotificationScreen}
@@ -221,6 +237,7 @@ const Stack = StackNavigator();
 function MyStacks() {
   return (
     <NavigationContainer>
+      <StatusBar></StatusBar>
       <Stack.Navigator initialRouteName="Loading">
         <Stack.Screen
           options={{ headerLeft: null }}
@@ -229,11 +246,25 @@ function MyStacks() {
         />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen
-          options={{ headerShown: false }}
+          options={{ headerShown: false, gestureEnabled: false }}
           name="App"
           component={MyTabs}
         />
         <Stack.Screen name="Loading" component={LoadingScreen} />
+        <Stack.Screen name="AddChat" component={AddChatScreen} />
+        <Stack.Group
+          screenOptions={{
+            presentation: "modal",
+            headerRight: () => <Text>Post</Text>,
+            headerBackTitle: "Back",
+            headerTitleAlign: "center",
+            headerTitle: "Make a new post",
+            headerLeftLabelVisible: false,
+          }}
+        >
+          <Stack.Screen name="Modal" component={PostScreen} />
+        </Stack.Group>
+        <Stack.Screen name="Chat" component={ChatScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

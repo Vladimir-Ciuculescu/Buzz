@@ -25,11 +25,6 @@ import * as Notifications from "expo-notifications";
 
 import { HelperText, TextInput } from "react-native-paper";
 
-/*
-import { NavigationContainer, NavigationContext } from "react-navigation";
-import { createStackNavigator } from "react-navigation";
-import { useNavigation } from "@react-navigation/native";
-*/
 const keyboardVerticalOffset = Platform.OS === "ios" ? 40 : 0;
 
 export default class LoginScreen extends React.Component {
@@ -150,6 +145,8 @@ export default class LoginScreen extends React.Component {
           existentAccount = true;
           userId = doc.data().userId;
           await AsyncStorage.setItem("avatar", doc.data().avatar);
+          await AsyncStorage.setItem("firstName", doc.data().firstName);
+          await AsyncStorage.setItem("lastName", doc.data().lastName);
         }
       }
 
