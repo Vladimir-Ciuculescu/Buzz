@@ -10,6 +10,7 @@ import {
   ScrollView,
   Platform,
   TouchableOpacity,
+  Animated,
 } from "react-native";
 import { Avatar } from "react-native-elements";
 import ChatElement from "../components/ChatElement";
@@ -22,6 +23,7 @@ import {
   SimpleLineIcons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
+import { Swipeable } from "react-native-gesture-handler";
 
 const MessageScreen = ({ navigation }) => {
   const [avatar, setAvatar] = useState("");
@@ -128,18 +130,35 @@ const MessageScreen = ({ navigation }) => {
     navigation.navigate("Chat", { id, chatName, avatar });
   };
 
+  const rightActions = (dragX, index) => {
+    return (
+      <TouchableOpacity>
+        <Animated.View style={styles.deleteButton}>
+          <AntDesign name="delete" size={24} color="black" />
+        </Animated.View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <SafeAreaView>
       <ScrollView>
         <Text>Direct messages</Text>
         {conversations.map(({ id, data: { firstName, lastName, avatar } }) => (
-          <ChatElement
-            key={id}
-            id={id}
-            chatName={firstName + " " + lastName}
-            avatar={avatar}
-            enterChat={enterChat}
-          />
+          <Swipeable
+            renderRightActions={rightActions}
+            overshootRight={() => console.log("awdwad")}
+            onSwipeableRightOpen={() => console.log("awdwad")}
+            onSwipeableRightWillOpen={() => console.log("awdwad")}
+          >
+            <ChatElement
+              key={id}
+              id={id}
+              chatName={firstName + " " + lastName}
+              avatar={avatar}
+              enterChat={enterChat}
+            />
+          </Swipeable>
         ))}
         <Text>Channels</Text>
         {channels.map(({ id, data: { chatName } }) => (
@@ -157,3 +176,13 @@ const MessageScreen = ({ navigation }) => {
 };
 
 export default MessageScreen;
+
+const styles = StyleSheet.create({
+  deleteButton: {
+    flex: 1,
+    backgroundColor: "red",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 70,
+  },
+});

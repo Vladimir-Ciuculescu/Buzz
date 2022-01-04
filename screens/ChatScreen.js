@@ -1,5 +1,6 @@
 import React, { useLayoutEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { Avatar } from "react-native-elements";
 import { AntDesign } from "@expo/vector-icons";
 
@@ -42,6 +43,7 @@ const ChatScreen = ({ navigation, route, avatar }) => {
 
   return (
     <View>
+      <StatusBar></StatusBar>
       <Text>navigation</Text>
     </View>
   );

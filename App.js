@@ -16,6 +16,8 @@ import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import firebase from "firebase";
 import { createBottomTabNavigator as BottomNavigator } from "@react-navigation/bottom-tabs";
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator as StackNavigator } from "@react-navigation/stack";
 import { AsyncStorage } from "react-native";
@@ -55,6 +57,8 @@ const Tabs = BottomNavigator();
 function MyTabs() {
   return (
     <Tabs.Navigator
+      activeColor="red"
+      barStyle={{ backgroundColor: "white" }}
       screenOptions={{
         activeTintColor: "#008ae6",
         inactiveTintColor: "#161F3D",
