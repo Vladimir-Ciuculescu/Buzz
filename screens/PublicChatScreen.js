@@ -18,6 +18,9 @@ import { Avatar } from "react-native-elements";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import firebase from "firebase";
 import firetore from "firebase/firestore";
+import { Entypo, MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import { TextInput as Input } from "react-native-paper";
+import * as ImagePicker from "expo-image-picker";
 
 const PublicChatScreen = ({ navigation, route }) => {
   const [input, setInput] = useState("");
@@ -91,6 +94,14 @@ const PublicChatScreen = ({ navigation, route }) => {
     setInput("");
   };
 
+  const openGallery = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+    });
+  };
+
   useLayoutEffect(() => {
     const unsubscribe = firebase
       .firestore()
@@ -159,14 +170,73 @@ const PublicChatScreen = ({ navigation, route }) => {
               )}
             </ScrollView>
             <View style={styles.footer}>
-              <TextInput
+              <Input
+                placeholder="Send a message"
                 value={input}
                 onChangeText={(text) => setInput(text)}
-                placeholder="Send a message"
-                style={styles.textInput}
+                theme={{
+                  colors: {
+                    primary: "transparent",
+                    text: "grey",
+                    activeUnderlineColor: "transparent",
+                    activeColor: "transparent",
+                  },
+                }}
+                underlineColor="transparent"
+                selectionColor="blue"
+                multiline={true}
+                style={{
+                  width: "93%",
+                  height: 50,
+                  borderRadius: 30,
+                  borderTopLeftRadius: 30,
+                  borderTopRightRadius: 30,
+                  marginRight: 10,
+                }}
+                left={
+                  <Input.Icon
+                    forceTextInputFocus={false}
+                    name={() => (
+                      <Entypo name="emoji-happy" size={24} color="black" />
+                    )}
+                  />
+                }
+                right={
+                  <Input.Icon
+                    disabled={true}
+                    style={{ width: 100, left: -25 }}
+                    forceTextInputFocus={false}
+                    name={() => (
+                      <View style={{ flexDirection: "row" }}>
+                        <MaterialIcons
+                          onPress={openGallery}
+                          style={{ marginRight: 20 }}
+                          name="add-photo-alternate"
+                          size={24}
+                          color="black"
+                        />
+                        <FontAwesome
+                          onPress={() => console.log("awdwa")}
+                          name="microphone"
+                          size={24}
+                          color="black"
+                        />
+                      </View>
+                    )}
+                  />
+                }
               />
-              <TouchableOpacity onPress={sendMessage} activeOpacity={0.5}>
-                <Ionicons name="send" size={24} color="#2B68E6" />
+
+              <TouchableOpacity
+                disabled={input === "" ? true : false}
+                onPress={sendMessage}
+                activeOpacity={0.5}
+              >
+                <Ionicons
+                  name="send"
+                  size={24}
+                  color={input === "" ? "#a3bef5" : "#2B68E6"}
+                />
               </TouchableOpacity>
             </View>
           </>

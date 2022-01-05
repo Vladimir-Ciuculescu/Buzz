@@ -23,7 +23,7 @@ import {
   SimpleLineIcons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import { Swipeable } from "react-native-gesture-handler";
+import { Swipeable, RectButton } from "react-native-gesture-handler";
 
 const MessageScreen = ({ navigation }) => {
   const [avatar, setAvatar] = useState("");
@@ -140,12 +140,34 @@ const MessageScreen = ({ navigation }) => {
     );
   };
 
+  const renderLeftActions = (progress, dragX) => {
+    const trans = dragX.interpolate({
+      inputRange: [0, 50, 100, 101],
+      outputRange: [-20, 0, 0, 1],
+    });
+    return (
+      <RectButton style={styles.leftAction}>
+        <Animated.View
+          style={[
+            styles.deleteButton,
+            {
+              transform: [{ translateX: trans }],
+            },
+          ]}
+        >
+          <AntDesign name="delete" size={24} color="black" />
+        </Animated.View>
+      </RectButton>
+    );
+  };
+
   return (
     <SafeAreaView>
       <ScrollView>
         <Text>Direct messages</Text>
         {conversations.map(({ id, data: { firstName, lastName, avatar } }) => (
           <Swipeable
+            renderLeftActions={renderLeftActions}
             renderRightActions={rightActions}
             overshootRight={() => console.log("awdwad")}
             onSwipeableRightOpen={() => console.log("awdwad")}
@@ -183,6 +205,6 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
     justifyContent: "center",
     alignItems: "center",
-    width: 70,
+    width: 80,
   },
 });
