@@ -24,6 +24,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { Swipeable, RectButton } from "react-native-gesture-handler";
+import { Accordion } from "native-base";
 
 const MessageScreen = ({ navigation }) => {
   const [avatar, setAvatar] = useState("");
@@ -164,34 +165,60 @@ const MessageScreen = ({ navigation }) => {
   return (
     <SafeAreaView>
       <ScrollView>
-        <Text>Direct messages</Text>
-        {conversations.map(({ id, data: { firstName, lastName, avatar } }) => (
-          <Swipeable
-            renderLeftActions={renderLeftActions}
-            renderRightActions={rightActions}
-            overshootRight={() => console.log("awdwad")}
-            onSwipeableRightOpen={() => console.log("awdwad")}
-            onSwipeableRightWillOpen={() => console.log("awdwad")}
-          >
-            <ChatElement
-              key={id}
-              id={id}
-              chatName={firstName + " " + lastName}
-              avatar={avatar}
-              enterChat={enterChat}
-            />
-          </Swipeable>
-        ))}
-        <Text>Channels</Text>
-        {channels.map(({ id, data: { chatName } }) => (
-          <PublicChatElement
-            key={id}
-            id={id}
-            chatName={chatName}
-            enterPublicChat={enterPublicChat}
-            avatar=""
-          />
-        ))}
+        <Accordion allowMultiple>
+          <Accordion.Item>
+            <Accordion.Summary>
+              Direct Messages
+              <Accordion.Icon />
+            </Accordion.Summary>
+            {conversations.map(
+              ({ id, data: { firstName, lastName, avatar } }) => (
+                <Accordion.Details>
+                  <Swipeable
+                    renderLeftActions={renderLeftActions}
+                    renderRightActions={rightActions}
+                    overshootRight={() => console.log("awdwad")}
+                    onSwipeableRightOpen={() => console.log("awdwad")}
+                    onSwipeableRightWillOpen={() => console.log("awdwad")}
+                  >
+                    <ChatElement
+                      key={id}
+                      id={id}
+                      chatName={firstName + " " + lastName}
+                      avatar={avatar}
+                      enterChat={enterChat}
+                    />
+                  </Swipeable>
+                </Accordion.Details>
+              )
+            )}
+          </Accordion.Item>
+          <Accordion.Item>
+            <Accordion.Summary>
+              Conversations
+              <Accordion.Icon />
+            </Accordion.Summary>
+            {channels.map(({ id, data: { chatName } }) => (
+              <Accordion.Details>
+                <Swipeable
+                  renderLeftActions={renderLeftActions}
+                  renderRightActions={rightActions}
+                  overshootRight={() => console.log("awdwad")}
+                  onSwipeableRightOpen={() => console.log("awdwad")}
+                  onSwipeableRightWillOpen={() => console.log("awdwad")}
+                >
+                  <PublicChatElement
+                    key={id}
+                    id={id}
+                    chatName={chatName}
+                    enterPublicChat={enterPublicChat}
+                    avatar=""
+                  />
+                </Swipeable>
+              </Accordion.Details>
+            ))}
+          </Accordion.Item>
+        </Accordion>
       </ScrollView>
     </SafeAreaView>
   );

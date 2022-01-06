@@ -3,7 +3,7 @@ import { Text, View } from "react-native";
 import { LogBox } from "react-native";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 import { StatusBar } from "expo-status-bar";
-
+import { NativeBaseProvider } from "native-base";
 import {
   AntDesign,
   Ionicons,
@@ -242,38 +242,40 @@ const Stack = StackNavigator();
 
 function MyStacks() {
   return (
-    <NavigationContainer>
-      <StatusBar></StatusBar>
-      <Stack.Navigator initialRouteName="Loading">
-        <Stack.Screen
-          options={{ headerLeft: null }}
-          name="Login"
-          component={LoginScreen}
-        />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen
-          options={{ headerShown: false, gestureEnabled: false }}
-          name="App"
-          component={MyTabs}
-        />
-        <Stack.Screen name="Loading" component={LoadingScreen} />
-        <Stack.Screen name="AddChat" component={AddChatScreen} />
-        <Stack.Group
-          screenOptions={{
-            presentation: "modal",
-            headerRight: () => <Text>Post</Text>,
-            headerBackTitle: "Back",
-            headerTitleAlign: "center",
-            headerTitle: "Make a new post",
-            headerLeftLabelVisible: false,
-          }}
-        >
-          <Stack.Screen name="Modal" component={PostScreen} />
-        </Stack.Group>
-        <Stack.Screen name="Chat" component={ChatScreen} />
-        <Stack.Screen name="PublicChat" component={PublicChatScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <NativeBaseProvider>
+      <NavigationContainer>
+        <StatusBar></StatusBar>
+        <Stack.Navigator initialRouteName="Loading">
+          <Stack.Screen
+            options={{ headerLeft: null }}
+            name="Login"
+            component={LoginScreen}
+          />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen
+            options={{ headerShown: false, gestureEnabled: false }}
+            name="App"
+            component={MyTabs}
+          />
+          <Stack.Screen name="Loading" component={LoadingScreen} />
+          <Stack.Screen name="AddChat" component={AddChatScreen} />
+          <Stack.Group
+            screenOptions={{
+              presentation: "modal",
+              headerRight: () => <Text>Post</Text>,
+              headerBackTitle: "Back",
+              headerTitleAlign: "center",
+              headerTitle: "Make a new post",
+              headerLeftLabelVisible: false,
+            }}
+          >
+            <Stack.Screen name="Modal" component={PostScreen} />
+          </Stack.Group>
+          <Stack.Screen name="Chat" component={ChatScreen} />
+          <Stack.Screen name="PublicChat" component={PublicChatScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </NativeBaseProvider>
   );
 }
 
