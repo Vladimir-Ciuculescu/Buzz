@@ -31,14 +31,21 @@ const MessageScreen = ({ navigation }) => {
   const [conversations, setConversations] = useState([]);
   const [channels, setChannels] = useState([]);
   const [currentUser, setCurrentUser] = useState("");
+  const [currentUserName, setCurrentUserName] = useState("");
+  const [UserId, setUserId] = useState("");
 
   const headerHeight = useHeaderHeight();
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("state", () => {
+  useLayoutEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
       const fetchData = async () => {
         const user = await AsyncStorage.getItem("user");
+        const UserId = await AsyncStorage.getItem("userId");
+        setUserId(UserId);
         const avatar = await AsyncStorage.getItem("avatar");
+        const firstName = await AsyncStorage.getItem("firstName");
+        const lastName = await AsyncStorage.getItem("lastName");
+        setCurrentUserName(firstName + " " + lastName);
         setCurrentUser(user);
         setAvatar(avatar);
       };
@@ -127,8 +134,35 @@ const MessageScreen = ({ navigation }) => {
     navigation.navigate("PublicChat", { id, chatName });
   };
 
-  const enterChat = (id, chatName, avatar) => {
-    navigation.navigate("Chat", { id, chatName, avatar });
+  const enterChat = async (id, chatName, avatar, toUserId, loggedInUserId) => {
+    navigation.navigate("Chat", {
+      id,
+      chatName,
+      avatar,
+      toUserId,
+      loggedInUserId,
+    });
+
+    const chatDoc = await firebase
+      .firestore()
+      .collection("private-chats")
+      .doc(loggedInUserId + toUserId)
+      .get();
+    const chatDoc2 = await firebase
+      .firestore()
+      .collection("private-chats")
+      .doc(toUserId + loggedInUserId)
+      .get();
+
+    if (!chatDoc.exists && !chatDoc2.exists) {
+      await firebase
+        .firestore()
+        .collection("private-chats")
+        .doc(loggedInUserId + toUserId)
+        .set({
+          chat: "chat",
+        });
+    }
   };
 
   const rightActions = (dragX, index) => {
@@ -172,19 +206,18 @@ const MessageScreen = ({ navigation }) => {
               <Accordion.Icon />
             </Accordion.Summary>
             {conversations.map(
-              ({ id, data: { firstName, lastName, avatar } }) => (
+              ({ id, data: { firstName, lastName, avatar, userId } }) => (
                 <Accordion.Details>
                   <Swipeable
                     renderLeftActions={renderLeftActions}
                     renderRightActions={rightActions}
-                    overshootRight={() => console.log("awdwad")}
-                    onSwipeableRightOpen={() => console.log("awdwad")}
-                    onSwipeableRightWillOpen={() => console.log("awdwad")}
                   >
                     <ChatElement
                       key={id}
                       id={id}
                       chatName={firstName + " " + lastName}
+                      userId={userId}
+                      loggedInUserId={UserId}
                       avatar={avatar}
                       enterChat={enterChat}
                     />
@@ -203,9 +236,6 @@ const MessageScreen = ({ navigation }) => {
                 <Swipeable
                   renderLeftActions={renderLeftActions}
                   renderRightActions={rightActions}
-                  overshootRight={() => console.log("awdwad")}
-                  onSwipeableRightOpen={() => console.log("awdwad")}
-                  onSwipeableRightWillOpen={() => console.log("awdwad")}
                 >
                   <PublicChatElement
                     key={id}

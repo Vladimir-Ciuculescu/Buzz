@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   SafeAreaView,
-  StatusBar,
   KeyboardAvoidingView,
   Platform,
   TextInput,
@@ -16,6 +15,7 @@ import {
 } from "react-native";
 import { Avatar } from "react-native-elements";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
 import firebase from "firebase";
 import firetore from "firebase/firestore";
 import { Entypo, MaterialIcons, FontAwesome } from "@expo/vector-icons";
@@ -123,13 +123,14 @@ const PublicChatScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      <StatusBar></StatusBar>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : null}
         style={styles.container}
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : null}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <>
+          <React.Fragment>
             <ScrollView
               ref={scrollViewRef}
               onContentSizeChange={() =>
@@ -216,7 +217,6 @@ const PublicChatScreen = ({ navigation, route }) => {
                           color="black"
                         />
                         <FontAwesome
-                          onPress={() => console.log("awdwa")}
                           name="microphone"
                           size={24}
                           color="black"
@@ -239,7 +239,7 @@ const PublicChatScreen = ({ navigation, route }) => {
                 />
               </TouchableOpacity>
             </View>
-          </>
+          </React.Fragment>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     </SafeAreaView>

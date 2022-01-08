@@ -3,7 +3,7 @@ import { Text, View } from "react-native";
 import { LogBox } from "react-native";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 import { StatusBar } from "expo-status-bar";
-import { NativeBaseProvider } from "native-base";
+import { NativeBaseProvider, themeTools, extendTheme } from "native-base";
 import {
   AntDesign,
   Ionicons,
@@ -17,6 +17,7 @@ import { createStackNavigator } from "react-navigation-stack";
 import firebase from "firebase";
 import { createBottomTabNavigator as BottomNavigator } from "@react-navigation/bottom-tabs";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator as StackNavigator } from "@react-navigation/stack";
@@ -36,8 +37,10 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import PublicChatScreen from "./screens/PublicChatScreen";
 import ProfileScreen2 from "./screens/ProfileScreen2";
 import ChatScreen from "./screens/ChatScreen";
+import SettingsScreen from "./screens/SettingsScreen";
 
 LogBox.ignoreAllLogs(true);
+LogBox.ignoreLogs(["Setting a timer"]);
 
 const firebaseConfig = {
   apiKey: "AIzaSyBiGTaFqnFoT2aj5KkvgoAr422VsVgMKtA",
@@ -48,6 +51,14 @@ const firebaseConfig = {
   appId: "1:1005852185814:web:1cc3df7a46a96c7e5de577",
   measurementId: "G-CLNTYEKDL3",
 };
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+} else {
+  firebase.app();
+}
+
+firebase.firestore().settings({ experimentalForceLongPolling: true });
 
 //If no firebase app has been initialized when the component is rendered, initialize it
 // Else use the one initialized already
@@ -138,145 +149,76 @@ function MyTabs() {
   );
 }
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-} else {
-  firebase.app();
-}
-
-const AppContainer = createStackNavigator(
-  {
-    default: createBottomTabNavigator(
-      {
-        Home: {
-          screen: HomeScreen,
-          navigationOptions: {
-            tabBarIcon: ({ tintColor }) => (
-              <Entypo name="home" size={24} color={tintColor} />
-            ),
-          },
-        },
-        Message: {
-          screen: MessageScreen,
-          navigationOptions: {
-            tabBarIcon: ({ tintColor }) => (
-              <MaterialCommunityIcons
-                name="message-processing"
-                size={24}
-                color={tintColor}
-              />
-            ),
-          },
-        },
-
-        Post: {
-          screen: PostScreen,
-          navigationOptions: {
-            tabBarIcon: ({ tintColor }) => (
-              <AntDesign
-                name="pluscircle"
-                size={48}
-                color="#65a84d"
-                style={{
-                  shadowColor: "#E9446A",
-                  shadowOffset: { width: 0, height: 0 },
-                  shadowRadius: 10,
-                  shadowOpacity: 0.3,
-                }}
-              />
-            ),
-          },
-        },
-
-        Notification: {
-          screen: NotificationScreen,
-          navigationOptions: {
-            tabBarIcon: ({ tintColor }) => (
-              <Octicons name="bell" size={24} color={tintColor} />
-            ),
-          },
-        },
-        Profile: {
-          screen: ProfileScreen,
-          navigationOptions: {
-            tabBarIcon: ({ tintColor }) => (
-              <Ionicons name="person" size={24} color={tintColor} />
-            ),
-          },
-        },
-      },
-      {
-        defaultNavigationOptions: {
-          tabBarOnPress: ({ navigation, defaultHandler }) => {
-            if (navigation.state.key === "Post") {
-              navigation.navigate("postModal");
-            } else {
-              defaultHandler();
-            }
-          },
-        },
-        tabBarOptions: {
-          activeTintColor: "#008ae6",
-          inactiveTintColor: "#161F3D",
-          showLabel: false,
-          style: { borderTopColor: "#A9A9A9", borderTopWidth: 1, height: 60 },
-        },
-      }
-    ),
-    postModal: {
-      screen: PostScreen,
-    },
-  },
-  {
-    mode: "modal",
-    headerMode: "none",
-  }
-);
-
-const AuthStack = createStackNavigator({
-  Login: LoginScreen,
-  Register: RegisterScreen,
-});
+const Drawer = createDrawerNavigator();
 
 const Stack = StackNavigator();
 
 function MyStacks() {
+  const theme = extendTheme({
+    components: {
+      Heading: {
+        baseStyle: (props) => {
+          return {
+            color: themeTools.mode("red.300", "blue.300")(props),
+          };
+        },
+      },
+    },
+  });
+
   return (
-    <NativeBaseProvider>
-      <NavigationContainer>
-        <StatusBar></StatusBar>
-        <Stack.Navigator initialRouteName="Loading">
-          <Stack.Screen
-            options={{ headerLeft: null }}
-            name="Login"
-            component={LoginScreen}
-          />
-          <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen
-            options={{ headerShown: false, gestureEnabled: false }}
-            name="App"
-            component={MyTabs}
-          />
-          <Stack.Screen name="Loading" component={LoadingScreen} />
-          <Stack.Screen name="AddChat" component={AddChatScreen} />
-          <Stack.Group
-            screenOptions={{
-              presentation: "modal",
-              headerRight: () => <Text>Post</Text>,
-              headerBackTitle: "Back",
-              headerTitleAlign: "center",
-              headerTitle: "Make a new post",
-              headerLeftLabelVisible: false,
-            }}
-          >
-            <Stack.Screen name="Modal" component={PostScreen} />
-          </Stack.Group>
-          <Stack.Screen name="Chat" component={ChatScreen} />
-          <Stack.Screen name="PublicChat" component={PublicChatScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
+    <NativeBaseProvider theme={theme}>
+      <StatusBar></StatusBar>
+      <Stack.Navigator initialRouteName="Loading">
+        <Stack.Screen
+          options={{ headerLeft: null }}
+          name="Login"
+          component={LoginScreen}
+        />
+        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen
+          options={{ headerShown: false, gestureEnabled: false }}
+          name="App"
+          component={MyTabs}
+        />
+        <Stack.Screen name="Loading" component={LoadingScreen} />
+        <Stack.Screen name="AddChat" component={AddChatScreen} />
+        <Stack.Group
+          screenOptions={{
+            presentation: "modal",
+            headerRight: () => <Text>Post</Text>,
+            headerBackTitle: "Back",
+            headerTitleAlign: "center",
+            headerTitle: "Make a new post",
+            headerLeftLabelVisible: false,
+          }}
+        >
+          <Stack.Screen name="Modal" component={PostScreen} />
+        </Stack.Group>
+        <Stack.Screen name="Chat" component={ChatScreen} />
+        <Stack.Screen name="PublicChat" component={PublicChatScreen} />
+      </Stack.Navigator>
     </NativeBaseProvider>
   );
 }
 
-export default MyStacks;
+const DrawerNavigator = () => {
+  return (
+    <Drawer.Navigator
+      drawerContent={SettingsScreen}
+      screenOptions={{ headerShown: false, swipeEdgeWidth: 0 }}
+    >
+      <Drawer.Screen name="MyStacks" component={MyStacks} />
+    </Drawer.Navigator>
+  );
+};
+
+const Application = () => {
+  return (
+    <NavigationContainer>
+      <DrawerNavigator></DrawerNavigator>
+    </NavigationContainer>
+  );
+};
+
+export default Application;

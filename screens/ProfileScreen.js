@@ -24,6 +24,7 @@ import * as ImagePicker from "expo-image-picker";
 import Fire from "../Fire";
 import ParallaxScrollView from "react-native-parallax-scroll-view";
 import { Shadow } from "react-native-shadow-2";
+import { DrawerActions } from "@react-navigation/native";
 
 export default class ProfileScreen extends Component {
   constructor(props) {
@@ -208,6 +209,9 @@ export default class ProfileScreen extends Component {
 
             <Button mode="contained" color="red" onPress={() => this.Logout()}>
               Log out
+            </Button>
+            <Button onPress={() => this.props.navigation.openDrawer()}>
+              Settings
             </Button>
 
             <Modal animationType="slide" visible={this.state.toggleEditProfile}>

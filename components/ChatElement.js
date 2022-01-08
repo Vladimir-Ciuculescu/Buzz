@@ -3,10 +3,17 @@ import { View, Text, StyleSheet } from "react-native";
 import { ListItem, Avatar } from "react-native-elements";
 import firebase from "firebase";
 
-const ChatElement = ({ id, chatName, avatar, enterChat }) => {
+const ChatElement = ({
+  id,
+  chatName,
+  avatar,
+  enterChat,
+  userId,
+  loggedInUserId,
+}) => {
   return (
     <ListItem
-      onPress={() => enterChat(id, chatName, avatar)}
+      onPress={() => enterChat(id, chatName, avatar, userId, loggedInUserId)}
       key={id}
       bottomDivider
     >
