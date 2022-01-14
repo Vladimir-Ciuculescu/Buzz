@@ -26,8 +26,6 @@ export default class PostScreen extends React.Component {
     text: "",
     image: null,
     loadingPost: false,
-    mode: "contain",
-    onlyScaleDown: false,
   };
 
   componentDidMount() {

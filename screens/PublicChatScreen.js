@@ -15,7 +15,6 @@ import {
 } from "react-native";
 import { Avatar } from "react-native-elements";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
-import { StatusBar } from "expo-status-bar";
 import firebase from "firebase";
 import firetore from "firebase/firestore";
 import { Entypo, MaterialIcons, FontAwesome } from "@expo/vector-icons";
@@ -123,7 +122,6 @@ const PublicChatScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <StatusBar></StatusBar>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : null}
         style={styles.container}

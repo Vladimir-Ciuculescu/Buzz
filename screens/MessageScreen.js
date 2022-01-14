@@ -36,6 +36,32 @@ const MessageScreen = ({ navigation }) => {
 
   const headerHeight = useHeaderHeight();
 
+  useEffect(() => {
+    const result = navigation.addListener("focus", () => {
+      const fetchUser = async () => {
+        const user = await AsyncStorage.getItem("user");
+
+        await firebase
+          .firestore()
+          .collection("accounts")
+          .where("email", "!=", user)
+          .get()
+          .then((snapshot) => {
+            setConversations(
+              snapshot.docs.map((doc) => ({
+                id: doc.id,
+                data: doc.data(),
+              }))
+            );
+          });
+      };
+
+      fetchUser();
+    });
+
+    return result;
+  }, []);
+
   useLayoutEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       const fetchData = async () => {
@@ -51,24 +77,6 @@ const MessageScreen = ({ navigation }) => {
       };
 
       fetchData();
-
-      const fetchUsers = async () => {
-        await firebase
-          .firestore()
-          .collection("accounts")
-          .where("email", "!=", currentUser)
-          .get()
-          .then((snapshot) => {
-            setConversations(
-              snapshot.docs.map((doc) => ({
-                id: doc.id,
-                data: doc.data(),
-              }))
-            );
-          });
-      };
-
-      fetchUsers();
 
       const fetchConversations = async () => {
         firebase
@@ -88,14 +96,14 @@ const MessageScreen = ({ navigation }) => {
     });
 
     return unsubscribe;
-  }, [navigation, avatar, conversations]);
+  }, [navigation, avatar]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Chats",
       headerStyle: {
         backgroundColor: "#1E90FF",
-        height: Platform.OS === "ios" ? headerHeight : 100,
+        height: Platform.OS === "ios" ? headerHeight : 110,
       },
       headerLeft: () => (
         <View style={{ marginLeft: 20 }}>
@@ -203,11 +211,26 @@ const MessageScreen = ({ navigation }) => {
           <Accordion.Item>
             <Accordion.Summary>
               Direct Messages
-              <Accordion.Icon />
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <TouchableOpacity onPress={() => console.log("awdwdaa")}>
+                  <AntDesign
+                    name="plus"
+                    size={24}
+                    color="black"
+                    style={{ marginRight: 10 }}
+                  />
+                </TouchableOpacity>
+                <Accordion.Icon />
+              </View>
             </Accordion.Summary>
             {conversations.map(
               ({ id, data: { firstName, lastName, avatar, userId } }) => (
-                <Accordion.Details>
+                <Accordion.Details marginX={-5} marginY={-3}>
                   <Swipeable
                     renderLeftActions={renderLeftActions}
                     renderRightActions={rightActions}
@@ -232,7 +255,7 @@ const MessageScreen = ({ navigation }) => {
               <Accordion.Icon />
             </Accordion.Summary>
             {channels.map(({ id, data: { chatName } }) => (
-              <Accordion.Details>
+              <Accordion.Details marginX={-5} marginY={-3}>
                 <Swipeable
                   renderLeftActions={renderLeftActions}
                   renderRightActions={rightActions}

@@ -1,26 +1,19 @@
 import React from "react";
-import { Text, View } from "react-native";
-import { LogBox } from "react-native";
-import { createBottomTabNavigator } from "react-navigation-tabs";
-import { StatusBar } from "expo-status-bar";
+import { Text, View, LogBox, StatusBar, Platform } from "react-native";
 import { NativeBaseProvider, themeTools, extendTheme } from "native-base";
 import {
   AntDesign,
   Ionicons,
-  Entypo,
+  Fontisto,
   MaterialCommunityIcons,
-  FontAwesome,
-  Octicons,
 } from "@expo/vector-icons";
-import { createAppContainer, createSwitchNavigator } from "react-navigation";
-import { createStackNavigator } from "react-navigation-stack";
 import firebase from "firebase";
-import { createBottomTabNavigator as BottomNavigator } from "@react-navigation/bottom-tabs";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
 import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator as StackNavigator } from "@react-navigation/stack";
+import { createStackNavigator } from "@react-navigation/stack";
 import { AsyncStorage } from "react-native";
 //screens
 import HomeScreen from "./screens/HomeScreen";
@@ -33,7 +26,6 @@ import ProfileScreen from "./screens/ProfileScreen";
 import PostScreen from "./screens/PostScreen";
 import AddChatScreen from "./screens/AddChatScreen";
 import ModalScreen from "./screens/ModalScreen";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import PublicChatScreen from "./screens/PublicChatScreen";
 import ProfileScreen2 from "./screens/ProfileScreen2";
 import ChatScreen from "./screens/ChatScreen";
@@ -58,32 +50,38 @@ if (!firebase.apps.length) {
   firebase.app();
 }
 
-firebase.firestore().settings({ experimentalForceLongPolling: true });
-
 //If no firebase app has been initialized when the component is rendered, initialize it
 // Else use the one initialized already
 
-const Tabs = BottomNavigator();
+const Tabs = createBottomTabNavigator();
 
 function MyTabs() {
   return (
     <Tabs.Navigator
-      activeColor="red"
-      barStyle={{ backgroundColor: "white" }}
       screenOptions={{
-        activeTintColor: "#008ae6",
-        inactiveTintColor: "#161F3D",
-        showLabel: false,
-        headerTitleAlign: "center",
-        style: { borderTopColor: "#A9A9A9", borderTopWidth: 1, height: 60 },
+        tabBarActiveTintColor: "blue",
+        tabBarInactiveTintColor: "grey",
+        tabBarStyle: {
+          backgroundColor: "purple",
+          bottom: 16,
+          right: 16,
+          left: 16,
+          height: 60,
+          borderRadius: 10,
+          position: "absolute",
+        },
       }}
     >
       <Tabs.Screen
         name="HomeScreen"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ tintColor }) => (
-            <Entypo name="home" size={24} color={tintColor} />
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? "ios-home" : "ios-home-outline"}
+              size={24}
+              color={focused ? "blue" : "grey"}
+            />
           ),
         }}
       />
@@ -91,11 +89,13 @@ function MyTabs() {
         name="Messages"
         component={MessageScreen}
         options={{
-          tabBarIcon: ({ tintColor }) => (
+          tabBarIcon: ({ focused }) => (
             <MaterialCommunityIcons
-              name="message-processing"
+              name={
+                focused ? "message-processing" : "message-processing-outline"
+              }
               size={24}
-              color={tintColor}
+              color={focused ? "blue" : "grey"}
             />
           ),
         }}
@@ -105,7 +105,7 @@ function MyTabs() {
         name="Post"
         component={PostScreen}
         options={{
-          tabBarIcon: ({ tintColor }) => (
+          tabBarIcon: ({}) => (
             <AntDesign
               name="pluscircle"
               size={35}
@@ -131,8 +131,12 @@ function MyTabs() {
         name="Notifications"
         component={NotificationScreen}
         options={{
-          tabBarIcon: ({ tintColor }) => (
-            <Octicons name="bell" size={24} color={tintColor} />
+          tabBarIcon: ({ focused }) => (
+            <Fontisto
+              name={focused ? "bell-alt" : "bell"}
+              size={24}
+              color={focused ? "blue" : "grey"}
+            />
           ),
         }}
       />
@@ -140,8 +144,12 @@ function MyTabs() {
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ tintColor }) => (
-            <Ionicons name="person" size={24} color={tintColor} />
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? "person" : "person-outline"}
+              size={24}
+              color={focused ? "blue" : "grey"}
+            />
           ),
         }}
       />
@@ -151,7 +159,7 @@ function MyTabs() {
 
 const Drawer = createDrawerNavigator();
 
-const Stack = StackNavigator();
+const Stack = createStackNavigator();
 
 function MyStacks() {
   const theme = extendTheme({
@@ -168,7 +176,6 @@ function MyStacks() {
 
   return (
     <NativeBaseProvider theme={theme}>
-      <StatusBar></StatusBar>
       <Stack.Navigator initialRouteName="Loading">
         <Stack.Screen
           options={{ headerLeft: null }}
@@ -216,6 +223,11 @@ const DrawerNavigator = () => {
 const Application = () => {
   return (
     <NavigationContainer>
+      <StatusBar
+        style={{ height: 50 }}
+        translucent
+        barStyle={Platform.OS === "ios" ? "dark-content" : "light-content"}
+      ></StatusBar>
       <DrawerNavigator></DrawerNavigator>
     </NavigationContainer>
   );

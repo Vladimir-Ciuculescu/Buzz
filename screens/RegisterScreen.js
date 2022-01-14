@@ -222,6 +222,7 @@ export default class RegisterScreen extends React.Component {
   };
 
   render() {
+    const { marian } = this.props.route.params;
     return (
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : null}
@@ -239,7 +240,9 @@ export default class RegisterScreen extends React.Component {
               style={styles.yellowCircle}
             ></Image>
 
-            <Text style={styles.registerMessage}>Register account</Text>
+            <Text style={styles.registerMessage}>
+              Register account {marian}
+            </Text>
 
             <View style={styles.form}>
               <View>

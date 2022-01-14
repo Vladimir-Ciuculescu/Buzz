@@ -56,7 +56,7 @@ export default class LoginScreen extends React.Component {
     this.setState({ password: "" });
     this.setState({ emailError: "" });
     this.setState({ passwordError: "" });
-    this.props.navigation.navigate("Register");
+    this.props.navigation.navigate("Register", { marian: "smth" });
   };
 
   registerForPushNotificationsAsync = async () => {
@@ -161,7 +161,13 @@ export default class LoginScreen extends React.Component {
         await AsyncStorage.setItem("userId", userId);
         await AsyncStorage.setItem("user", this.state.email);
         await AsyncStorage.setItem("token", "abc123");
-        this.props.navigation.navigate("App", { screen: "HomeScreen" });
+        this.props.navigation.navigate(
+          "App",
+          {
+            screen: "HomeScreen",
+          },
+          { email: this.state.email }
+        );
 
         if (this.state.deviceToken) {
           await firebase
@@ -190,15 +196,8 @@ export default class LoginScreen extends React.Component {
         style={styles.container}
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : null}
       >
-        {/* <StatusBar
-          translucent
-          backgroundColor="#5E8D48"
-          barStyle="light-content"
-        /> */}
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView>
-            <StatusBar barStyle="light-content"></StatusBar>
-
             <View style={styles.greenCircle}></View>
 
             <View style={styles.yellowCircle}></View>
@@ -208,9 +207,9 @@ export default class LoginScreen extends React.Component {
               style={styles.logo}
             ></Image>
 
-            <Text
-              style={styles.greeting}
-            >{`Hello partner, \n Welcome back !`}</Text>
+            <Text style={styles.greeting}>
+              {`Hello partner, \n Welcome back !`}
+            </Text>
 
             <View style={styles.form}>
               <View>
