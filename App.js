@@ -61,15 +61,7 @@ function MyTabs() {
       screenOptions={{
         tabBarActiveTintColor: "blue",
         tabBarInactiveTintColor: "grey",
-        tabBarStyle: {
-          backgroundColor: "purple",
-          bottom: 16,
-          right: 16,
-          left: 16,
-          height: 60,
-          borderRadius: 10,
-          position: "absolute",
-        },
+        
       }}
     >
       <Tabs.Screen
