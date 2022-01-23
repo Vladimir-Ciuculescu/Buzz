@@ -30,6 +30,7 @@ import PublicChatScreen from "./screens/PublicChatScreen";
 import ProfileScreen2 from "./screens/ProfileScreen2";
 import ChatScreen from "./screens/ChatScreen";
 import SettingsScreen from "./screens/SettingsScreen";
+import StreamChatScreen from "./screens/StreamChatScreen";
 
 LogBox.ignoreAllLogs(true);
 LogBox.ignoreLogs(["Setting a timer"]);
@@ -61,7 +62,6 @@ function MyTabs() {
       screenOptions={{
         tabBarActiveTintColor: "blue",
         tabBarInactiveTintColor: "grey",
-        
       }}
     >
       <Tabs.Screen
@@ -182,20 +182,12 @@ function MyStacks() {
         />
         <Stack.Screen name="Loading" component={LoadingScreen} />
         <Stack.Screen name="AddChat" component={AddChatScreen} />
-        <Stack.Group
-          screenOptions={{
-            presentation: "modal",
-            headerRight: () => <Text>Post</Text>,
-            headerBackTitle: "Back",
-            headerTitleAlign: "center",
-            headerTitle: "Make a new post",
-            headerLeftLabelVisible: false,
-          }}
-        >
+        <Stack.Group>
           <Stack.Screen name="Modal" component={PostScreen} />
         </Stack.Group>
         <Stack.Screen name="Chat" component={ChatScreen} />
         <Stack.Screen name="PublicChat" component={PublicChatScreen} />
+        <Stack.Screen name="StreamChat" component={StreamChatScreen} />
       </Stack.Navigator>
     </NativeBaseProvider>
   );

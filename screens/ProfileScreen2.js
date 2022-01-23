@@ -25,8 +25,9 @@ import Fire from "../Fire";
 import ParallaxScrollView from "react-native-parallax-scroll-view";
 import { Shadow } from "react-native-shadow-2";
 import { useState, useEffect, useLayoutEffect } from "react";
+import { useRoute } from "@react-navigation/core";
 
-const ProfileScreen2 = ({ navigation }) => {
+const ProfileScreen2 = (props) => {
   const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
   const [avatar, setAvatar] = useState("");
@@ -65,7 +66,7 @@ const ProfileScreen2 = ({ navigation }) => {
         style: "destructive",
         onPress: async () => {
           await AsyncStorage.removeItem("user");
-          navigation.navigate("Login", { screen: "LoginScreen" });
+          this.props.navigation.navigate("Login", { screen: "LoginScreen" });
         },
       },
     ]);

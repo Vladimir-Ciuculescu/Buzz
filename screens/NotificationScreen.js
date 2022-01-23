@@ -2,103 +2,89 @@ import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import React, { useState, useEffect, useRef } from "react";
 import { Text, View, Button, Platform, StyleSheet } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { StreamChat } from "stream-chat";
+import {
+  Chat,
+  OverlayProvider,
+  ChannelList,
+  Channel,
+  MessageList,
+  MessageInput,
+} from "stream-chat-expo";
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
-
-sendPushNotification = async (token) => {
-  const message = {
-    to: token,
-    sound: "default",
-    title: "Original Title",
-    body: "And here is the body!",
-    data: { someData: "goes here" },
-  };
-
-  await fetch("https://exp.host/--/api/v2/push/send", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Accept-encoding": "gzip, deflate",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(message),
-  });
-};
+const API_KEY = "uxafdkrq5ftg";
+const client = StreamChat.getInstance(API_KEY);
 
 export default function NotificationScreen() {
-  const [expoPushToken, setExpoPushToken] = useState("");
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
+  const [isReady, SetIsReady] = useState(false);
+  const [selectedChannel, setSelectedChannel] = useState(null);
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
-    );
-
-    // This listener is fired whenever a notification is received while the app is foregrounded
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
-
-    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {});
-
-    return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
+    const connectUser = async () => {
+      await client.connectUser(
+        {
+          id: "vadim",
+          name: "vadim sadim",
+          image: "wadwadwad",
+        },
+        client.devToken("vadim")
       );
-      Notifications.removeNotificationSubscription(responseListener.current);
+
+      //create a channel if it does not exist, otherwise enter the current one
+      const channel = client.channel("messaging", "dude", {
+        name: "hello",
+      });
+      await channel.create();
+      SetIsReady(true);
     };
+    connectUser();
+
+    return () => client.disconnectUser();
   }, []);
 
-  return (
-    <View style={styles.container}>
-      <Button
-        title="Press to Send Notification"
-        onPress={() =>
-          sendPushNotification("ExponentPushToken[KB4w73LiDWi81_LehrBSWe]")
-        }
-      />
-    </View>
-  );
-}
+  const onChannelPressed = (channel) => {
+    setSelectedChannel(channel);
+  };
 
-async function registerForPushNotificationsAsync() {
-  let token;
-  if (Constants.isDevice) {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== "granted") {
-      alert("Failed to get push token for push notification!");
-      return;
-    }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
+  if (!isReady) {
+    return null;
+  } else {
+    return (
+      <SafeAreaProvider>
+        <OverlayProvider>
+          <Chat client={client}>
+            {selectedChannel ? (
+              <Channel channel={selectedChannel}>
+                <MessageList />
+                <MessageInput />
+                <Text
+                  style={{ margin: 30 }}
+                  onPress={() => setSelectedChannel(null)}
+                >
+                  adawdaw
+                </Text>
+              </Channel>
+            ) : (
+              <ChannelList onSelect={onChannelPressed} />
+            )}
+          </Chat>
+        </OverlayProvider>
+      </SafeAreaProvider>
+    );
   }
 
-  if (Platform.OS === "android") {
-    Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#FF231F7C",
-    });
-  }
-
-  return token;
+  // return (
+  //   <View style={styles.container}>
+  //     <Button
+  //       title="Press to Send Notification"
+  //       onPress={() =>
+  //         sendPushNotification("ExponentPushToken[KB4w73LiDWi81_LehrBSWe]")
+  //       }
+  //     />
+  //   </View>
+  // );
 }
 
 const styles = StyleSheet.create({

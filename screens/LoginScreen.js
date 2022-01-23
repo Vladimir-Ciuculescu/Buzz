@@ -42,6 +42,8 @@ export default class LoginScreen extends React.Component {
       statusColor: "#65a84d",
       emailError: "",
       passwordError: "",
+      firstName: "",
+      lastName: "",
     };
   }
 
@@ -147,6 +149,7 @@ export default class LoginScreen extends React.Component {
           await AsyncStorage.setItem("avatar", doc.data().avatar);
           await AsyncStorage.setItem("firstName", doc.data().firstName);
           await AsyncStorage.setItem("lastName", doc.data().lastName);
+          this.setState({ firtstName: doc.data().firstName });
         }
       }
 
@@ -166,7 +169,7 @@ export default class LoginScreen extends React.Component {
           {
             screen: "HomeScreen",
           },
-          { email: this.state.email }
+          { firstName: this.state.firstName }
         );
 
         if (this.state.deviceToken) {

@@ -120,8 +120,6 @@ export default class ProfileScreen extends Component {
   };
 
   render() {
-    const { email } = this.props.route.params ? this.props.route.params : "";
-
     return (
       <ParallaxScrollView
         backgroundColor="white"
