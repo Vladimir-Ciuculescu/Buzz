@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-
 import {
   View,
   Text,
@@ -11,24 +10,32 @@ import {
   Alert,
   ActivityIndicator,
   AsyncStorage,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import Fire from "../Fire";
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { AntDesign, Entypo } from "@expo/vector-icons";
 import Constants from "expo-constants";
-
 import { Avatar } from "react-native-elements";
-
 import firebase from "firebase";
+import { Camera } from "expo-camera";
 
 const PostScreen = ({ navigation }) => {
+  const cameraRef = useRef();
+
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
   const [loadingPost, setLoadingPost] = useState(false);
   const [avatar, setAvatar] = useState("");
   const [fullName, setFullName] = useState("");
+  const [startCamera, setStartCamera] = useState(false);
+  const [isPreview, setIsPreview] = useState(false);
+
+  const [type, setType] = useState(Camera.Constants.Type.back);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -103,56 +110,108 @@ const PostScreen = ({ navigation }) => {
     }
   };
 
+  const openCamera = async () => {
+    const { status } = await Camera.requestCameraPermissionsAsync();
+    if (status === "granted") {
+      setStartCamera(true);
+    }
+  };
+
+  const takePicture = async () => {
+    const options = { quality: 0.7, base64: true };
+    const data = await cameraRef.current.takePictureAsync(options);
+    const source = data.base64;
+
+    if (source) {
+      await cameraRef.current.pausePreview();
+      setIsPreview(true);
+    }
+  };
+
+  const cancelPreview = async () => {
+    await cameraRef.current.resumePreview();
+    setIsPreview(false);
+  };
+
   return (
     <View style={styles.container}>
-      <View>
-        <View
-          style={{
-            flexDirection: "row",
-            marginRight: 16,
-            marginLeft: 20,
-            marginTop: 20,
-          }}
-        >
-          <Avatar style={styles.avatar} rounded source={{ uri: avatar }} />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        {startCamera ? (
+          <Camera ref={cameraRef} style={styles.camera} type={type}>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  setType(
+                    type === Camera.Constants.Type.back
+                      ? Camera.Constants.Type.front
+                      : Camera.Constants.Type.back
+                  );
+                }}
+              >
+                <MaterialIcons name="flip-camera-ios" size={24} color="red" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={takePicture}>
+                <Text>Make a photo</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={takePicture}>
+                <Text>Make a photo</Text>
+              </TouchableOpacity>
+            </View>
+          </Camera>
+        ) : (
+          <View>
+            <View
+              style={{
+                flexDirection: "row",
+                marginRight: 16,
+                marginLeft: 20,
+                marginTop: 20,
+              }}
+            >
+              <Avatar style={styles.avatar} rounded source={{ uri: avatar }} />
 
-          <Text style={{ marginLeft: 20, fontSize: 17 }}>{fullName}</Text>
+              <Text style={{ marginLeft: 20, fontSize: 17 }}>{fullName}</Text>
 
-          <View style={styles.options}>
-            <TouchableOpacity onPress={pickImage}>
-              <FontAwesome name="photo" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ marginLeft: 20 }}>
-              <Entypo name="camera" size={24} color="black" />
-            </TouchableOpacity>
+              <View style={styles.options}>
+                <TouchableOpacity onPress={pickImage}>
+                  <FontAwesome name="photo" size={24} color="black" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={openCamera}
+                  style={{ marginLeft: 20 }}
+                >
+                  <Entypo name="camera" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <TextInput
+              placeholder="What do you want to share with others ?"
+              multiline={true}
+              autoFocus={true}
+              numberOfLines={4}
+              style={styles.question}
+              onChangeText={(text) => setText(text)}
+              value={text}
+            ></TextInput>
+
+            <View
+              style={{
+                alignContent: "center",
+                alignItems: "center",
+                alignSelf: "center",
+                marginTop: 30,
+              }}
+            >
+              <Image
+                source={{ uri: image }}
+                style={{ height: 500, width: 330, borderRadius: 10 }}
+              ></Image>
+            </View>
           </View>
-        </View>
-
-        <TextInput
-          placeholder="What do you want to share with others ?"
-          multiline={true}
-          autoFocus={true}
-          numberOfLines={4}
-          style={styles.question}
-          onChangeText={(text) => setText(text)}
-          value={text}
-        ></TextInput>
-
-        <View
-          style={{
-            alignContent: "center",
-            alignItems: "center",
-            alignSelf: "center",
-            marginTop: 30,
-          }}
-        >
-          <Image
-            source={{ uri: image }}
-            style={{ height: 500, width: 330, borderRadius: 10 }}
-          ></Image>
-        </View>
-      </View>
-      <View />
+        )}
+      </TouchableWithoutFeedback>
     </View>
   );
 };
@@ -177,6 +236,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginLeft: "auto",
     alignItems: "center",
+  },
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    margin: 20,
+  },
+  button: {
+    flex: 0.1,
+    alignSelf: "flex-end",
+    alignItems: "center",
+  },
+  text: {
+    fontSize: 18,
+    color: "white",
   },
 });
 

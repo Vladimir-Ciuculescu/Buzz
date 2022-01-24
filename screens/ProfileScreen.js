@@ -15,6 +15,8 @@ import {
   ActivityIndicator,
   ImageBackground,
 } from "react-native";
+import API_KEY from "../StreamCredentials";
+import { StreamChat } from "stream-chat";
 
 import { Button, Title } from "react-native-paper";
 import firebase from "firebase";
@@ -25,6 +27,8 @@ import Fire from "../Fire";
 import ParallaxScrollView from "react-native-parallax-scroll-view";
 import { Shadow } from "react-native-shadow-2";
 import { DrawerActions } from "@react-navigation/native";
+
+const client = StreamChat.getInstance(API_KEY);
 
 export default class ProfileScreen extends Component {
   constructor(props) {
@@ -61,6 +65,7 @@ export default class ProfileScreen extends Component {
         style: "destructive",
         onPress: async () => {
           await AsyncStorage.removeItem("user");
+          client.disconnectUser();
           this.props.navigation.navigate("Login", { screen: "LoginScreen" });
         },
       },

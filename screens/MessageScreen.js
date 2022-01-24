@@ -29,14 +29,7 @@ import API_KEY from "../StreamCredentials";
 import { StreamChat } from "stream-chat";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import {
-  Chat,
-  OverlayProvider,
-  ChannelList,
-  Channel,
-  MessageList,
-  MessageInput,
-} from "stream-chat-expo";
+import { Chat, OverlayProvider, ChannelList } from "stream-chat-expo";
 
 const client = StreamChat.getInstance(API_KEY);
 
@@ -73,26 +66,26 @@ const MessageScreen = ({ navigation }) => {
 
       fetchUser();
 
-      const connectUser = async () => {
-        await client.connectUser(
-          {
-            id: "vadim",
-            name: "vadim sadim",
-            image: "wadwadwad",
-          },
-          client.devToken("vadim")
-        );
+      // const connectUser = async () => {
+      //   await client.connectUser(
+      //     {
+      //       id: "vadim",
+      //       name: "vadim sadim",
+      //       image: "wadwadwad",
+      //     },
+      //     client.devToken("vadim")
+      //   );
 
-        //create a channel if it does not exist, otherwise enter the current one
-        const channel = client.channel("messaging", "dudeeewadwadwa", {
-          name: "hello again",
-          image:
-            'https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png"',
-        });
-        await channel.create();
-        SetIsReady(true);
-      };
-      connectUser();
+      //   //create a channel if it does not exist, otherwise enter the current one
+      //   const channel = client.channel("messaging", "dudeeewadwadwa", {
+      //     name: "hello again",
+      //     image:
+      //       'https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png"',
+      //   });
+      //   await channel.create();
+      //   SetIsReady(true);
+      // };
+      // connectUser();
 
       return () => client.disconnectUser();
     });
@@ -102,7 +95,12 @@ const MessageScreen = ({ navigation }) => {
 
   const onChannelPressed = (channel) => {
     setSelectedChannel(channel);
-    navigation.navigate("StreamChat", { channel: channel, client: client });
+    console.log("channel", channel.data.name);
+    navigation.navigate("StreamChat", {
+      channel: channel,
+      client: client,
+      name: channel.data.name,
+    });
   };
 
   useLayoutEffect(() => {

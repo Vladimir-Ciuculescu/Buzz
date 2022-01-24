@@ -7,25 +7,22 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  StatusBar,
-  LayoutAnimation,
   Image,
   ScrollView,
   TouchableWithoutFeedback,
   Keyboard,
-  TextPropTypes,
   KeyboardAvoidingView,
-  Button,
   Platform,
-  Alert,
 } from "react-native";
 import { AsyncStorage } from "react-native";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
+import API_KEY from "../StreamCredentials";
+import { StreamChat } from "stream-chat";
 
 import { HelperText, TextInput } from "react-native-paper";
 
-const keyboardVerticalOffset = Platform.OS === "ios" ? 40 : 0;
+const client = StreamChat.getInstance(API_KEY);
 
 export default class LoginScreen extends React.Component {
   constructor(props) {
@@ -44,6 +41,7 @@ export default class LoginScreen extends React.Component {
       passwordError: "",
       firstName: "",
       lastName: "",
+      userId: "",
     };
   }
 
@@ -105,6 +103,26 @@ export default class LoginScreen extends React.Component {
     } catch (e) {}
   };
 
+  fetchUser = async (id, name, image) => {
+    // await client.connectUser(
+    //   {
+    //     id: name,
+    //     name: name,
+    //     image: image,
+    //     token: id,
+    //   },
+    //   client.devToken(name)
+    // );
+
+    await client.connectUser(
+      {
+        id: "Marius-Banici",
+        name: "asfesffaw",
+      },
+      client.devToken("Marius-Banici")
+    );
+  };
+
   handleLogin = async () => {
     const { email, password } = this.state;
     let userId = "";
@@ -149,7 +167,12 @@ export default class LoginScreen extends React.Component {
           await AsyncStorage.setItem("avatar", doc.data().avatar);
           await AsyncStorage.setItem("firstName", doc.data().firstName);
           await AsyncStorage.setItem("lastName", doc.data().lastName);
-          this.setState({ firtstName: doc.data().firstName });
+          this.setState({
+            firstName: doc.data().firstName,
+            lastName: doc.data().lastName,
+            userId: doc.data().userId,
+            avatar: doc.data().avatar,
+          });
         }
       }
 
@@ -161,9 +184,15 @@ export default class LoginScreen extends React.Component {
         });
         this.setState({ token: "abc123" });
 
+        //create a new user for getstream, or get the current one
+
         await AsyncStorage.setItem("userId", userId);
         await AsyncStorage.setItem("user", this.state.email);
         await AsyncStorage.setItem("token", "abc123");
+        const fullName = this.state.firstName + "-" + this.state.lastName;
+
+        this.fetchUser(this.state.userId, fullName, this.state.avatar);
+
         this.props.navigation.navigate(
           "App",
           {
