@@ -104,22 +104,14 @@ export default class LoginScreen extends React.Component {
   };
 
   fetchUser = async (id, name, image) => {
-    // await client.connectUser(
-    //   {
-    //     id: name,
-    //     name: name,
-    //     image: image,
-    //     token: id,
-    //   },
-    //   client.devToken(name)
-    // );
-
     await client.connectUser(
       {
-        id: "Marius-Banici",
-        name: "asfesffaw",
+        id: name,
+        name: name,
+        image: image,
+        token: id,
       },
-      client.devToken("Marius-Banici")
+      client.devToken(name)
     );
   };
 

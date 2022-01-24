@@ -65,29 +65,6 @@ const MessageScreen = ({ navigation }) => {
       };
 
       fetchUser();
-
-      // const connectUser = async () => {
-      //   await client.connectUser(
-      //     {
-      //       id: "vadim",
-      //       name: "vadim sadim",
-      //       image: "wadwadwad",
-      //     },
-      //     client.devToken("vadim")
-      //   );
-
-      //   //create a channel if it does not exist, otherwise enter the current one
-      //   const channel = client.channel("messaging", "dudeeewadwadwa", {
-      //     name: "hello again",
-      //     image:
-      //       'https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png"',
-      //   });
-      //   await channel.create();
-      //   SetIsReady(true);
-      // };
-      // connectUser();
-
-      return () => client.disconnectUser();
     });
 
     return result;
@@ -95,7 +72,6 @@ const MessageScreen = ({ navigation }) => {
 
   const onChannelPressed = (channel) => {
     setSelectedChannel(channel);
-    console.log("channel", channel.data.name);
     navigation.navigate("StreamChat", {
       channel: channel,
       client: client,
@@ -128,7 +104,6 @@ const MessageScreen = ({ navigation }) => {
       title: "Chats",
       headerStyle: {
         backgroundColor: "#1E90FF",
-        height: Platform.OS === "ios" ? headerHeight : 110,
       },
       headerLeft: () => (
         <View style={{ marginLeft: 20 }}>
@@ -148,9 +123,7 @@ const MessageScreen = ({ navigation }) => {
             <AntDesign name="camerao" size={24} color="black" />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("AddChat", { screen: "AddChatScreen" })
-            }
+            onPress={() => navigation.navigate("AddChat", { client: client })}
           >
             <MaterialCommunityIcons
               name="chat-plus-outline"
@@ -194,7 +167,7 @@ const MessageScreen = ({ navigation }) => {
     );
   };
 
-  if (!isReady) {
+  if (isReady) {
     return null;
   } else {
     return (
@@ -203,6 +176,9 @@ const MessageScreen = ({ navigation }) => {
           <Chat client={client}>
             <ChannelList onSelect={(e) => onChannelPressed(e)} />
           </Chat>
+          <View style={{ height: 200 }}>
+            <Text>awdawd</Text>
+          </View>
         </OverlayProvider>
       </SafeAreaProvider>
     );
@@ -220,74 +196,3 @@ const styles = StyleSheet.create({
     width: 80,
   },
 });
-
-// <SafeAreaView>
-//   <ScrollView>
-//     <Accordion allowMultiple>
-//       <Accordion.Item>
-//         <Accordion.Summary>
-//           Direct Messages
-//           <View
-//             style={{
-//               flexDirection: "row",
-//               alignItems: "center",
-//             }}
-//           >
-//             <TouchableOpacity onPress={() => console.log("awdwdaa")}>
-//               <AntDesign
-//                 name="plus"
-//                 size={24}
-//                 color="black"
-//                 style={{ marginRight: 10 }}
-//               />
-//             </TouchableOpacity>
-//             <Accordion.Icon />
-//           </View>
-//         </Accordion.Summary>
-//         {conversations.map(
-//           ({ id, data: { firstName, lastName, avatar, userId } }) => (
-//             <Accordion.Details marginX={-5} marginY={-3}>
-//               <Swipeable
-//                 renderLeftActions={renderLeftActions}
-//                 renderRightActions={rightActions}
-//               >
-//                 <ChatElement
-//                   key={id}
-//                   id={id}
-//                   chatName={firstName + " " + lastName}
-//                   userId={userId}
-//                   loggedInUserId={UserId}
-//                   avatar={avatar}
-//                   enterChat={enterChat}
-//                 />
-//               </Swipeable>
-//             </Accordion.Details>
-//           )
-//         )}
-//       </Accordion.Item>
-//       <Accordion.Item>
-//         <Accordion.Summary>
-//           Conversations
-//           <Accordion.Icon />
-//         </Accordion.Summary>
-//         {channels.map(({ id, data: { chatName } }) => (
-//           <Accordion.Details marginX={-5} marginY={-3}>
-//             <Swipeable
-//               renderLeftActions={renderLeftActions}
-//               renderRightActions={rightActions}
-//             >
-//               <PublicChatElement
-//                 key={id}
-//                 id={id}
-//                 chatName={chatName}
-//                 enterPublicChat={enterPublicChat}
-//                 avatar=""
-//               />
-//             </Swipeable>
-//           </Accordion.Details>
-//         ))}
-//       </Accordion.Item>
-//     </Accordion>
-
-//   </ScrollView>
-// </SafeAreaView>

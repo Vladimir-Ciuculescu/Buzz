@@ -27,7 +27,6 @@ import PostScreen from "./screens/PostScreen";
 import AddChatScreen from "./screens/AddChatScreen";
 import ModalScreen from "./screens/ModalScreen";
 import PublicChatScreen from "./screens/PublicChatScreen";
-import ProfileScreen2 from "./screens/ProfileScreen2";
 import ChatScreen from "./screens/ChatScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import StreamChatScreen from "./screens/StreamChatScreen";

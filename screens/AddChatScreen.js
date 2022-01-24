@@ -1,11 +1,19 @@
 import React, { useLayoutEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import { Button, Input } from "react-native-elements";
 import firebase from "firebase";
 import firetore from "firebase/firestore";
+import API_KEY from "../StreamCredentials";
+import { StreamChat } from "stream-chat";
+import { useRoute } from "@react-navigation/core";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const AddChatScreen = ({ navigation }) => {
   const [input, setInput] = useState("");
+  const [loading, setlLoading] = useState(false);
+
+  const route = useRoute();
+  const client = route.params.client;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -15,24 +23,35 @@ const AddChatScreen = ({ navigation }) => {
   }, [navigation]);
 
   const createChat = async () => {
-    await firebase
-      .firestore()
-      .collection("chats")
-      .doc(input)
-      .set({
-        chatName: input,
-      })
-      .then(() => navigation.goBack());
+    setlLoading(true);
+
+    const channel = client.channel("messaging", input, {
+      name: input,
+    });
+    await channel.watch();
+
+    navigation.goBack();
+
+    setlLoading(false);
   };
 
   return (
     <View style={styles.container}>
       <Input
-        placeholder="Enter a chat screen"
+        placeholder="Enter the chat name"
         value={input}
         onChangeText={(text) => setInput(text)}
       ></Input>
-      <Button onPress={createChat} title="Create a new chat" />
+      <TouchableOpacity
+        onPress={createChat}
+        disabled={input === "" ? true : false}
+      >
+        {loading ? (
+          <ActivityIndicator color="#FFF" size="large"></ActivityIndicator>
+        ) : (
+          <Text>awdaw</Text>
+        )}
+      </TouchableOpacity>
     </View>
   );
 };

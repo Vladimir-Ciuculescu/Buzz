@@ -49,6 +49,8 @@ export default class HomeScreen extends React.Component {
     this.getPosts();
   }
 
+  componentDidMount() {}
+
   getPosts = async () => {
     let result;
     await firebase
