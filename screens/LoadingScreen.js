@@ -1,14 +1,40 @@
 import React from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import * as firebase from "firebase";
 import { AsyncStorage } from "react-native";
-import Fire from "../Fire";
+import { StreamChat } from "stream-chat";
+import API_KEY from "../StreamCredentials";
+
+const client = StreamChat.getInstance(API_KEY);
 
 export default class LoadingScreen extends React.Component {
   async componentDidMount() {
     const user = await AsyncStorage.getItem("user");
-    this.props.navigation.navigate(user !== null ? "App" : "Login");
+    if (user) {
+      const fullName = await AsyncStorage.getItem("fullName");
+      const userId = await AsyncStorage.getItem("userId");
+      const avatar = await AsyncStorage.getItem("avatar");
+      console.log(fullName);
+      console.log(userId);
+      console.log(avatar);
+      this.fetchUser(userId, fullName, avatar);
+
+      this.props.navigation.navigate("App");
+    } else {
+      this.props.navigation.navigate("Login");
+    }
   }
+
+  fetchUser = async (id, name, image) => {
+    await client.connectUser(
+      {
+        id: name,
+        name: name,
+        image: image,
+        token: id,
+      },
+      client.devToken(name)
+    );
+  };
 
   render() {
     return (

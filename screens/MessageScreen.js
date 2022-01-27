@@ -29,7 +29,12 @@ import API_KEY from "../StreamCredentials";
 import { StreamChat } from "stream-chat";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { Chat, OverlayProvider, ChannelList } from "stream-chat-expo";
+import {
+  Chat,
+  OverlayProvider,
+  ChannelList,
+  ChannelPreviewUnreadCount,
+} from "stream-chat-expo";
 
 const client = StreamChat.getInstance(API_KEY);
 
@@ -48,6 +53,8 @@ const MessageScreen = ({ navigation }) => {
     const result = navigation.addListener("focus", () => {
       const fetchUser = async () => {
         const user = await AsyncStorage.getItem("user");
+        const userId = await AsyncStorage.getItem("userId");
+        setUserId(userId);
 
         await firebase
           .firestore()
@@ -167,6 +174,16 @@ const MessageScreen = ({ navigation }) => {
     );
   };
 
+  const CustomPreviewTitle = ({ channel }) => (
+    <Text>
+      {channel.data.cutomProperty} - {channel.data.name}
+    </Text>
+  );
+
+  const CustomPreviewUnreadCount = ({ channel }) => {
+    console.log("CANAAAAAL", channel.state.read);
+    return <Text>awdawd</Text>;
+  };
   if (isReady) {
     return null;
   } else {
@@ -174,7 +191,10 @@ const MessageScreen = ({ navigation }) => {
       <SafeAreaProvider>
         <OverlayProvider>
           <Chat client={client}>
-            <ChannelList onSelect={(e) => onChannelPressed(e)} />
+            <ChannelList
+              PreviewUnreadCount={CustomPreviewUnreadCount}
+              onSelect={(e) => onChannelPressed(e)}
+            ></ChannelList>
           </Chat>
           <View style={{ height: 200 }}>
             <Text>awdawd</Text>

@@ -178,10 +178,11 @@ export default class LoginScreen extends React.Component {
 
         //create a new user for getstream, or get the current one
 
-        await AsyncStorage.setItem("userId", userId);
+        await AsyncStorage.setItem("userId", this.state.userId);
         await AsyncStorage.setItem("user", this.state.email);
-        await AsyncStorage.setItem("token", "abc123");
         const fullName = this.state.firstName + "-" + this.state.lastName;
+
+        await AsyncStorage.setItem("fullName", fullName);
 
         this.fetchUser(this.state.userId, fullName, this.state.avatar);
 

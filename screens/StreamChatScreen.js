@@ -12,7 +12,7 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { SafeAreaView } from "react-navigation";
+import { SafeAreaView } from "react-native";
 import { useEffect } from "react";
 
 const StreamChatScreen = ({ navigation }) => {
@@ -33,7 +33,7 @@ const StreamChatScreen = ({ navigation }) => {
   }
 
   return (
-    <View>
+    <SafeAreaView style={{ backgroundColor: "white" }}>
       <OverlayProvider bottomInset={90}>
         <Chat client={route.params.client}>
           <Channel channel={channel}>
@@ -42,7 +42,7 @@ const StreamChatScreen = ({ navigation }) => {
           </Channel>
         </Chat>
       </OverlayProvider>
-    </View>
+    </SafeAreaView>
   );
 };
 
