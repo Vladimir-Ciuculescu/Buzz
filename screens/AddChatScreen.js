@@ -1,8 +1,6 @@
 import React, { useLayoutEffect, useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import { Button, Input } from "react-native-elements";
-import firebase from "firebase";
-import firetore from "firebase/firestore";
 import API_KEY from "../StreamCredentials";
 import { StreamChat } from "stream-chat";
 import { useRoute } from "@react-navigation/core";

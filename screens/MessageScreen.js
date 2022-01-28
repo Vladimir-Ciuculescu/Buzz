@@ -28,13 +28,10 @@ import { Accordion } from "native-base";
 import API_KEY from "../StreamCredentials";
 import { StreamChat } from "stream-chat";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { TextInput } from "react-native";
+import { List } from "react-native-paper";
 
-import {
-  Chat,
-  OverlayProvider,
-  ChannelList,
-  ChannelPreviewUnreadCount,
-} from "stream-chat-expo";
+import { Chat, OverlayProvider, ChannelList } from "stream-chat-expo";
 
 const client = StreamChat.getInstance(API_KEY);
 
@@ -75,13 +72,12 @@ const MessageScreen = ({ navigation }) => {
     });
 
     return result;
-  }, []);
+  }, [navigation]);
 
   const onChannelPressed = (channel) => {
     setSelectedChannel(channel);
     navigation.navigate("StreamChat", {
       channel: channel,
-      client: client,
       name: channel.data.name,
     });
   };
@@ -143,6 +139,10 @@ const MessageScreen = ({ navigation }) => {
     });
   }, [navigation, avatar, conversations]);
 
+  const OpenSearcher = () => {
+    navigation.navigate("Searcher");
+  };
+
   const rightActions = (dragX, index) => {
     return (
       <TouchableOpacity>
@@ -174,31 +174,21 @@ const MessageScreen = ({ navigation }) => {
     );
   };
 
-  const CustomPreviewTitle = ({ channel }) => (
-    <Text>
-      {channel.data.cutomProperty} - {channel.data.name}
-    </Text>
-  );
-
-  const CustomPreviewUnreadCount = ({ channel }) => {
-    console.log("CANAAAAAL", channel.state.read);
-    return <Text>awdawd</Text>;
-  };
   if (isReady) {
     return null;
   } else {
     return (
       <SafeAreaProvider>
         <OverlayProvider>
-          <Chat client={client}>
-            <ChannelList
-              PreviewUnreadCount={CustomPreviewUnreadCount}
-              onSelect={(e) => onChannelPressed(e)}
-            ></ChannelList>
-          </Chat>
-          <View style={{ height: 200 }}>
-            <Text>awdawd</Text>
-          </View>
+          <TextInput
+            onFocus={OpenSearcher}
+            placeholder="Looking for someone ?"
+            style={styles.searchPersonInput}
+          />
+          <ChannelList onSelect={(e) => onChannelPressed(e)}></ChannelList>
+          {conversations.map((user) => (
+            <Text>{user.data.firstName + " " + user.data.lastName}</Text>
+          ))}
         </OverlayProvider>
       </SafeAreaProvider>
     );
@@ -214,5 +204,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: 80,
+  },
+  searchPersonInput: {
+    marginHorizontal: 30,
+    marginTop: 20,
+    height: 40,
+    borderRadius: 10,
+    borderWidth: 2,
+    paddingLeft: 10,
+    backgroundColor: "#DCDCDC",
+    borderColor: "transparent",
+    color: "black",
   },
 });

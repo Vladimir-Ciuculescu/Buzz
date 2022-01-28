@@ -15,6 +15,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { AsyncStorage } from "react-native";
+
 //screens
 import HomeScreen from "./screens/HomeScreen";
 import LoadingScreen from "./screens/LoadingScreen";
@@ -30,10 +31,16 @@ import PublicChatScreen from "./screens/PublicChatScreen";
 import ChatScreen from "./screens/ChatScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import StreamChatScreen from "./screens/StreamChatScreen";
+import API_KEY from "./StreamCredentials";
+import { StreamChat } from "stream-chat";
+import { Chat } from "stream-chat-expo";
+import Searcher from "./screens/Searcher";
 
+//Ignore warnings
 LogBox.ignoreAllLogs(true);
 LogBox.ignoreLogs(["Setting a timer"]);
 
+//Initialize Firebase App
 const firebaseConfig = {
   apiKey: "AIzaSyBiGTaFqnFoT2aj5KkvgoAr422VsVgMKtA",
   authDomain: "wadwad-60664.firebaseapp.com",
@@ -50,8 +57,7 @@ if (!firebase.apps.length) {
   firebase.app();
 }
 
-//If no firebase app has been initialized when the component is rendered, initialize it
-// Else use the one initialized already
+const client = StreamChat.getInstance(API_KEY);
 
 const Tabs = createBottomTabNavigator();
 
@@ -187,6 +193,13 @@ function MyStacks() {
         <Stack.Screen name="Chat" component={ChatScreen} />
         <Stack.Screen name="PublicChat" component={PublicChatScreen} />
         <Stack.Screen name="StreamChat" component={StreamChatScreen} />
+        <Stack.Group>
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="Searcher"
+            component={Searcher}
+          />
+        </Stack.Group>
       </Stack.Navigator>
     </NativeBaseProvider>
   );
@@ -206,12 +219,14 @@ const DrawerNavigator = () => {
 const Application = () => {
   return (
     <NavigationContainer>
-      <StatusBar
-        style={{ height: 50 }}
-        translucent
-        barStyle={Platform.OS === "ios" ? "dark-content" : "light-content"}
-      ></StatusBar>
-      <DrawerNavigator></DrawerNavigator>
+      <Chat client={client}>
+        <StatusBar
+          style={{ height: 50 }}
+          translucent
+          barStyle={Platform.OS === "ios" ? "dark-content" : "light-content"}
+        ></StatusBar>
+        <DrawerNavigator></DrawerNavigator>
+      </Chat>
     </NavigationContainer>
   );
 };

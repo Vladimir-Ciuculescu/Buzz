@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Buzz",
-    "slug": "your-app-slug",
+    "slug": "buzz-smth",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/vsp.png",
@@ -16,7 +16,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "Buzz",
+      "bundleIdentifier": "Buzz.smth.com",
       "buildNumber": "1.0.0"
     },
 

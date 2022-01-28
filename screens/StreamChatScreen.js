@@ -8,25 +8,23 @@ import {
   Chat,
 } from "stream-chat-react-native-core";
 import { useRoute } from "@react-navigation/core";
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SafeAreaView } from "react-native";
 import { useEffect } from "react";
+import { useChatContext } from "stream-chat-expo";
 
 const StreamChatScreen = ({ navigation }) => {
-  const { bottom } = useSafeAreaInsets();
-
   const route = useRoute();
   const channel = route.params.channel;
   const name = route.params.name;
+
+  const { client } = useChatContext();
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: name,
     });
-  });
+  }, [navigation]);
 
   if (!channel) {
     return <Text>wadawdaw</Text>;
@@ -35,12 +33,10 @@ const StreamChatScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={{ backgroundColor: "white" }}>
       <OverlayProvider bottomInset={90}>
-        <Chat client={route.params.client}>
-          <Channel channel={channel}>
-            <MessageList />
-            <MessageInput />
-          </Channel>
-        </Chat>
+        <Channel channel={channel}>
+          <MessageList />
+          <MessageInput />
+        </Channel>
       </OverlayProvider>
     </SafeAreaView>
   );
