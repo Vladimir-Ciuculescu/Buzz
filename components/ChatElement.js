@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { ListItem, Avatar } from "react-native-elements";
-import firebase from "firebase";
 
 const ChatElement = ({
   id,
@@ -12,11 +11,7 @@ const ChatElement = ({
   loggedInUserId,
 }) => {
   return (
-    <ListItem
-      onPress={() => enterChat(id, chatName, avatar, userId, loggedInUserId)}
-      key={id}
-      bottomDivider
-    >
+    <ListItem onPress={() => ({})} key={id} bottomDivider>
       <Avatar
         rounded
         source={{
@@ -26,12 +21,11 @@ const ChatElement = ({
         }}
       />
       <ListItem.Content>
-        <ListItem.Title style={{ fontWeight: "800" }}>
+        <ListItem.Title
+          style={{ fontWeight: "700", fontSize: 14, marginBottom: 15 }}
+        >
           {chatName}
         </ListItem.Title>
-        <ListItem.Subtitle numberOfLines={1} ellipsizeMode="tail">
-          nothing for now
-        </ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>
   );

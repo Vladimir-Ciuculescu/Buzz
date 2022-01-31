@@ -106,7 +106,7 @@ function MyTabs() {
             <AntDesign
               name="pluscircle"
               size={35}
-              color="#65a84d"
+              color="blue"
               style={{
                 shadowColor: "#E9446A",
                 shadowOffset: { width: 0, height: 0 },

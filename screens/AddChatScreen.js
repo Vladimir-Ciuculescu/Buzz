@@ -1,14 +1,16 @@
-import React, { useLayoutEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, Alert } from "react-native";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { Button, Input } from "react-native-elements";
 import API_KEY from "../StreamCredentials";
 import { StreamChat } from "stream-chat";
 import { useRoute } from "@react-navigation/core";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { Feather } from "@expo/vector-icons";
 
 const AddChatScreen = ({ navigation }) => {
   const [input, setInput] = useState("");
   const [loading, setlLoading] = useState(false);
+  const [chatName, setChatName] = useState("");
 
   const route = useRoute();
   const client = route.params.client;
@@ -20,11 +22,22 @@ const AddChatScreen = ({ navigation }) => {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    var result = input.replace(/\s+/g, " ").trim();
+    result = result.toLowerCase();
+    result = result.replaceAll(" ", "-");
+    setChatName(result);
+  }, [input]);
+
+  const setChannelName = (text) => {
+    setInput(text);
+  };
+
   const createChat = async () => {
     setlLoading(true);
 
-    const channel = client.channel("messaging", input, {
-      name: input,
+    const channel = client.channel("messaging", chatName, {
+      name: chatName,
     });
     await channel.watch();
 
@@ -36,10 +49,15 @@ const AddChatScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Input
+        autoCapitalize="none"
         placeholder="Enter the chat name"
         value={input}
-        onChangeText={(text) => setInput(text)}
+        onChangeText={(text) => setChannelName(text)}
       ></Input>
+      <View style={{ flexDirection: "row" }}>
+        <Feather name="hash" size={24} color="black" />
+        <Text style={{ fontSize: 22 }}>{chatName}</Text>
+      </View>
       <TouchableOpacity
         onPress={createChat}
         disabled={input === "" ? true : false}
@@ -47,7 +65,7 @@ const AddChatScreen = ({ navigation }) => {
         {loading ? (
           <ActivityIndicator color="#FFF" size="large"></ActivityIndicator>
         ) : (
-          <Text>awdaw</Text>
+          <Text>Add a new chat</Text>
         )}
       </TouchableOpacity>
     </View>
