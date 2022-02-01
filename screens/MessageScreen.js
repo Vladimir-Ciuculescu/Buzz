@@ -5,6 +5,7 @@ import {
   AsyncStorage,
   TouchableOpacity,
   Animated,
+  Text,
 } from "react-native";
 import { Avatar } from "react-native-elements";
 import ChatElement from "../components/ChatElement";
@@ -17,7 +18,7 @@ import API_KEY from "../StreamCredentials";
 import { StreamChat } from "stream-chat";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { TextInput } from "react-native";
-import { FAB } from "react-native-paper";
+import { FAB, List } from "react-native-paper";
 import { OverlayProvider, useChatContext, ChannelList } from "stream-chat-expo";
 import ChannelElement from "../components/ChannelElement";
 
@@ -164,7 +165,9 @@ const MessageScreen = ({ navigation }) => {
                     alignItems: "center",
                   }}
                 >
-                  <TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("PersonSearcher")}
+                  >
                     <AntDesign
                       name="plus"
                       size={24}
@@ -175,7 +178,7 @@ const MessageScreen = ({ navigation }) => {
                   <Accordion.Icon />
                 </View>
               </Accordion.Summary>
-              {conversations.map(
+              {/* {conversations.map(
                 ({ id, data: { firstName, lastName, avatar, userId } }) => (
                   <Accordion.Details marginX={-5} marginY={-3}>
                     <Swipeable
@@ -193,7 +196,7 @@ const MessageScreen = ({ navigation }) => {
                     </Swipeable>
                   </Accordion.Details>
                 )
-              )}
+              )} */}
             </Accordion.Item>
             <Accordion.Item>
               <Accordion.Summary>
@@ -232,6 +235,7 @@ const MessageScreen = ({ navigation }) => {
               ))}
             </Accordion.Item>
           </Accordion>
+
           <FAB
             style={styles.fab}
             small

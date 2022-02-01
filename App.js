@@ -36,6 +36,7 @@ import { StreamChat } from "stream-chat";
 import { Chat } from "stream-chat-expo";
 import Searcher from "./screens/Searcher";
 import TestModal from "./screens/TestModal";
+import PersonSearcher from "./screens/PersonSearcher";
 
 //Ignore warnings
 LogBox.ignoreAllLogs(true);
@@ -195,13 +196,12 @@ function MyStacks() {
         <Stack.Screen name="PublicChat" component={PublicChatScreen} />
         <Stack.Screen name="StreamChat" component={StreamChatScreen} />
         <Stack.Screen name="TestModal" component={TestModal} />
-        <Stack.Group>
-          <Stack.Screen
-            options={{ headerShown: false }}
-            name="Searcher"
-            component={Searcher}
-          />
-        </Stack.Group>
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="Searcher"
+          component={Searcher}
+        />
+        <Stack.Screen name="PersonSearcher" component={PersonSearcher} />
       </Stack.Navigator>
     </NativeBaseProvider>
   );

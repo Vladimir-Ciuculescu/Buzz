@@ -18,7 +18,6 @@ const windowWidth = Dimensions.get("window").width;
 
 const Searcher = ({ navigation }) => {
   const { client } = useChatContext();
-  const [filters, setFilters] = useState({});
   const [input, setInput] = useState("");
   const [allChanels, setAllChannels] = useState([]);
   const [channelsResponse, setChannelsResponse] = useState([]);
@@ -26,6 +25,7 @@ const Searcher = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       presentation: "modal",
+      title: "New message",
     });
   });
 
@@ -34,9 +34,8 @@ const Searcher = ({ navigation }) => {
       const response = await client.queryChannels();
       setAllChannels(
         response.map((item) => ({
-          name: item.data.name.toString().toLowerCase(),
+          name: item.data.name,
           id: item.data.id,
-          last_sent: item.data.last_message_at,
         }))
       );
     };
@@ -49,14 +48,10 @@ const Searcher = ({ navigation }) => {
   }, [allChanels]);
 
   useEffect(() => {
-    const filtered = allChanels.filter(
-      (item) => item.name.includes(input) === true
-    );
+    const filtered = allChanels.filter((item) => item.name.includes(input));
 
     setChannelsResponse(filtered);
   }, [input]);
-
-  useEffect(() => {}, [channelsResponse]);
 
   const searchChannel = (e) => {
     const result = e.toLowerCase();
