@@ -4,13 +4,11 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   Image,
   TextInput,
   Alert,
   ActivityIndicator,
   AsyncStorage,
-  KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
@@ -19,10 +17,10 @@ import * as ImagePicker from "expo-image-picker";
 import Fire from "../Fire";
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { AntDesign, Entypo } from "@expo/vector-icons";
-import Constants from "expo-constants";
 import { Avatar } from "react-native-elements";
 import firebase from "firebase";
 import { Camera } from "expo-camera";
+import { Card, Title, Divider, Button } from "react-native-paper";
 
 const PostScreen = ({ navigation }) => {
   const cameraRef = useRef();
@@ -128,6 +126,8 @@ const PostScreen = ({ navigation }) => {
     }
   };
 
+  const LeftContent = (props) => <Avatar.Icon {...props} icon="folder" />;
+
   const cancelPreview = async () => {
     await cameraRef.current.resumePreview();
     setIsPreview(false);
@@ -186,7 +186,7 @@ const PostScreen = ({ navigation }) => {
               </View>
             </View>
 
-            <TextInput
+            {/* <TextInput
               placeholder="What do you want to share with others ?"
               multiline={true}
               autoFocus={true}
@@ -194,9 +194,20 @@ const PostScreen = ({ navigation }) => {
               style={styles.question}
               onChangeText={(text) => setText(text)}
               value={text}
-            ></TextInput>
+            ></TextInput> */}
+            <Text
+              style={{
+                marginLeft: 20,
+                marginTop: 40,
+                fontWeight: "600",
+                fontSize: 17,
+                marginBottom: 20,
+              }}
+            >
+              What kind of post are you making ?
+            </Text>
 
-            <View
+            {/* <View
               style={{
                 alignContent: "center",
                 alignItems: "center",
@@ -208,7 +219,35 @@ const PostScreen = ({ navigation }) => {
                 source={{ uri: image }}
                 style={{ height: 500, width: 330, borderRadius: 10 }}
               ></Image>
-            </View>
+            </View> */}
+            <Card
+              onPress={() => {
+                navigation.navigate("TestModal");
+              }}
+              style={{ marginHorizontal: 15, backgroundColor: "white" }}
+            >
+              <Card.Content>
+                <Title>Create a poll</Title>
+              </Card.Content>
+              <Divider />
+              <Card.Cover
+                style={{ width: "70%" }}
+                source={{
+                  uri: "https://avatars.slack-edge.com/2020-05-09/1112549471909_7543dde099089941d3c3_512.png",
+                }}
+              />
+              <Card.Actions>
+                <Button onPress={() => navigation.navigate("TestModal")}>
+                  Create poll
+                </Button>
+              </Card.Actions>
+            </Card>
+            <Card style={{ marginHorizontal: 15, marginTop: 10 }}>
+              <Card.Content>
+                <Title>Informational post</Title>
+              </Card.Content>
+              <Card.Cover source={{ uri: "https://picsum.photos/700" }} />
+            </Card>
           </View>
         )}
       </TouchableWithoutFeedback>

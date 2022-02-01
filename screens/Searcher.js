@@ -49,7 +49,6 @@ const Searcher = ({ navigation }) => {
   }, [allChanels]);
 
   useEffect(() => {
-    console.log(input);
     const filtered = allChanels.filter(
       (item) => item.name.includes(input) === true
     );
@@ -57,9 +56,7 @@ const Searcher = ({ navigation }) => {
     setChannelsResponse(filtered);
   }, [input]);
 
-  useEffect(() => {
-    console.log("filtrate", channelsResponse);
-  }, [channelsResponse]);
+  useEffect(() => {}, [channelsResponse]);
 
   const searchChannel = (e) => {
     const result = e.toLowerCase();

@@ -35,6 +35,7 @@ import API_KEY from "./StreamCredentials";
 import { StreamChat } from "stream-chat";
 import { Chat } from "stream-chat-expo";
 import Searcher from "./screens/Searcher";
+import TestModal from "./screens/TestModal";
 
 //Ignore warnings
 LogBox.ignoreAllLogs(true);
@@ -193,6 +194,7 @@ function MyStacks() {
         <Stack.Screen name="Chat" component={ChatScreen} />
         <Stack.Screen name="PublicChat" component={PublicChatScreen} />
         <Stack.Screen name="StreamChat" component={StreamChatScreen} />
+        <Stack.Screen name="TestModal" component={TestModal} />
         <Stack.Group>
           <Stack.Screen
             options={{ headerShown: false }}

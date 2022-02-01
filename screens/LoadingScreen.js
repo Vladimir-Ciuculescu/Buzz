@@ -13,9 +13,7 @@ export default class LoadingScreen extends React.Component {
       const fullName = await AsyncStorage.getItem("fullName");
       const userId = await AsyncStorage.getItem("userId");
       const avatar = await AsyncStorage.getItem("avatar");
-      console.log(fullName);
-      console.log(userId);
-      console.log(avatar);
+
       this.fetchUser(userId, fullName, avatar);
 
       this.props.navigation.navigate("App");

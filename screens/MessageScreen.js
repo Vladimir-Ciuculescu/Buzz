@@ -164,7 +164,7 @@ const MessageScreen = ({ navigation }) => {
                     alignItems: "center",
                   }}
                 >
-                  <TouchableOpacity onPress={() => console.log("awdwdaa")}>
+                  <TouchableOpacity>
                     <AntDesign
                       name="plus"
                       size={24}
@@ -204,7 +204,7 @@ const MessageScreen = ({ navigation }) => {
                     alignItems: "center",
                   }}
                 >
-                  <TouchableOpacity onPress={() => console.log("awdwdaa")}>
+                  <TouchableOpacity>
                     <AntDesign
                       name="plus"
                       size={24}
