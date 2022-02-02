@@ -17,6 +17,7 @@ const StreamChatScreen = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: name,
+      headerBackTitleVisible: false,
     });
   }, [navigation]);
 

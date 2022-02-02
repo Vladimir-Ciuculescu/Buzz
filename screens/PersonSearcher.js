@@ -86,13 +86,54 @@ const PersonSearcher = ({ navigation }) => {
     });
     const { token } = users[0];
 
-    console.log(users[0].id);
-    console.log(client.userID);
-
     if (userId < token) {
-      // const conversation = client.channel('messaging', {
-      //   members:
-      // })
+      const response = await client.queryChannels({
+        id: { $eq: userId + token },
+      });
+      if (response.length === 0) {
+        const channel = client.channel("messaging", userId + token, {
+          name: userId + token,
+          members: [users[0].id, client.userID],
+        });
+
+        await channel.watch();
+
+        navigation.navigate("StreamChat", {
+          channel: response[0],
+        });
+      } else {
+        const members = await response[0].queryMembers({
+          user_id: { $ne: client.userID },
+        });
+        navigation.navigate("StreamChat", {
+          channel: response[0],
+          name: members.members[0].user_id.replace("-", " "),
+        });
+      }
+    } else {
+      const response = await client.queryChannels({
+        id: { $eq: token + userId },
+      });
+      if (response.length === 0) {
+        const channel = client.channel("messaging", token + userId, {
+          name: token + userId,
+          members: [users[0].id, client.userID],
+        });
+
+        await channel.watch();
+
+        navigation.navigate("StreamChat", {
+          channel: response[0],
+        });
+      } else {
+        const members = await response[0].queryMembers({
+          user_id: { $ne: client.userID },
+        });
+        navigation.navigate("StreamChat", {
+          channel: response[0],
+          name: members.members[0].user_id.replace("-", " "),
+        });
+      }
     }
   };
 
@@ -110,13 +151,21 @@ const PersonSearcher = ({ navigation }) => {
         onPress={() => enterConversation(item.id)}
         style={{ flexDirection: "row", paddingTop: 15 }}
       >
-        <Avatar style={styles.avatar} rounded source={{ uri: item.image }} />
+        <Avatar
+          title={
+            name.charAt(0).toUpperCase() + name.charAt(space + 1).toUpperCase()
+          }
+          style={styles.avatar}
+          rounded
+          source={{ uri: item.image }}
+          overlayContainerStyle={{ backgroundColor: "red" }}
+        />
         <Text
           style={{
             fontSize: 16,
             paddingLeft: 15,
             alignSelf: "center",
-            fontWeight: "600",
+            fontWeight: "bold",
           }}
         >
           {Name}

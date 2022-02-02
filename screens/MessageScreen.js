@@ -5,12 +5,10 @@ import {
   AsyncStorage,
   TouchableOpacity,
   Animated,
-  Text,
+  ScrollView,
 } from "react-native";
 import { Avatar } from "react-native-elements";
-import ChatElement from "../components/ChatElement";
 import firebase from "firebase";
-import firetore from "firebase/firestore";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Swipeable, RectButton } from "react-native-gesture-handler";
 import { Accordion } from "native-base";
@@ -18,8 +16,8 @@ import API_KEY from "../StreamCredentials";
 import { StreamChat } from "stream-chat";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { TextInput } from "react-native";
-import { FAB, List } from "react-native-paper";
-import { OverlayProvider, useChatContext, ChannelList } from "stream-chat-expo";
+import { FAB } from "react-native-paper";
+import { OverlayProvider, useChatContext } from "stream-chat-expo";
 import ChannelElement from "../components/ChannelElement";
 
 const client = StreamChat.getInstance(API_KEY);
@@ -42,7 +40,9 @@ const MessageScreen = ({ navigation }) => {
         const userId = await AsyncStorage.getItem("userId");
         setUserId(userId);
 
-        const response = await client.queryChannels();
+        const response = await client.queryChannels({
+          member_count: { $ne: 2 },
+        });
         setChannels(response);
 
         await firebase
@@ -65,14 +65,6 @@ const MessageScreen = ({ navigation }) => {
 
     return result;
   }, [navigation]);
-
-  const onChannelPressed = (channel) => {
-    setSelectedChannel(channel);
-    navigation.navigate("StreamChat", {
-      channel: channel,
-      name: channel.data.name,
-    });
-  };
 
   useLayoutEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -149,36 +141,36 @@ const MessageScreen = ({ navigation }) => {
     return (
       <SafeAreaProvider>
         <OverlayProvider>
-          <TextInput
-            onFocus={OpenSearcher}
-            placeholder="Looking for someone ?"
-            style={styles.searchPersonInput}
-          />
-          {/* <ChannelList onSelect={(e) => onChannelPressed(e)}></ChannelList> */}
-          <Accordion allowMultiple>
-            <Accordion.Item>
-              <Accordion.Summary>
-                Direct Messages
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate("PersonSearcher")}
+          <ScrollView>
+            <TextInput
+              onFocus={OpenSearcher}
+              placeholder="Looking for someone ?"
+              style={styles.searchPersonInput}
+            />
+            <Accordion allowMultiple>
+              <Accordion.Item>
+                <Accordion.Summary>
+                  Direct Messages
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
                   >
-                    <AntDesign
-                      name="plus"
-                      size={24}
-                      color="black"
-                      style={{ marginRight: 10 }}
-                    />
-                  </TouchableOpacity>
-                  <Accordion.Icon />
-                </View>
-              </Accordion.Summary>
-              {/* {conversations.map(
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate("PersonSearcher")}
+                    >
+                      <AntDesign
+                        name="plus"
+                        size={24}
+                        color="black"
+                        style={{ marginRight: 10 }}
+                      />
+                    </TouchableOpacity>
+                    <Accordion.Icon />
+                  </View>
+                </Accordion.Summary>
+                {/* {conversations.map(
                 ({ id, data: { firstName, lastName, avatar, userId } }) => (
                   <Accordion.Details marginX={-5} marginY={-3}>
                     <Swipeable
@@ -197,52 +189,52 @@ const MessageScreen = ({ navigation }) => {
                   </Accordion.Details>
                 )
               )} */}
-            </Accordion.Item>
-            <Accordion.Item>
-              <Accordion.Summary>
-                Channels
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <TouchableOpacity>
-                    <AntDesign
-                      name="plus"
-                      size={24}
-                      color="black"
-                      style={{ marginRight: 10 }}
-                    />
-                  </TouchableOpacity>
-                  <Accordion.Icon />
-                </View>
-              </Accordion.Summary>
-              {channels.map(({ id }) => (
-                <Accordion.Details marginX={-5} marginY={-3}>
-                  <Swipeable
-                    renderLeftActions={renderLeftActions}
-                    renderRightActions={rightActions}
+              </Accordion.Item>
+              <Accordion.Item>
+                <Accordion.Summary>
+                  Channels
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
                   >
-                    <ChannelElement
-                      key={id}
-                      id={id}
-                      channelName={id}
-                      navigation={navigation}
-                    />
-                  </Swipeable>
-                </Accordion.Details>
-              ))}
-            </Accordion.Item>
-          </Accordion>
-
-          <FAB
-            style={styles.fab}
-            small
-            icon="chat-plus"
-            onPress={() => navigation.navigate("AddChat", { client: client })}
-          />
+                    <TouchableOpacity>
+                      <AntDesign
+                        name="plus"
+                        size={24}
+                        color="black"
+                        style={{ marginRight: 10 }}
+                      />
+                    </TouchableOpacity>
+                    <Accordion.Icon />
+                  </View>
+                </Accordion.Summary>
+                {channels.map(({ id }) => (
+                  <Accordion.Details marginX={-5} marginY={-3}>
+                    <Swipeable
+                      renderLeftActions={renderLeftActions}
+                      renderRightActions={rightActions}
+                    >
+                      <ChannelElement
+                        key={id}
+                        id={id}
+                        channelName={id}
+                        navigation={navigation}
+                      />
+                    </Swipeable>
+                  </Accordion.Details>
+                ))}
+              </Accordion.Item>
+            </Accordion>
+          </ScrollView>
         </OverlayProvider>
+        <FAB
+          style={styles.fab}
+          small
+          icon="chat-plus"
+          onPress={() => navigation.navigate("AddChat", { client: client })}
+        />
       </SafeAreaProvider>
     );
   }

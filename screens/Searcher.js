@@ -31,7 +31,7 @@ const Searcher = ({ navigation }) => {
 
   useEffect(() => {
     const fetchChannels = async () => {
-      const response = await client.queryChannels();
+      const response = await client.queryChannels({ member_count: { $ne: 2 } });
       setAllChannels(
         response.map((item) => ({
           name: item.data.name,

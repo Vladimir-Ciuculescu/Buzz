@@ -201,7 +201,11 @@ function MyStacks() {
           name="Searcher"
           component={Searcher}
         />
-        <Stack.Screen name="PersonSearcher" component={PersonSearcher} />
+        <Stack.Screen
+          name="PersonSearcher"
+          component={PersonSearcher}
+          options={{ presentation: "modal" }}
+        />
       </Stack.Navigator>
     </NativeBaseProvider>
   );
