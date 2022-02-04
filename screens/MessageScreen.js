@@ -15,7 +15,7 @@ import { TextInput } from "react-native";
 import { FAB } from "react-native-paper";
 import { OverlayProvider, useChatContext } from "stream-chat-expo";
 import ChannelElement from "../components/ChannelElement";
-import { createIconSetFromFontello } from "react-native-vector-icons";
+import { Image } from "react-native-elements/dist/image/Image";
 
 const MessageScreen = ({ navigation }) => {
   const { client } = useChatContext();
@@ -46,15 +46,11 @@ const MessageScreen = ({ navigation }) => {
         const privateChannels = await client.queryChannels({
           member_count: { $eq: 2 },
           last_message_at: { $gte: OneWeek },
+          joined: { $eq: true },
         });
 
         setChannels(publicChannels);
         setPrivateChannels(privateChannels);
-
-        console.log(
-          "wadawdwsdaw",
-          privateChannels[1].state.membership.user.name
-        );
       };
 
       fetchUser();
@@ -144,14 +140,27 @@ const MessageScreen = ({ navigation }) => {
                 </Accordion.Summary>
                 {privateChannels.map(({ id, state }) => {
                   console.log(state.members);
+                  let channelName;
+                  let image;
+                  if (Object.keys(state.members)[0] === client.user.id) {
+                    channelName = Object.keys(state.members)[1];
+                    Image = state.members[channelName].user.image;
+                  } else {
+                    channelName = Object.keys(state.members)[0];
+                    image = state.members[channelName].user.image;
+                  }
+
+                  console.log(image);
+
                   return (
                     <Accordion.Details marginX={-5} marginY={-3}>
                       <ChannelElement
                         key={id}
                         id={id}
-                        channelName={id}
+                        channelName={channelName.replace("-", " ")}
                         navigation={navigation}
                         currentUser={client.user.id}
+                        image={image}
                       />
                     </Accordion.Details>
                   );
