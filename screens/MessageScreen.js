@@ -4,23 +4,18 @@ import {
   StyleSheet,
   AsyncStorage,
   TouchableOpacity,
-  Animated,
   ScrollView,
 } from "react-native";
 import { Avatar } from "react-native-elements";
 import firebase from "firebase";
-import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Swipeable, RectButton } from "react-native-gesture-handler";
+import { AntDesign } from "@expo/vector-icons";
 import { Accordion } from "native-base";
-import API_KEY from "../StreamCredentials";
-import { StreamChat } from "stream-chat";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { TextInput } from "react-native";
 import { FAB } from "react-native-paper";
 import { OverlayProvider, useChatContext } from "stream-chat-expo";
 import ChannelElement from "../components/ChannelElement";
-
-const client = StreamChat.getInstance(API_KEY);
+import { createIconSetFromFontello } from "react-native-vector-icons";
 
 const MessageScreen = ({ navigation }) => {
   const { client } = useChatContext();
@@ -29,9 +24,9 @@ const MessageScreen = ({ navigation }) => {
   const [currentUser, setCurrentUser] = useState("");
   const [currentUserName, setCurrentUserName] = useState("");
   const [UserId, setUserId] = useState("");
-  const [selectedChannel, setSelectedChannel] = useState(null);
   const [isReady, SetIsReady] = useState(false);
   const [channels, setChannels] = useState([]);
+  const [privateChannels, setPrivateChannels] = useState([]);
 
   useLayoutEffect(() => {
     const result = navigation.addListener("focus", () => {
@@ -40,24 +35,26 @@ const MessageScreen = ({ navigation }) => {
         const userId = await AsyncStorage.getItem("userId");
         setUserId(userId);
 
-        const response = await client.queryChannels({
-          member_count: { $ne: 2 },
-        });
-        setChannels(response);
+        const OneWeek = new Date();
+        OneWeek.setDate(OneWeek.getDate() - 2);
 
-        await firebase
-          .firestore()
-          .collection("accounts")
-          .where("email", "!=", user)
-          .get()
-          .then((snapshot) => {
-            setConversations(
-              snapshot.docs.map((doc) => ({
-                id: doc.id,
-                data: doc.data(),
-              }))
-            );
-          });
+        const publicChannels = await client.queryChannels({
+          member_count: { $ne: 2 },
+          last_message_at: { $gte: OneWeek },
+        });
+
+        const privateChannels = await client.queryChannels({
+          member_count: { $eq: 2 },
+          last_message_at: { $gte: OneWeek },
+        });
+
+        setChannels(publicChannels);
+        setPrivateChannels(privateChannels);
+
+        console.log(
+          "wadawdwsdaw",
+          privateChannels[1].state.membership.user.name
+        );
       };
 
       fetchUser();
@@ -104,37 +101,6 @@ const MessageScreen = ({ navigation }) => {
     navigation.navigate("Searcher");
   };
 
-  const rightActions = (dragX, index) => {
-    return (
-      <TouchableOpacity>
-        <Animated.View style={styles.deleteButton}>
-          <AntDesign name="delete" size={24} color="black" />
-        </Animated.View>
-      </TouchableOpacity>
-    );
-  };
-
-  const renderLeftActions = (progress, dragX) => {
-    const trans = dragX.interpolate({
-      inputRange: [0, 50, 100, 101],
-      outputRange: [-20, 0, 0, 1],
-    });
-    return (
-      <RectButton style={styles.leftAction}>
-        <Animated.View
-          style={[
-            styles.deleteButton,
-            {
-              transform: [{ translateX: trans }],
-            },
-          ]}
-        >
-          <AntDesign name="delete" size={24} color="black" />
-        </Animated.View>
-      </RectButton>
-    );
-  };
-
   if (isReady) {
     return null;
   } else {
@@ -147,6 +113,12 @@ const MessageScreen = ({ navigation }) => {
               placeholder="Looking for someone ?"
               style={styles.searchPersonInput}
             />
+            {/* <ChannelList
+              filters={{
+                member_count: { $ne: 2 },
+              }}
+            /> */}
+
             <Accordion allowMultiple>
               <Accordion.Item>
                 <Accordion.Summary>
@@ -170,25 +142,20 @@ const MessageScreen = ({ navigation }) => {
                     <Accordion.Icon />
                   </View>
                 </Accordion.Summary>
-                {/* {conversations.map(
-                ({ id, data: { firstName, lastName, avatar, userId } }) => (
-                  <Accordion.Details marginX={-5} marginY={-3}>
-                    <Swipeable
-                      renderLeftActions={renderLeftActions}
-                      renderRightActions={rightActions}
-                    >
-                      <ChatElement
+                {privateChannels.map(({ id, state }) => {
+                  console.log(state.members);
+                  return (
+                    <Accordion.Details marginX={-5} marginY={-3}>
+                      <ChannelElement
                         key={id}
                         id={id}
-                        chatName={firstName + " " + lastName}
-                        userId={userId}
-                        loggedInUserId={UserId}
-                        avatar={avatar}
+                        channelName={id}
+                        navigation={navigation}
+                        currentUser={client.user.id}
                       />
-                    </Swipeable>
-                  </Accordion.Details>
-                )
-              )} */}
+                    </Accordion.Details>
+                  );
+                })}
               </Accordion.Item>
               <Accordion.Item>
                 <Accordion.Summary>
@@ -212,17 +179,12 @@ const MessageScreen = ({ navigation }) => {
                 </Accordion.Summary>
                 {channels.map(({ id }) => (
                   <Accordion.Details marginX={-5} marginY={-3}>
-                    <Swipeable
-                      renderLeftActions={renderLeftActions}
-                      renderRightActions={rightActions}
-                    >
-                      <ChannelElement
-                        key={id}
-                        id={id}
-                        channelName={id}
-                        navigation={navigation}
-                      />
-                    </Swipeable>
+                    <ChannelElement
+                      key={id}
+                      id={id}
+                      channelName={id}
+                      navigation={navigation}
+                    />
                   </Accordion.Details>
                 ))}
               </Accordion.Item>

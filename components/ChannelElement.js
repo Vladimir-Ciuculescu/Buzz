@@ -3,10 +3,12 @@ import { ListItem } from "react-native-elements";
 import { Feather } from "@expo/vector-icons";
 import { useChatContext } from "stream-chat-expo";
 
-const ChannelElement = ({ id, channelName, navigation }) => {
+const ChannelElement = ({ id, channelName, members, navigation }) => {
   const { client } = useChatContext();
 
   const enterChannel = async () => {
+    console.log(members);
+
     const response = await client.queryChannels({ id: { $eq: id } });
     navigation.navigate("StreamChat", {
       channel: response[0],
