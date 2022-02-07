@@ -4,29 +4,26 @@ import {
   StyleSheet,
   AsyncStorage,
   TouchableOpacity,
+  Text,
   ScrollView,
 } from "react-native";
 import { Avatar } from "react-native-elements";
-import firebase from "firebase";
 import { AntDesign } from "@expo/vector-icons";
 import { Accordion } from "native-base";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { TextInput } from "react-native";
 import { FAB } from "react-native-paper";
-import { OverlayProvider, useChatContext } from "stream-chat-expo";
-import ChannelElement from "../components/ChannelElement";
-import { Image } from "react-native-elements/dist/image/Image";
+import { OverlayProvider, useChatContext, ChannelList } from "stream-chat-expo";
 
 const MessageScreen = ({ navigation }) => {
   const { client } = useChatContext();
   const [avatar, setAvatar] = useState("");
-  const [conversations, setConversations] = useState([]);
   const [currentUser, setCurrentUser] = useState("");
   const [currentUserName, setCurrentUserName] = useState("");
   const [UserId, setUserId] = useState("");
   const [isReady, SetIsReady] = useState(false);
-  const [channels, setChannels] = useState([]);
-  const [privateChannels, setPrivateChannels] = useState([]);
+
+  const [oneWeek, setOneWeek] = useState(new Date());
 
   useLayoutEffect(() => {
     const result = navigation.addListener("focus", () => {
@@ -37,20 +34,7 @@ const MessageScreen = ({ navigation }) => {
 
         const OneWeek = new Date();
         OneWeek.setDate(OneWeek.getDate() - 2);
-
-        const publicChannels = await client.queryChannels({
-          member_count: { $ne: 2 },
-          last_message_at: { $gte: OneWeek },
-        });
-
-        const privateChannels = await client.queryChannels({
-          member_count: { $eq: 2 },
-          last_message_at: { $gte: OneWeek },
-          joined: { $eq: true },
-        });
-
-        setChannels(publicChannels);
-        setPrivateChannels(privateChannels);
+        setOneWeek(OneWeek);
       };
 
       fetchUser();
@@ -87,14 +71,55 @@ const MessageScreen = ({ navigation }) => {
       },
       headerLeft: () => (
         <View style={{ marginLeft: 20 }}>
-          <Avatar rounded source={{ uri: avatar }} />
+          <Avatar
+            style={styles.avatar}
+            title={client.user.id.charAt(0)}
+            rounded
+            source={{ uri: avatar }}
+            overlayContainerStyle={{ backgroundColor: "red" }}
+          />
         </View>
       ),
     });
-  }, [navigation, avatar, conversations]);
+  }, [navigation, avatar]);
 
   const OpenSearcher = () => {
     navigation.navigate("Searcher");
+  };
+
+  const enterChannel = (channel) => {
+    let channelName;
+    if (Object.keys(channel.state.members)[0] === client.user.id) {
+      channelName = Object.keys(channel.state.members)[1];
+    } else {
+      channelName = Object.keys(channel.state.members)[0];
+    }
+
+    navigation.navigate("StreamChat", {
+      channel: channel,
+      name: channelName.replace("-", " "),
+    });
+  };
+
+  const enterPublicChannel = (channel) => {
+    console.log(channel.state.membership);
+
+    navigation.navigate("StreamChat", {
+      channel: channel,
+      name: channel.id,
+    });
+  };
+
+  const CustomPreviewTitle = ({ channel }) => {
+    let channelName;
+
+    if (Object.keys(channel.state.members)[0] === client.user.id) {
+      channelName = Object.keys(channel.state.members)[1];
+    } else {
+      channelName = Object.keys(channel.state.members)[0];
+    }
+
+    return <Text>{channelName.replace("-", " ")}</Text>;
   };
 
   if (isReady) {
@@ -109,95 +134,57 @@ const MessageScreen = ({ navigation }) => {
               placeholder="Looking for someone ?"
               style={styles.searchPersonInput}
             />
-            {/* <ChannelList
-              filters={{
-                member_count: { $ne: 2 },
-              }}
-            /> */}
 
-            <Accordion allowMultiple>
-              <Accordion.Item>
-                <Accordion.Summary>
-                  Direct Messages
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                    }}
-                  >
-                    <TouchableOpacity
-                      onPress={() => navigation.navigate("PersonSearcher")}
-                    >
-                      <AntDesign
-                        name="plus"
-                        size={24}
-                        color="black"
-                        style={{ marginRight: 10 }}
-                      />
-                    </TouchableOpacity>
-                    <Accordion.Icon />
-                  </View>
-                </Accordion.Summary>
-                {privateChannels.map(({ id, state }) => {
-                  console.log(state.members);
-                  let channelName;
-                  let image;
-                  if (Object.keys(state.members)[0] === client.user.id) {
-                    channelName = Object.keys(state.members)[1];
-                    Image = state.members[channelName].user.image;
-                  } else {
-                    channelName = Object.keys(state.members)[0];
-                    image = state.members[channelName].user.image;
-                  }
+            <View>
+              <View style={styles.messagesHeader}>
+                <Text style={{ alignSelf: "center", marginLeft: 10 }}>
+                  Direct messages
+                </Text>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("PersonSearcher")}
+                  style={{
+                    right: 0,
+                    position: "absolute",
+                    alignSelf: "center",
+                    marginRight: 10,
+                  }}
+                >
+                  <AntDesign name="plus" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+              <ChannelList
+                filters={{
+                  member_count: { $eq: 2 },
+                  last_message_at: { $gte: oneWeek },
+                  members: { $in: [client.user.id] },
+                }}
+                onSelect={(channel) => enterChannel(channel)}
+                PreviewTitle={CustomPreviewTitle}
+              />
 
-                  console.log(image);
-
-                  return (
-                    <Accordion.Details marginX={-5} marginY={-3}>
-                      <ChannelElement
-                        key={id}
-                        id={id}
-                        channelName={channelName.replace("-", " ")}
-                        navigation={navigation}
-                        currentUser={client.user.id}
-                        image={image}
-                      />
-                    </Accordion.Details>
-                  );
-                })}
-              </Accordion.Item>
-              <Accordion.Item>
-                <Accordion.Summary>
+              <View style={styles.messagesHeader}>
+                <Text style={{ alignSelf: "center", marginLeft: 10 }}>
                   Channels
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                    }}
-                  >
-                    <TouchableOpacity>
-                      <AntDesign
-                        name="plus"
-                        size={24}
-                        color="black"
-                        style={{ marginRight: 10 }}
-                      />
-                    </TouchableOpacity>
-                    <Accordion.Icon />
-                  </View>
-                </Accordion.Summary>
-                {channels.map(({ id }) => (
-                  <Accordion.Details marginX={-5} marginY={-3}>
-                    <ChannelElement
-                      key={id}
-                      id={id}
-                      channelName={id}
-                      navigation={navigation}
-                    />
-                  </Accordion.Details>
-                ))}
-              </Accordion.Item>
-            </Accordion>
+                </Text>
+                <TouchableOpacity
+                  style={{
+                    right: 0,
+                    position: "absolute",
+                    alignSelf: "center",
+                    marginRight: 10,
+                  }}
+                >
+                  <AntDesign name="plus" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+              <ChannelList
+                filters={{
+                  member_count: { $ne: 2 },
+                  last_message_at: { $gte: oneWeek },
+                }}
+                onSelect={(channel) => enterPublicChannel(channel)}
+              />
+            </View>
           </ScrollView>
         </OverlayProvider>
         <FAB
@@ -214,13 +201,6 @@ const MessageScreen = ({ navigation }) => {
 export default MessageScreen;
 
 const styles = StyleSheet.create({
-  deleteButton: {
-    flex: 1,
-    backgroundColor: "red",
-    justifyContent: "center",
-    alignItems: "center",
-    width: 80,
-  },
   searchPersonInput: {
     marginHorizontal: 30,
     marginTop: 20,
@@ -238,5 +218,16 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     margin: 16,
+  },
+  avatar: {
+    width: 35,
+    height: 35,
+  },
+  messagesHeader: {
+    width: "100%",
+    height: 40,
+    backgroundColor: "#6495ED",
+    display: "flex",
+    flexDirection: "row",
   },
 });

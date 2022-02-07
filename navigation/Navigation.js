@@ -17,50 +17,29 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { AsyncStorage } from "react-native";
 
 //screens
-import HomeScreen from "./screens/HomeScreen";
-import LoadingScreen from "./screens/LoadingScreen";
-import RegisterScreen from "./screens/RegisterScreen";
-import LoginScreen from "./screens/LoginScreen";
-import MessageScreen from "./screens/MessageScreen";
-import NotificationScreen from "./screens/NotificationScreen";
-import ProfileScreen from "./screens/ProfileScreen";
-import PostScreen from "./screens/PostScreen";
-import AddChatScreen from "./screens/AddChatScreen";
-import ModalScreen from "./screens/ModalScreen";
-import PublicChatScreen from "./screens/PublicChatScreen";
-import SettingsScreen from "./screens/SettingsScreen";
-import StreamChatScreen from "./screens/StreamChatScreen";
-import API_KEY from "./StreamCredentials";
-import { StreamChat } from "stream-chat";
+import HomeScreen from "../screens/HomeScreen";
+import LoadingScreen from "../screens/LoadingScreen";
+import RegisterScreen from "../screens/RegisterScreen";
+import LoginScreen from "../screens/LoginScreen";
+import MessageScreen from "../screens/MessageScreen";
+import NotificationScreen from "../screens/NotificationScreen";
+import ProfileScreen from "../screens/ProfileScreen";
+import PostScreen from "../screens/PostScreen";
+import AddChatScreen from "../screens/AddChatScreen";
+import PublicChatScreen from "../screens/PublicChatScreen";
+import SettingsScreen from "../screens/SettingsScreen";
+import StreamChatScreen from "../screens/StreamChatScreen";
+import API_KEY from "../StreamCredentials";
 import { Chat } from "stream-chat-expo";
-import Searcher from "./screens/Searcher";
-import TestModal from "./screens/TestModal";
-import PersonSearcher from "./screens/PersonSearcher";
-
-//Ignore warnings
-LogBox.ignoreAllLogs(true);
-LogBox.ignoreLogs(["Setting a timer"]);
-
-//Initialize Firebase App
-const firebaseConfig = {
-  apiKey: "AIzaSyBiGTaFqnFoT2aj5KkvgoAr422VsVgMKtA",
-  authDomain: "wadwad-60664.firebaseapp.com",
-  projectId: "wadwad-60664",
-  storageBucket: "wadwad-60664.appspot.com",
-  messagingSenderId: "1005852185814",
-  appId: "1:1005852185814:web:1cc3df7a46a96c7e5de577",
-  measurementId: "G-CLNTYEKDL3",
-};
-
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-} else {
-  firebase.app();
-}
-
-const client = StreamChat.getInstance(API_KEY);
+import Searcher from "../screens/Searcher";
+import TestModal from "../screens/TestModal";
+import PersonSearcher from "../screens/PersonSearcher";
 
 const Tabs = createBottomTabNavigator();
+
+const Drawer = createDrawerNavigator();
+
+const Stack = createStackNavigator();
 
 function MyTabs() {
   return (
@@ -155,10 +134,6 @@ function MyTabs() {
   );
 }
 
-const Drawer = createDrawerNavigator();
-
-const Stack = createStackNavigator();
-
 function MyStacks() {
   const theme = extendTheme({
     components: {
@@ -220,7 +195,7 @@ const DrawerNavigator = () => {
   );
 };
 
-const Application = () => {
+const Navigation = () => {
   return (
     <NavigationContainer>
       <Chat client={client}>
@@ -235,4 +210,4 @@ const Application = () => {
   );
 };
 
-export default Application;
+export default Navigation;
