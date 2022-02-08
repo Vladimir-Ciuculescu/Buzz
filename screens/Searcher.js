@@ -7,14 +7,16 @@ import {
   View,
   Text,
   FlatList,
+  StatusBar,
 } from "react-native";
 import { useEffect, useLayoutEffect } from "react";
 import { AntDesign, Feather } from "@expo/vector-icons";
-import { ChannelList } from "stream-chat-expo";
 import { useState } from "react";
 import { useChatContext } from "stream-chat-expo";
-
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
 const windowWidth = Dimensions.get("window").width;
+
+const options = ["Connections", "Channels"];
 
 const Searcher = ({ navigation }) => {
   const { client } = useChatContext();
@@ -31,6 +33,7 @@ const Searcher = ({ navigation }) => {
 
   useEffect(() => {
     const fetchChannels = async () => {
+      StatusBar.setHidden(false);
       const response = await client.queryChannels({ member_count: { $ne: 2 } });
       setAllChannels(
         response.map((item) => ({
@@ -101,7 +104,7 @@ const Searcher = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.results}>
-        {/* <ChannelList filters={filters} /> */}
+        <SegmentedControl values={options} />
 
         <FlatList
           data={channelsResponse}

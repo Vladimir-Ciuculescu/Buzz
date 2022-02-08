@@ -1,19 +1,16 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import { Button, Input } from "react-native-elements";
-import API_KEY from "../StreamCredentials";
-import { StreamChat } from "stream-chat";
-import { useRoute } from "@react-navigation/core";
+import { Input } from "react-native-elements";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Feather } from "@expo/vector-icons";
+import { useChatContext } from "stream-chat-expo";
 
 const AddChatScreen = ({ navigation }) => {
   const [input, setInput] = useState("");
   const [loading, setlLoading] = useState(false);
   const [chatName, setChatName] = useState("");
 
-  const route = useRoute();
-  const client = route.params.client;
+  const { client } = useChatContext();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -36,10 +33,20 @@ const AddChatScreen = ({ navigation }) => {
   const createChat = async () => {
     setlLoading(true);
 
+    const usersResponse = await client.queryUsers({});
+
+    let Users = [];
+
+    usersResponse.users.map((user) => {
+      Users.push(user.id);
+    });
+
     const channel = client.channel("messaging", chatName, {
       name: chatName,
     });
     await channel.watch();
+
+    await channel.addMembers(Users);
 
     navigation.goBack();
 

@@ -65,7 +65,7 @@ export default class ProfileScreen extends Component {
         style: "destructive",
         onPress: async () => {
           await AsyncStorage.removeItem("user");
-          client.disconnectUser();
+          await client.disconnectUser();
           this.props.navigation.navigate("Login", { screen: "LoginScreen" });
         },
       },

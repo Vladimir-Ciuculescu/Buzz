@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { Avatar } from "react-native-elements";
 import { AntDesign } from "@expo/vector-icons";
-import { Accordion } from "native-base";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { TextInput } from "react-native";
 import { FAB } from "react-native-paper";
@@ -41,7 +40,7 @@ const MessageScreen = ({ navigation }) => {
     });
 
     return result;
-  }, [navigation]);
+  }, []);
 
   useLayoutEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -122,80 +121,76 @@ const MessageScreen = ({ navigation }) => {
     return <Text>{channelName.replace("-", " ")}</Text>;
   };
 
-  if (isReady) {
-    return null;
-  } else {
-    return (
-      <SafeAreaProvider>
-        <OverlayProvider>
-          <ScrollView>
-            <TextInput
-              onFocus={OpenSearcher}
-              placeholder="Looking for someone ?"
-              style={styles.searchPersonInput}
+  return (
+    <SafeAreaProvider>
+      <OverlayProvider>
+        <ScrollView>
+          <TextInput
+            onFocus={OpenSearcher}
+            placeholder="Looking for someone ?"
+            style={styles.searchPersonInput}
+          />
+
+          <View>
+            <View style={styles.messagesHeader}>
+              <Text style={{ alignSelf: "center", marginLeft: 10 }}>
+                Direct messages
+              </Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("PersonSearcher")}
+                style={{
+                  right: 0,
+                  position: "absolute",
+                  alignSelf: "center",
+                  marginRight: 10,
+                }}
+              >
+                <AntDesign name="plus" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+            <ChannelList
+              filters={{
+                member_count: { $eq: 2 },
+                last_message_at: { $gte: oneWeek },
+                members: { $in: [client.user.id] },
+              }}
+              onSelect={(channel) => enterChannel(channel)}
+              PreviewTitle={CustomPreviewTitle}
             />
 
-            <View>
-              <View style={styles.messagesHeader}>
-                <Text style={{ alignSelf: "center", marginLeft: 10 }}>
-                  Direct messages
-                </Text>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("PersonSearcher")}
-                  style={{
-                    right: 0,
-                    position: "absolute",
-                    alignSelf: "center",
-                    marginRight: 10,
-                  }}
-                >
-                  <AntDesign name="plus" size={24} color="black" />
-                </TouchableOpacity>
-              </View>
-              <ChannelList
-                filters={{
-                  member_count: { $eq: 2 },
-                  last_message_at: { $gte: oneWeek },
-                  members: { $in: [client.user.id] },
+            <View style={styles.messagesHeader}>
+              <Text style={{ alignSelf: "center", marginLeft: 10 }}>
+                Channels
+              </Text>
+              <TouchableOpacity
+                style={{
+                  right: 0,
+                  position: "absolute",
+                  alignSelf: "center",
+                  marginRight: 10,
                 }}
-                onSelect={(channel) => enterChannel(channel)}
-                PreviewTitle={CustomPreviewTitle}
-              />
-
-              <View style={styles.messagesHeader}>
-                <Text style={{ alignSelf: "center", marginLeft: 10 }}>
-                  Channels
-                </Text>
-                <TouchableOpacity
-                  style={{
-                    right: 0,
-                    position: "absolute",
-                    alignSelf: "center",
-                    marginRight: 10,
-                  }}
-                >
-                  <AntDesign name="plus" size={24} color="black" />
-                </TouchableOpacity>
-              </View>
-              <ChannelList
-                filters={{
-                  member_count: { $ne: 2 },
-                  last_message_at: { $gte: oneWeek },
-                }}
-                onSelect={(channel) => enterPublicChannel(channel)}
-              />
+              >
+                <AntDesign name="plus" size={24} color="black" />
+              </TouchableOpacity>
             </View>
-          </ScrollView>
-        </OverlayProvider>
-        <FAB
-          style={styles.fab}
-          small
-          icon="chat-plus"
-          onPress={() => navigation.navigate("AddChat", { client: client })}
-        />
-      </SafeAreaProvider>
-    );
-  }
+            <ChannelList
+              filters={{
+                member_count: { $ne: 2 },
+                last_message_at: { $gte: oneWeek },
+              }}
+              onSelect={(channel) => enterPublicChannel(channel)}
+            />
+          </View>
+        </ScrollView>
+      </OverlayProvider>
+      <FAB
+        style={styles.fab}
+        small
+        icon="chat-plus"
+        onPress={() => navigation.navigate("AddChat", { client: client })}
+      />
+    </SafeAreaProvider>
+  );
 };
 
 export default MessageScreen;
