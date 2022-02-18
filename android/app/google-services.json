@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1005852185814",
+    "project_id": "wadwad-60664",
+    "storage_bucket": "wadwad-60664.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1005852185814:android:24811f5f7313508e5de577",
+        "android_client_info": {
+          "package_name": "com.androidtest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1005852185814-63vrgjrospkd609bqlk4fp92mccq8sm3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOzgP4QYwt50vkUR7N6OC3hO6ZyZhEwEA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1005852185814-63vrgjrospkd609bqlk4fp92mccq8sm3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1005852185814-e9uh7otdttbriphqkmaov859gbdcqnok.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "Buzz.smth.com"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

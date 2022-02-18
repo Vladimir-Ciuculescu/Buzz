@@ -36,6 +36,7 @@ export default class RegisterScreen extends React.Component {
     emailError: "",
     passwordError: "",
     repeatPasswordError: "",
+    verified: false,
   };
 
   ToLogin = () => {
@@ -172,6 +173,14 @@ export default class RegisterScreen extends React.Component {
         this.setState({ password: "" });
         this.setState({ repeatPassword: "" });
       } else {
+        //Create firebase user with email and password
+        await firebase
+          .auth()
+          .createUserWithEmailAndPassword(this.state.email, this.state.password)
+          .then((result) => {
+            result.user.sendEmailVerification();
+          });
+
         await firebase
           .firestore()
           .collection("accounts")
@@ -184,17 +193,8 @@ export default class RegisterScreen extends React.Component {
             userId: "",
             avatar: "",
             phoneNumber: null,
+            verified: false,
           });
-
-        //Create firebase user with email and password
-        await firebase
-          .auth()
-          .createUserWithEmailAndPassword(
-            this.state.email,
-            this.state.password
-          );
-
-        firebase.auth().onAuthStateChanged((user) => {});
 
         const userId = firebase.auth().currentUser.uid;
 

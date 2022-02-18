@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, View, LogBox, StatusBar, Platform } from "react-native";
 import { NativeBaseProvider, themeTools, extendTheme } from "native-base";
 import {
@@ -15,7 +15,6 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { AsyncStorage } from "react-native";
-
 //screens
 import HomeScreen from "./screens/HomeScreen";
 import LoadingScreen from "./screens/LoadingScreen";
@@ -34,8 +33,8 @@ import API_KEY from "./StreamCredentials";
 import { StreamChat } from "stream-chat";
 import { Chat } from "stream-chat-expo";
 import Searcher from "./screens/Searcher";
-import TestModal from "./screens/TestModal";
 import PersonSearcher from "./screens/PersonSearcher";
+import PollAddScreen from "./screens/PollAddScreen";
 
 //Ignore warnings
 LogBox.ignoreAllLogs(true);
@@ -193,7 +192,7 @@ function MyStacks() {
         </Stack.Group>
         <Stack.Screen name="PublicChat" component={PublicChatScreen} />
         <Stack.Screen name="StreamChat" component={StreamChatScreen} />
-        <Stack.Screen name="TestModal" component={TestModal} />
+        <Stack.Screen name="Poll" component={PollAddScreen} />
         <Stack.Screen
           options={{ headerShown: false }}
           name="Searcher"

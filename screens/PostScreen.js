@@ -222,7 +222,7 @@ const PostScreen = ({ navigation }) => {
             </View> */}
             <Card
               onPress={() => {
-                navigation.navigate("TestModal");
+                navigation.navigate("Poll");
               }}
               style={{ marginHorizontal: 15, backgroundColor: "white" }}
             >
@@ -237,7 +237,7 @@ const PostScreen = ({ navigation }) => {
                 }}
               />
               <Card.Actions>
-                <Button onPress={() => navigation.navigate("TestModal")}>
+                <Button onPress={() => navigation.navigate("Poll")}>
                   Create poll
                 </Button>
               </Card.Actions>

@@ -29,6 +29,7 @@ class Fire {
           timestamp: this.timestamp,
           image: remoteUri,
           avatar: avatar,
+          type: "informational",
         })
         .then((ref) => {
           res(ref);
