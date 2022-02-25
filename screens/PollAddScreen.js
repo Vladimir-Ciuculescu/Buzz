@@ -10,13 +10,15 @@ import { Headline, TextInput, List } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
 import firebase from "firebase";
 
-const posts = firebase.firestore().collection("posts");
-
 const PollAddScreen = ({ navigation }) => {
   const [subjectInput, setSubjectInput] = useState("");
   const [options, setOptions] = useState([]);
   const [optionInput, setOptionInput] = useState("");
   const [docId, setDocId] = useState("");
+  const [posts, setPosts] = useState(null);
+  useEffect((_) => {
+    setPosts(firebase.firestore().collection("posts"));
+  });
 
   const handlePost = async () => {
     await posts

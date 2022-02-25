@@ -37,8 +37,8 @@ import PersonSearcher from "./screens/PersonSearcher";
 import PollAddScreen from "./screens/PollAddScreen";
 
 //Ignore warnings
-LogBox.ignoreAllLogs(true);
-LogBox.ignoreLogs(["Setting a timer"]);
+// LogBox.ignoreAllLogs(true);
+// LogBox.ignoreLogs(["Setting a timer"]);
 
 //Initialize Firebase App
 const firebaseConfig = {
@@ -50,7 +50,6 @@ const firebaseConfig = {
   appId: "1:1005852185814:web:1cc3df7a46a96c7e5de577",
   measurementId: "G-CLNTYEKDL3",
 };
-
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 } else {

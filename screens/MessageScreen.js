@@ -101,8 +101,6 @@ const MessageScreen = ({ navigation }) => {
   };
 
   const enterPublicChannel = (channel) => {
-    console.log(channel.state.membership);
-
     navigation.navigate("StreamChat", {
       channel: channel,
       name: channel.id,
