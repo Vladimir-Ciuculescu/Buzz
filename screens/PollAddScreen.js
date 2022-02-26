@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  AsyncStorage,
 } from "react-native";
 import { Headline, TextInput, List } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
@@ -21,6 +22,7 @@ const PollAddScreen = ({ navigation }) => {
 
   const handlePost = async () => {
     setLoading(true);
+    const userId = await AsyncStorage.getItem("userId");
 
     await firebase
       .firestore()
@@ -29,6 +31,8 @@ const PollAddScreen = ({ navigation }) => {
         text: subjectInput,
         type: "poll",
         totalVotes: 0,
+        uid: userId,
+        timestamp: Date.now(),
       })
       .then((docRef) => {
         setDocId(docRef.id);

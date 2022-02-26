@@ -28,7 +28,6 @@ import moment from "moment";
 import ImageModal from "react-native-image-modal";
 
 import firebase from "firebase";
-import firetore from "firebase/firestore";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -49,8 +48,6 @@ export default class HomeScreen extends React.Component {
     this.getPosts();
   }
 
-  componentDidMount() {}
-
   getPosts = async () => {
     let result;
     await firebase
@@ -65,40 +62,107 @@ export default class HomeScreen extends React.Component {
 
     this.setState({ loadingRefresh: true });
     this.setState({ posts: [] });
+
     firebase
       .firestore()
       .collection("posts")
       .orderBy("timestamp", "desc")
       .get()
       .then((querySnapshot) => {
-        let postAvatar, postOwner;
+        var postAvatar, postOwner;
         querySnapshot.forEach(async (doc) => {
+          let docId = doc.id;
           await firebase
             .firestore()
             .collection("accounts")
             .where("userId", "==", doc.data().uid)
             .get()
-            .then((snap) => {
-              snap.docs.forEach((doc) => {
+            .then((snapShot) => {
+              snapShot.docs.forEach((doc) => {
                 postAvatar = doc.data().avatar;
                 postOwner = doc.data().lastName + " " + doc.data().firstName;
               });
             });
 
-          let post = {
-            image: doc.data().image,
-            text: doc.data().text,
-            timestamp: doc.data().timestamp,
-            uid: doc.data().uid,
-            avatar: postAvatar,
-            postOwner,
-          };
+          let post;
 
+          if (doc.data().type === "informational") {
+            post = {
+              image: doc.data().image,
+              text: doc.data().text,
+              timestamp: doc.data().timestamp,
+              uid: doc.data().uid,
+              avatar: postAvatar,
+              postOwner: postOwner,
+              type: doc.data().type,
+            };
+          } else {
+            let options = [];
+            firebase
+              .firestore()
+              .collection("posts")
+              .doc(docId)
+              .collection("options")
+              .get()
+              .then((snapShot) => {
+                snapShot.forEach((doc) => {
+                  options.push({
+                    option: doc.data().option,
+                    votes: doc.data().votes,
+                  });
+                });
+              });
+            post = {
+              text: doc.data().text,
+              timestamp: doc.data().timestamp,
+              options: options,
+              uid: doc.data().uid,
+              avatar: postAvatar,
+              postOwner: postOwner,
+              type: doc.data().type,
+            };
+          }
           this.setState({
             posts: [...this.state.posts, post],
           });
         });
       });
+
+    // firebase
+    //   .firestore()
+    //   .collection("posts")
+    //   .orderBy("timestamp", "desc")
+    //   .get()
+    //   .then((querySnapshot) => {
+    //     let postAvatar, postOwner;
+    //     querySnapshot.forEach(async (doc) => {
+    //       console.log(doc.data().type);
+    //       // await firebase
+    //       //   .firestore()
+    //       //   .collection("accounts")
+    //       //   .where("userId", "==", doc.data().uid)
+    //       //   .get()
+    //       //   .then((snap) => {
+    //       //     snap.docs.forEach((doc) => {
+    //       //       postAvatar = doc.data().avatar;
+    //       //       postOwner = doc.data().lastName + " " + doc.data().firstName;
+    //       //     });
+    //       //   });
+
+    //       // let post = {
+    //       //   image: doc.data().image,
+    //       //   text: doc.data().text,
+    //       //   timestamp: doc.data().timestamp,
+    //       //   uid: doc.data().uid,
+    //       //   avatar: postAvatar,
+    //       //   postOwner,
+    //       // };
+
+    // this.setState({
+    //   posts: [...this.state.posts, post],
+    // });
+    //     });
+    //   });
 
     this.setState({ loadingRefresh: false });
   };
@@ -113,6 +177,7 @@ export default class HomeScreen extends React.Component {
   };
 
   renderPost = (post) => {
+    console.log(post.type);
     return (
       <Card style={styles.cardPost}>
         <Card.Content style={{ marginBottom: 10, marginLeft: -10 }}>
