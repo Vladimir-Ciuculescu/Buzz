@@ -61,19 +61,6 @@ const PostScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       ),
-      headerRight: () =>
-        loadingPost ? (
-          <ActivityIndicator
-            style={{ marginRight: 20 }}
-            color="blue"
-          ></ActivityIndicator>
-        ) : (
-          <View style={{ marginRight: 20 }}>
-            <TouchableOpacity onPress={handlePost}>
-              <Text style={{ color: "blue" }}>Post</Text>
-            </TouchableOpacity>
-          </View>
-        ),
     });
   });
 
@@ -171,9 +158,11 @@ const PostScreen = ({ navigation }) => {
             >
               <Avatar style={styles.avatar} rounded source={{ uri: avatar }} />
 
-              <Text style={{ marginLeft: 20, fontSize: 17 }}>{fullName}</Text>
+              <Text style={{ marginLeft: 20, fontSize: 20, marginTop: 13 }}>
+                {fullName}
+              </Text>
 
-              <View style={styles.options}>
+              {/* <View style={styles.options}>
                 <TouchableOpacity onPress={pickImage}>
                   <FontAwesome name="photo" size={24} color="black" />
                 </TouchableOpacity>
@@ -183,18 +172,8 @@ const PostScreen = ({ navigation }) => {
                 >
                   <Entypo name="camera" size={24} color="black" />
                 </TouchableOpacity>
-              </View>
+              </View> */}
             </View>
-
-            {/* <TextInput
-              placeholder="What do you want to share with others ?"
-              multiline={true}
-              autoFocus={true}
-              numberOfLines={4}
-              style={styles.question}
-              onChangeText={(text) => setText(text)}
-              value={text}
-            ></TextInput> */}
             <Text
               style={{
                 marginLeft: 20,
@@ -206,20 +185,6 @@ const PostScreen = ({ navigation }) => {
             >
               What kind of post are you making ?
             </Text>
-
-            {/* <View
-              style={{
-                alignContent: "center",
-                alignItems: "center",
-                alignSelf: "center",
-                marginTop: 30,
-              }}
-            >
-              <Image
-                source={{ uri: image }}
-                style={{ height: 500, width: 330, borderRadius: 10 }}
-              ></Image>
-            </View> */}
             <Card
               onPress={() => {
                 navigation.navigate("Poll");
@@ -236,13 +201,11 @@ const PostScreen = ({ navigation }) => {
                   uri: "https://avatars.slack-edge.com/2020-05-09/1112549471909_7543dde099089941d3c3_512.png",
                 }}
               />
-              <Card.Actions>
-                <Button onPress={() => navigation.navigate("Poll")}>
-                  Create poll
-                </Button>
-              </Card.Actions>
             </Card>
-            <Card style={{ marginHorizontal: 15, marginTop: 10 }}>
+            <Card
+              onPress={() => navigation.navigate("Informational")}
+              style={{ marginHorizontal: 15, marginTop: 10 }}
+            >
               <Card.Content>
                 <Title>Informational post</Title>
               </Card.Content>

@@ -5,6 +5,8 @@ import {
   TextInput as Input,
   Text,
   TouchableOpacity,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Headline, TextInput, List } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
@@ -16,12 +18,14 @@ const PollAddScreen = ({ navigation }) => {
   const [optionInput, setOptionInput] = useState("");
   const [docId, setDocId] = useState("");
   const [posts, setPosts] = useState(null);
-  useEffect((_) => {
-    setPosts(firebase.firestore().collection("posts"));
-  });
+  const [loading, setLoading] = useState(false);
 
   const handlePost = async () => {
-    await posts
+    setLoading(true);
+
+    await firebase
+      .firestore()
+      .collection("posts")
       .add({
         text: subjectInput,
         type: "poll",
@@ -30,6 +34,20 @@ const PollAddScreen = ({ navigation }) => {
       .then((docRef) => {
         setDocId(docRef.id);
       });
+
+    setLoading(false);
+
+    setSubjectInput("");
+    setOptions([]);
+    setOptionInput("");
+
+    Alert.alert("Success ", "Your poll was succesfully submitted !", [
+      {
+        text: "Great !",
+        onPress: () => navigation.goBack(),
+        style: "cancel",
+      },
+    ]);
   };
 
   useEffect(() => {
@@ -39,33 +57,47 @@ const PollAddScreen = ({ navigation }) => {
   }, [docId]);
 
   const addDocOption = async (option) => {
-    await posts.doc(docId).collection("options").doc(option).set({
-      option: option,
-      votes: 0,
-    });
+    await firebase
+      .firestore()
+      .collection("posts")
+      .doc(docId)
+      .collection("options")
+      .doc(option)
+      .set({
+        option: option,
+        votes: 0,
+      });
   };
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <View style={{ marginRight: 20 }}>
-          <TouchableOpacity
-            disabled={
-              subjectInput === "" && options.length === 0 ? true : false
-            }
-            onPress={handlePost}
-          >
-            <Text
-              style={{
-                color: "blue",
-                opacity: subjectInput !== "" && options.length !== 0 ? 1 : 0.2,
-              }}
+      headerRight: () =>
+        loading ? (
+          <ActivityIndicator
+            size="small"
+            style={{ marginRight: 10 }}
+            color="#6201ef"
+          ></ActivityIndicator>
+        ) : (
+          <View style={{ marginRight: 20 }}>
+            <TouchableOpacity
+              disabled={
+                subjectInput === "" && options.length === 0 ? true : false
+              }
+              onPress={handlePost}
             >
-              Post
-            </Text>
-          </TouchableOpacity>
-        </View>
-      ),
+              <Text
+                style={{
+                  color: "blue",
+                  opacity:
+                    subjectInput !== "" && options.length !== 0 ? 1 : 0.2,
+                }}
+              >
+                Post
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ),
     });
   });
 

@@ -16,13 +16,12 @@ import { useChatContext } from "stream-chat-expo";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 const windowWidth = Dimensions.get("window").width;
 
-const options = ["Connections", "Channels"];
-
 const Searcher = ({ navigation }) => {
   const { client } = useChatContext();
   const [input, setInput] = useState("");
   const [allChanels, setAllChannels] = useState([]);
   const [channelsResponse, setChannelsResponse] = useState([]);
+  const [option, setOption] = useState("");
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -92,7 +91,7 @@ const Searcher = ({ navigation }) => {
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
         <TextInput
           autoCapitalize="none"
-          placeholder="Looking for someone ?"
+          placeholder="Looking for something / someone ?"
           style={styles.searchPersonInput}
           onChangeText={(e) => searchChannel(e)}
         />
@@ -104,7 +103,11 @@ const Searcher = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.results}>
-        <SegmentedControl values={options} />
+        <SegmentedControl
+          values={["Connections", "Channels"]}
+          selectedIndex={0}
+          onValueChange={(val) => setOption(val)}
+        />
 
         <FlatList
           data={channelsResponse}

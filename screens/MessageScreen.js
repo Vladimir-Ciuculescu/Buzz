@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Avatar } from "react-native-elements";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Feather } from "@expo/vector-icons";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { TextInput } from "react-native";
 import { FAB } from "react-native-paper";
@@ -119,6 +119,17 @@ const MessageScreen = ({ navigation }) => {
     return <Text>{channelName.replace("-", " ")}</Text>;
   };
 
+  const CustomPreviewAvatar = () => {
+    return (
+      <Feather
+        name="hash"
+        style={{ paddingLeft: 5, paddingTop: 5 }}
+        size={24}
+        color="black"
+      />
+    );
+  };
+
   return (
     <SafeAreaProvider>
       <OverlayProvider>
@@ -172,6 +183,7 @@ const MessageScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
             <ChannelList
+              PreviewAvatar={CustomPreviewAvatar}
               filters={{
                 member_count: { $ne: 2 },
                 last_message_at: { $gte: oneWeek },

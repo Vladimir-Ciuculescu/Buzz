@@ -13,6 +13,7 @@ import {
 import { Avatar } from "react-native-elements";
 import { FontAwesome, MaterialIcons, Entypo } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
+import * as ImagePicker from "expo-image-picker";
 
 import firebase from "firebase";
 
@@ -31,7 +32,7 @@ const InformationalAddScreen = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       tabBarVisible: true,
-      title: "awdaw",
+      title: "Make a post",
     });
   });
 

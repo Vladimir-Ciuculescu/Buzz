@@ -35,10 +35,11 @@ import { Chat } from "stream-chat-expo";
 import Searcher from "./screens/Searcher";
 import PersonSearcher from "./screens/PersonSearcher";
 import PollAddScreen from "./screens/PollAddScreen";
+import InformationalPost from "./screens/InformationalAddScreen";
 
 //Ignore warnings
-// LogBox.ignoreAllLogs(true);
-// LogBox.ignoreLogs(["Setting a timer"]);
+LogBox.ignoreAllLogs(true);
+LogBox.ignoreLogs(["Setting a timer"]);
 
 //Initialize Firebase App
 const firebaseConfig = {
@@ -192,6 +193,7 @@ function MyStacks() {
         <Stack.Screen name="PublicChat" component={PublicChatScreen} />
         <Stack.Screen name="StreamChat" component={StreamChatScreen} />
         <Stack.Screen name="Poll" component={PollAddScreen} />
+        <Stack.Screen name="Informational" component={InformationalPost} />
         <Stack.Screen
           options={{ headerShown: false }}
           name="Searcher"
