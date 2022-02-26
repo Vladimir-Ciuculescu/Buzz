@@ -17,7 +17,6 @@ const PollAddScreen = ({ navigation }) => {
   const [options, setOptions] = useState([]);
   const [optionInput, setOptionInput] = useState("");
   const [docId, setDocId] = useState("");
-  const [posts, setPosts] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handlePost = async () => {

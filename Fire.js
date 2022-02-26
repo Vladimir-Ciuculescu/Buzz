@@ -24,7 +24,7 @@ class Fire {
       this.firestore
         .collection("posts")
         .add({
-          text,
+          text: text,
           uid: userId,
           timestamp: this.timestamp,
           image: remoteUri,

@@ -9,15 +9,25 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TextInput,
+  Image,
+  ActivityIndicator,
+  useWindowDimensions,
 } from "react-native";
 import { Avatar } from "react-native-elements";
-import { FontAwesome, MaterialIcons, Entypo } from "@expo/vector-icons";
+import {
+  FontAwesome,
+  MaterialIcons,
+  Entypo,
+  AntDesign,
+} from "@expo/vector-icons";
 import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
+import Fire from "../Fire";
 
 import firebase from "firebase";
 
 const InformationalAddScreen = ({ navigation }) => {
+  const { width } = useWindowDimensions();
   const cameraRef = useRef();
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
@@ -26,13 +36,29 @@ const InformationalAddScreen = ({ navigation }) => {
   const [fullName, setFullName] = useState("");
   const [startCamera, setStartCamera] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
-
   const [type, setType] = useState(Camera.Constants.Type.back);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       tabBarVisible: true,
       title: "Make a post",
+      headerRight: () =>
+        loadingPost ? (
+          <ActivityIndicator size="small" style={{ marginRight: 10 }} />
+        ) : (
+          <View style={{ marginRight: 20 }}>
+            <TouchableOpacity
+              disabled={text === "" && image === null ? true : false}
+              onPress={handlePost}
+            >
+              <Text
+                style={{ opacity: image === null && text === "" ? 0.2 : 1 }}
+              >
+                Post
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ),
     });
   });
 
@@ -53,25 +79,25 @@ const InformationalAddScreen = ({ navigation }) => {
 
   const handlePost = async () => {
     setLoadingPost(true);
+
     await Fire.shared.addPost({
       text: text.trim(),
       localUri: image,
     });
-
-    setText("");
     setImage(null);
     setLoadingPost(false);
+    setText("");
 
     Alert.alert("Success", "Post succesfully uploaded", [
       {
         text: "OK",
-        onPress: () => props.navigation.goBack(),
+        onPress: () => navigation.goBack(),
       },
     ]);
   };
 
   const pickImage = async () => {
-    const avatar = await AsyncStorage.getItem("avatar");
+    //const avatar = await AsyncStorage.getItem("avatar");
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -92,6 +118,9 @@ const InformationalAddScreen = ({ navigation }) => {
   const takePicture = async () => {
     const options = { quality: 0.7, base64: true };
     const data = await cameraRef.current.takePictureAsync(options);
+
+    setImage(data.uri);
+
     const source = data.base64;
 
     if (source) {
@@ -112,7 +141,7 @@ const InformationalAddScreen = ({ navigation }) => {
           <Camera ref={cameraRef} style={styles.camera} type={type}>
             <View style={styles.buttonContainer}>
               <TouchableOpacity
-                style={styles.button}
+                style={{ position: "absolute", top: 20, left: width / 2 - 35 }}
                 onPress={() => {
                   setType(
                     type === Camera.Constants.Type.back
@@ -121,14 +150,48 @@ const InformationalAddScreen = ({ navigation }) => {
                   );
                 }}
               >
-                <MaterialIcons name="flip-camera-ios" size={24} color="red" />
+                <MaterialIcons name="flip-camera-ios" size={24} color="white" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={takePicture}>
-                <Text>Make a photo</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={takePicture}>
-                <Text>Make a photo</Text>
-              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  width: 70,
+                  height: 70,
+                  bottom: 30,
+                  borderRadius: 50,
+                  backgroundColor: "#fff",
+                  position: "absolute",
+                  left: width / 2 - 55,
+                }}
+                onPress={takePicture}
+              ></TouchableOpacity>
+              {isPreview ? (
+                <TouchableOpacity
+                  onPress={() => cancelPreview()}
+                  style={{ left: 20, top: 20, position: "absolute" }}
+                >
+                  <MaterialIcons
+                    name="arrow-back-ios"
+                    size={24}
+                    color="white"
+                  />
+                </TouchableOpacity>
+              ) : null}
+
+              {isPreview ? (
+                <TouchableOpacity
+                  onPress={() => setStartCamera(false)}
+                  style={{ right: 20, top: 20, position: "absolute" }}
+                >
+                  <Text style={{ color: "white", fontSize: 20 }}>Next</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={{ right: 20, top: 20, position: "absolute" }}
+                  onPress={() => setStartCamera(false)}
+                >
+                  <AntDesign name="close" size={24} color="white" />
+                </TouchableOpacity>
+              )}
             </View>
           </Camera>
         ) : (
@@ -157,7 +220,24 @@ const InformationalAddScreen = ({ navigation }) => {
                 </TouchableOpacity>
               </View>
             </View>
-            <TextInput placeholder="What's on your mind ?" />
+            <TextInput
+              style={{ marginTop: 30, marginLeft: 40 }}
+              placeholder="What's on your mind ?"
+              onChangeText={(e) => setText(e)}
+            />
+            <View
+              style={{
+                alignContent: "center",
+                alignItems: "center",
+                alignSelf: "center",
+                marginTop: 30,
+              }}
+            >
+              <Image
+                source={{ uri: image }}
+                style={{ height: 230, width: 350, borderRadius: 10 }}
+              ></Image>
+            </View>
           </View>
         )}
       </TouchableWithoutFeedback>
@@ -195,11 +275,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     flexDirection: "row",
     margin: 20,
-  },
-  button: {
-    flex: 0.1,
-    alignSelf: "flex-end",
-    alignItems: "center",
   },
   text: {
     fontSize: 18,
