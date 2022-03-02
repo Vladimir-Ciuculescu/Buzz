@@ -127,43 +127,6 @@ export default class HomeScreen extends React.Component {
           });
         });
       });
-
-    // firebase
-    //   .firestore()
-    //   .collection("posts")
-    //   .orderBy("timestamp", "desc")
-    //   .get()
-    //   .then((querySnapshot) => {
-    //     let postAvatar, postOwner;
-    //     querySnapshot.forEach(async (doc) => {
-    //       console.log(doc.data().type);
-    //       // await firebase
-    //       //   .firestore()
-    //       //   .collection("accounts")
-    //       //   .where("userId", "==", doc.data().uid)
-    //       //   .get()
-    //       //   .then((snap) => {
-    //       //     snap.docs.forEach((doc) => {
-    //       //       postAvatar = doc.data().avatar;
-    //       //       postOwner = doc.data().lastName + " " + doc.data().firstName;
-    //       //     });
-    //       //   });
-
-    //       // let post = {
-    //       //   image: doc.data().image,
-    //       //   text: doc.data().text,
-    //       //   timestamp: doc.data().timestamp,
-    //       //   uid: doc.data().uid,
-    //       //   avatar: postAvatar,
-    //       //   postOwner,
-    //       // };
-
-    // this.setState({
-    //   posts: [...this.state.posts, post],
-    // });
-    //     });
-    //   });
-
     this.setState({ loadingRefresh: false });
   };
 
@@ -177,54 +140,65 @@ export default class HomeScreen extends React.Component {
   };
 
   renderPost = (post) => {
-    console.log(post.type);
-    return (
-      <Card style={styles.cardPost}>
-        <Card.Content style={{ marginBottom: 10, marginLeft: -10 }}>
-          <View style={{ flexDirection: "column" }}>
-            <View style={{ flexDirection: "row" }}>
-              <Avatar.Image
-                size={40}
-                source={{
-                  uri: post.avatar,
+    if (post.type === "informational") {
+      return (
+        <Card style={styles.cardPost}>
+          <Card.Content style={{ marginBottom: 10, marginLeft: -10 }}>
+            <View style={{ flexDirection: "column" }}>
+              <View style={{ flexDirection: "row" }}>
+                <Avatar.Image
+                  size={40}
+                  source={{
+                    uri: post.avatar,
+                  }}
+                />
+                <View style={{ flexDirection: "column", marginLeft: 10 }}>
+                  <Text>{post.postOwner}</Text>
+                  <Text style={styles.timestamp}>
+                    {moment(post.timestamp).fromNow()}
+                  </Text>
+                </View>
+              </View>
+              <Text style={styles.name}>{post.text}</Text>
+              <View
+                style={{
+                  alignSelf: "center",
                 }}
-              />
-              <View style={{ flexDirection: "column", marginLeft: 10 }}>
-                <Text>{post.postOwner}</Text>
-                <Text style={styles.timestamp}>
-                  {moment(post.timestamp).fromNow()}
-                </Text>
+              >
+                <ImageModal
+                  isTranslucent={true}
+                  resizeMode="contain"
+                  imageBackgroundColor="#000000"
+                  style={{
+                    width: screenWidth - 20,
+                    height: screenWidth - 20,
+                  }}
+                  source={{
+                    uri: post.image,
+                  }}
+                />
               </View>
             </View>
-            <Text style={styles.name}>{post.text}</Text>
-            <View
-              style={{
-                alignSelf: "center",
-              }}
-            >
-              <ImageModal
-                isTranslucent={true}
-                resizeMode="contain"
-                imageBackgroundColor="#000000"
-                style={{
-                  width: screenWidth - 20,
-                  height: screenWidth - 20,
-                }}
-                source={{
-                  uri: post.image,
-                }}
-              />
-            </View>
-          </View>
+          </Card.Content>
+          <Card.Actions style={{ position: "absolute", bottom: 10 }}>
+            <AntDesign
+              name="hearto"
+              size={24}
+              color="#73788B"
+              style={{ marginRight: 16 }}
+            />
+          </Card.Actions>
+        </Card>
+      );
+    }
+    return (
+      <Card style={styles.cardPostg}>
+        <Card.Title title={post.text} />
+        <Card.Content>
+          {post.options.map((item) => (
+            <Paragraph>{item.option}</Paragraph>
+          ))}
         </Card.Content>
-        <Card.Actions style={{ position: "absolute", bottom: 10 }}>
-          <AntDesign
-            name="hearto"
-            size={24}
-            color="#73788B"
-            style={{ marginRight: 16 }}
-          />
-        </Card.Actions>
       </Card>
     );
   };
