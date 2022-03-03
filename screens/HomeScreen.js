@@ -3,29 +3,16 @@ import {
   View,
   Text,
   StyleSheet,
-  Button,
-  Touchable,
   AsyncStorage,
   FlatList,
-  Image,
-  Modal,
-  ImageBackground,
-  LayoutChangeEvent,
-  SafeAreaView,
-  ScrollView,
   Dimensions,
 } from "react-native";
-import {
-  BottomNavigation,
-  Snackbar,
-  Card,
-  Title,
-  Paragraph,
-  Avatar,
-} from "react-native-paper";
+import { Snackbar, Card, Paragraph, Avatar, Button } from "react-native-paper";
 import { Ionicons, AntDesign, Feather } from "@expo/vector-icons";
 import moment from "moment";
 import ImageModal from "react-native-image-modal";
+import ProgressBar from "react-native-animated-progress";
+import { CheckBox } from "react-native-elements";
 
 import firebase from "firebase";
 
@@ -44,6 +31,8 @@ export default class HomeScreen extends React.Component {
       posts: [],
       currentPost: null,
       togglePost: false,
+      toggle: false,
+      userId: "",
     };
     this.getPosts();
   }
@@ -112,6 +101,15 @@ export default class HomeScreen extends React.Component {
                   });
                 });
               });
+
+            const selectedOption = await firebase
+              .firestore()
+              .collection("posts")
+              .doc(doc.id)
+              .collection("users")
+              .doc(this.state.userId)
+              .get();
+
             post = {
               text: doc.data().text,
               timestamp: doc.data().timestamp,
@@ -120,6 +118,9 @@ export default class HomeScreen extends React.Component {
               avatar: postAvatar,
               postOwner: postOwner,
               type: doc.data().type,
+              docId: doc.id,
+              totalVotes: doc.data().totalVotes,
+              selectedOption: selectedOption.data().selectedOption,
             };
           }
           this.setState({
@@ -132,11 +133,50 @@ export default class HomeScreen extends React.Component {
 
   getUser = async () => {
     const user = await AsyncStorage.getItem("user");
+    const userId = await AsyncStorage.getItem("userId");
     const query = firebase.firestore().collection("accounts").doc(user).get();
     const firstName = (await query).data().firstName;
     const lastName = (await query).data().lastName;
     const fullName = firstName + " " + lastName;
-    this.setState({ user: fullName });
+    this.setState({ user: fullName, userId });
+  };
+
+  Vote = async (post, option) => {
+    const increment = firebase.firestore.FieldValue.increment(1);
+
+    const getCurrentUser = await firebase
+      .firestore()
+      .collection("posts")
+      .doc(post.docId)
+      .collection("options")
+      .doc(option.option)
+      .collection("voters")
+      .doc(this.state.fullName)
+      .get();
+
+    await firebase
+      .firestore()
+      .collection("posts")
+      .doc(post.docId)
+      .update({ totalVotes: increment });
+
+    await firebase
+      .firestore()
+      .collection("posts")
+      .doc(post.docId)
+      .collection("options")
+      .doc(option.option)
+      .update({
+        votes: increment,
+      });
+
+    await firebase
+      .firestore()
+      .collection("posts")
+      .doc(post.docId)
+      .collection("users")
+      .doc(this.state.userId)
+      .set({ selectedOption: option.option });
   };
 
   renderPost = (post) => {
@@ -196,9 +236,25 @@ export default class HomeScreen extends React.Component {
         <Card.Title title={post.text} />
         <Card.Content>
           {post.options.map((item) => (
-            <Paragraph>{item.option}</Paragraph>
+            <>
+              <View style={{ display: "flex", flexDirection: "row" }}>
+                <CheckBox
+                  checked={item.option === post.selectedOption}
+                  onPress={() => this.Vote(post, item)}
+                />
+                <Paragraph style={{ marginTop: 20 }}>{item.option}</Paragraph>
+              </View>
+              <ProgressBar
+                backgroundColor="red"
+                animated={true}
+                progress={30}
+              />
+            </>
           ))}
         </Card.Content>
+        <Card.Actions>
+          <Button>Change my vote</Button>
+        </Card.Actions>
       </Card>
     );
   };

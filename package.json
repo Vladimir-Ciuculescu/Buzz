@@ -54,6 +54,7 @@
     "react-dom": "16.13.1",
     "react-native": "~0.63.4",
     "react-native-animated-component": "^0.2.0",
+    "react-native-animated-progress": "^1.0.2",
     "react-native-camera": "^4.2.1",
     "react-native-card-list": "^0.1.0",
     "react-native-cards": "^1.1.4",
