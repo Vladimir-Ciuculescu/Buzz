@@ -144,16 +144,6 @@ export default class HomeScreen extends React.Component {
   Vote = async (post, option) => {
     const increment = firebase.firestore.FieldValue.increment(1);
 
-    const getCurrentUser = await firebase
-      .firestore()
-      .collection("posts")
-      .doc(post.docId)
-      .collection("options")
-      .doc(option.option)
-      .collection("voters")
-      .doc(this.state.fullName)
-      .get();
-
     await firebase
       .firestore()
       .collection("posts")
@@ -232,9 +222,9 @@ export default class HomeScreen extends React.Component {
       );
     }
     return (
-      <Card style={styles.cardPostg}>
+      <Card style={styles.cardPost}>
         <Card.Title title={post.text} />
-        <Card.Content>
+        <Card.Content style={{ marginBottom: 10, marginLeft: -10 }}>
           {post.options.map((item) => (
             <>
               <View style={{ display: "flex", flexDirection: "row" }}>
@@ -253,7 +243,15 @@ export default class HomeScreen extends React.Component {
           ))}
         </Card.Content>
         <Card.Actions>
-          <Button>Change my vote</Button>
+          <Button
+            onPress={() =>
+              this.props.navigation.navigate("UpdatePoll", {
+                postId: post.docId,
+              })
+            }
+          >
+            Change my vote
+          </Button>
         </Card.Actions>
       </Card>
     );

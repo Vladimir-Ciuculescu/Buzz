@@ -36,6 +36,7 @@ import Searcher from "./screens/Searcher";
 import PersonSearcher from "./screens/PersonSearcher";
 import PollAddScreen from "./screens/PollAddScreen";
 import InformationalPost from "./screens/InformationalAddScreen";
+import UpdatePollScreen from "./screens/UpdatePollScreen";
 
 //Ignore warnings
 LogBox.ignoreAllLogs(true);
@@ -194,6 +195,7 @@ function MyStacks() {
         <Stack.Screen name="StreamChat" component={StreamChatScreen} />
         <Stack.Screen name="Poll" component={PollAddScreen} />
         <Stack.Screen name="Informational" component={InformationalPost} />
+        <Stack.Screen name="UpdatePoll" component={UpdatePollScreen} />
         <Stack.Screen
           options={{ headerShown: false }}
           name="Searcher"
