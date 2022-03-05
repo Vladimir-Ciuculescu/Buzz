@@ -67,43 +67,123 @@ const UpdatePollScreen = ({ navigation }) => {
   }, []);
 
   const Vote = async (option) => {
-    //If
-    if (option === selectedOption) {
-      console.log("iesi acasa");
-      return;
-    }
-
-    setSelectedOption(option);
-
-    //Change the selected option
-    await firebase
-      .firestore()
-      .collection("posts")
-      .doc(postId)
-      .collection("users")
-      .doc(userId)
-      .set({ selectedOption: option });
-
     const increment = firebase.firestore.FieldValue.increment(1);
-    //increment the total number of votes
-    await firebase
-      .firestore()
-      .collection("posts")
-      .doc(postId)
-      .update({ totalVotes: increment });
+    const decrement = firebase.firestore.FieldValue.increment(-1);
 
-    //increment the number of votes for the current selected option
-    await firebase
-      .firestore()
-      .collection("posts")
-      .doc(postId)
-      .collection("options")
-      .doc(option)
-      .update({
-        votes: increment,
+    //If the user has not voted at all;
+    if (selectedOption === "") {
+      setSelectedOption(option);
+      setTotalVotes(totalVotes + 1);
+
+      setOptions((oldOptions) => {
+        return oldOptions.map((item) => {
+          return item.option === option
+            ? { option: item.option, votes: item.votes + 1 }
+            : item;
+        });
       });
 
-    console.log(totalVotes);
+      await firebase
+        .firestore()
+        .collection("posts")
+        .doc(postId)
+        .update({ totalVotes: increment });
+
+      await firebase
+        .firestore()
+        .collection("posts")
+        .doc(postId)
+        .collection("options")
+        .doc(option)
+        .update({ votes: increment });
+
+      await firebase
+        .firestore()
+        .collection("posts")
+        .doc(postId)
+        .collection("users")
+        .doc(userId)
+        .set({ selectedOption: option });
+
+      setSelectedOption(option);
+    }
+    // If the user unchecks the selected option
+    else if (selectedOption === option) {
+      setTotalVotes(totalVotes - 1);
+      setSelectedOption("");
+
+      const modifiedOption = options.find((item) => item.option === option);
+
+      setOptions((oldOptions) => {
+        return oldOptions.map((item) => {
+          return item === modifiedOption
+            ? { option: item.option, votes: item.votes - 1 }
+            : item;
+        });
+      });
+
+      await firebase
+        .firestore()
+        .collection("posts")
+        .doc(postId)
+        .update({ totalVotes: decrement });
+
+      await firebase
+        .firestore()
+        .collection("posts")
+        .doc(postId)
+        .collection("options")
+        .doc(option)
+        .update({ votes: decrement });
+
+      await firebase
+        .firestore()
+        .collection("posts")
+        .doc(postId)
+        .collection("users")
+        .doc(userId)
+        .set({ selectedOption: "" });
+    } else {
+      // If there is already a selected option and the user changes it .
+
+      setOptions((oldOptions) => {
+        return oldOptions.map((item) => {
+          return item.option === selectedOption
+            ? { option: item.option, votes: item.votes - 1 }
+            : item.option === option
+            ? { option: item.option, votes: item.votes + 1 }
+            : item;
+        });
+      });
+
+      setSelectedOption(option);
+
+      await firebase
+        .firestore()
+        .collection("posts")
+        .doc(postId)
+        .collection("options")
+        .doc(selectedOption)
+        .update({ votes: decrement });
+
+      await firebase
+        .firestore()
+        .collection("posts")
+        .doc(postId)
+        .collection("options")
+        .doc(option)
+        .update({ votes: increment });
+
+      setSelectedOption(option);
+
+      await firebase
+        .firestore()
+        .collection("posts")
+        .doc(postId)
+        .collection("users")
+        .doc(userId)
+        .set({ selectedOption: option });
+    }
   };
 
   return (
@@ -111,8 +191,6 @@ const UpdatePollScreen = ({ navigation }) => {
       <Card.Title title={text} />
       <Card.Content style={{ marginBottom: 10, marginLeft: -10 }}>
         {options.map((item) => {
-          console.log(item.option);
-          console.log(Math.floor((item.votes / totalVotes) * 100));
           return (
             <>
               <View style={{ display: "flex", flexDirection: "row" }}>
