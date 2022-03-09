@@ -110,18 +110,35 @@ export default class HomeScreen extends React.Component {
               .doc(this.state.userId)
               .get();
 
-            post = {
-              text: doc.data().text,
-              timestamp: doc.data().timestamp,
-              options: options,
-              uid: doc.data().uid,
-              avatar: postAvatar,
-              postOwner: postOwner,
-              type: doc.data().type,
-              docId: doc.id,
-              totalVotes: doc.data().totalVotes,
-              selectedOption: selectedOption.data().selectedOption,
-            };
+            //const docSelectedOptionRef = await firebase.firestore().collection("posts").doc(doc.id).collection("users").doc()
+
+            if (selectedOption.exists) {
+              post = {
+                text: doc.data().text,
+                timestamp: doc.data().timestamp,
+                options: options,
+                uid: doc.data().uid,
+                avatar: postAvatar,
+                postOwner: postOwner,
+                type: doc.data().type,
+                docId: doc.id,
+                totalVotes: doc.data().totalVotes,
+                selectedOption: selectedOption.data().selectedOption,
+              };
+            } else {
+              post = {
+                text: doc.data().text,
+                timestamp: doc.data().timestamp,
+                options: options,
+                uid: doc.data().uid,
+                avatar: postAvatar,
+                postOwner: postOwner,
+                type: doc.data().type,
+                docId: doc.id,
+                totalVotes: doc.data().totalVotes,
+                selectedOption: "",
+              };
+            }
           }
           this.setState({
             posts: [...this.state.posts, post],
@@ -210,25 +227,18 @@ export default class HomeScreen extends React.Component {
               </View>
             </View>
           </Card.Content>
-          <Card.Actions style={{ position: "absolute", bottom: 10 }}>
-            <AntDesign
-              name="hearto"
-              size={24}
-              color="#73788B"
-              style={{ marginRight: 16 }}
-            />
-          </Card.Actions>
         </Card>
       );
     }
     return (
-      <Card style={styles.cardPost}>
+      <Card style={{ marginBottom: 20, width: screenWidth - 30 }}>
         <Card.Title title={post.text} />
         <Card.Content style={{ marginBottom: 10, marginLeft: -10 }}>
           {post.options.map((item) => (
             <>
               <View style={{ display: "flex", flexDirection: "row" }}>
                 <CheckBox
+                  disabled={true}
                   checked={item.option === post.selectedOption}
                   onPress={() => this.Vote(post, item)}
                 />

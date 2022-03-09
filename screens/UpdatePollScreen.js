@@ -187,40 +187,48 @@ const UpdatePollScreen = ({ navigation }) => {
   };
 
   return (
-    <Card style={styles.cardPost}>
-      <Card.Title title={text} />
-      <Card.Content style={{ marginBottom: 10, marginLeft: -10 }}>
-        {options.map((item) => {
-          return (
-            <>
-              <View style={{ display: "flex", flexDirection: "row" }}>
-                <CheckBox
-                  checked={item.option === selectedOption}
-                  onPress={() => Vote(item.option)}
+    <View style={styles.container}>
+      <Card style={styles.cardPost}>
+        <Card.Title title={text} />
+        <Card.Content style={{ marginBottom: 10, marginLeft: 10 }}>
+          {options.map((item) => {
+            return (
+              <>
+                <View style={{ display: "flex", flexDirection: "row" }}>
+                  <CheckBox
+                    checked={item.option === selectedOption}
+                    onPress={() => Vote(item.option)}
+                  />
+                  <Paragraph style={{ marginTop: 17 }}>{item.option}</Paragraph>
+                  <Paragraph
+                    style={{ marginTop: 17, right: 0, position: "absolute" }}
+                  >
+                    {Math.floor((item.votes / totalVotes) * 100)} %
+                  </Paragraph>
+                </View>
+                <ProgressBar
+                  backgroundColor="red"
+                  animated={true}
+                  progress={Math.floor((item.votes / totalVotes) * 100)}
                 />
-                <Paragraph style={{ marginTop: 20 }}>{item.option}</Paragraph>
-              </View>
-              <ProgressBar
-                backgroundColor="red"
-                animated={true}
-                progress={Math.floor((item.votes / totalVotes) * 100)}
-              />
-            </>
-          );
-        })}
-      </Card.Content>
-      <Card.Actions>
-        <Button>Change my vote</Button>
-      </Card.Actions>
-    </Card>
+              </>
+            );
+          })}
+        </Card.Content>
+      </Card>
+    </View>
   );
 };
 
 export default UpdatePollScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+  },
   cardPost: {
-    marginBottom: 20,
-    width: screenWidth - 30,
+    marginTop: 30,
+    width: screenWidth - 20,
   },
 });

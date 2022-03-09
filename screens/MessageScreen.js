@@ -13,6 +13,10 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { TextInput } from "react-native";
 import { FAB } from "react-native-paper";
 import { OverlayProvider, useChatContext, ChannelList } from "stream-chat-expo";
+import API_KEY from "../StreamCredentials";
+import { StreamChat } from "stream-chat";
+
+const client = StreamChat.getInstance(API_KEY);
 
 const MessageScreen = ({ navigation }) => {
   const { client } = useChatContext();

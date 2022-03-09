@@ -9,9 +9,10 @@ import {
   Alert,
   AsyncStorage,
 } from "react-native";
-import { Headline, TextInput, List } from "react-native-paper";
+import { Headline, TextInput, List, Chip } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
 import firebase from "firebase";
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
 
 const PollAddScreen = ({ navigation }) => {
   const [subjectInput, setSubjectInput] = useState("");
@@ -19,6 +20,12 @@ const PollAddScreen = ({ navigation }) => {
   const [optionInput, setOptionInput] = useState("");
   const [docId, setDocId] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pollType, setPollType] = useState("Single select");
+
+  const Types = [
+    { type: "Single select", icon: "info" },
+    { type: "Multiple select", icon: "info" },
+  ];
 
   const handlePost = async () => {
     setLoading(true);
@@ -106,6 +113,27 @@ const PollAddScreen = ({ navigation }) => {
 
   return (
     <View>
+      <View
+        style={{
+          marginTop: 10,
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginHorizontal: 55,
+        }}
+      >
+        {Types.map((item) => (
+          <Chip
+            mode="outlined"
+            icon="poll"
+            selected={item.type === pollType}
+            selectedColor="blue"
+            onPress={() => setPollType(item.type)}
+          >
+            {item.type}
+          </Chip>
+        ))}
+      </View>
       <Input
         style={styles.Input}
         value={subjectInput}
@@ -123,7 +151,11 @@ const PollAddScreen = ({ navigation }) => {
         >
           <Text style={{ marginBottom: 10, fontWeight: "700" }}>{option}</Text>
           <AntDesign
-            style={{ position: "absolute", right: 0, marginRight: 30 }}
+            style={{
+              position: "absolute",
+              right: 0,
+              marginRight: 30,
+            }}
             name="close"
             size={24}
             color="black"

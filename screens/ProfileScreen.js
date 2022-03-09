@@ -209,7 +209,7 @@ export default class ProfileScreen extends Component {
                 })
               }
             >
-              Edit Profile
+              Edit Profie photo
             </Button>
 
             <Button mode="contained" color="red" onPress={() => this.Logout()}>
@@ -274,7 +274,7 @@ export default class ProfileScreen extends Component {
                     </TouchableOpacity>
                   </View>
 
-                  <View style={styles.firstNameSection}>
+                  {/* <View style={styles.firstNameSection}>
                     <Text
                       style={{
                         color: "#A9A9A9",
@@ -290,9 +290,9 @@ export default class ProfileScreen extends Component {
                       placeholder="First Name"
                       onChangeText={(e) => this.setState({ firstName: e })}
                     />
-                  </View>
+                  </View> */}
 
-                  <View style={styles.lastNameSection}>
+                  {/* <View style={styles.lastNameSection}>
                     <Text
                       style={{
                         color: "#A9A9A9",
@@ -308,9 +308,9 @@ export default class ProfileScreen extends Component {
                       placeholder="Second Name"
                       onChangeText={(e) => this.setState({ secondName: e })}
                     />
-                  </View>
+                  </View> */}
 
-                  <View style={styles.phoneNumber}>
+                  {/* <View style={styles.phoneNumber}>
                     <Text
                       style={{
                         color: "#A9A9A9",
@@ -326,7 +326,7 @@ export default class ProfileScreen extends Component {
                       keyboardType="numeric"
                       onChangeText={(e) => this.setState({ phoneNumber: e })}
                     />
-                  </View>
+                  </View> */}
                 </View>
               </TouchableWithoutFeedback>
             </Modal>
