@@ -40,6 +40,7 @@ const PollAddScreen = ({ navigation }) => {
         totalVotes: 0,
         uid: userId,
         timestamp: Date.now(),
+        pollType: pollType,
       })
       .then((docRef) => {
         setDocId(docRef.id);
@@ -119,7 +120,7 @@ const PollAddScreen = ({ navigation }) => {
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
-          marginHorizontal: 55,
+          marginHorizontal: 70,
         }}
       >
         {Types.map((item) => (
@@ -166,16 +167,24 @@ const PollAddScreen = ({ navigation }) => {
         </View>
       ))}
       <TextInput
+        theme={{
+          colors: {
+            primary: "blue",
+            underlineColor: "transparent",
+          },
+        }}
         onChangeText={(e) => {
           setOptionInput(e);
         }}
         multiline
+        mode="outlined"
         value={optionInput}
-        placeholder="Add option"
+        label="Add option"
         style={styles.subjectInput}
         right={
           <TextInput.Icon
             disabled={optionInput !== "" ? false : true}
+            color="blue"
             name="plus"
             onPress={() => {
               setOptions((prevoptions) => [...prevoptions, optionInput]);

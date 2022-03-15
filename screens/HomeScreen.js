@@ -13,7 +13,7 @@ import moment from "moment";
 import ImageModal from "react-native-image-modal";
 import ProgressBar from "react-native-animated-progress";
 import { CheckBox } from "react-native-elements";
-
+import { useRef } from "react";
 import firebase from "firebase";
 
 const screenWidth = Dimensions.get("window").width;
@@ -124,6 +124,7 @@ export default class HomeScreen extends React.Component {
                 docId: doc.id,
                 totalVotes: doc.data().totalVotes,
                 selectedOption: selectedOption.data().selectedOption,
+                pollType: doc.data().pollType,
               };
             } else {
               post = {
@@ -137,6 +138,7 @@ export default class HomeScreen extends React.Component {
                 docId: doc.id,
                 totalVotes: doc.data().totalVotes,
                 selectedOption: "",
+                pollType: doc.data().pollType,
               };
             }
           }
@@ -255,9 +257,13 @@ export default class HomeScreen extends React.Component {
         <Card.Actions>
           <Button
             onPress={() =>
-              this.props.navigation.navigate("UpdatePoll", {
-                postId: post.docId,
-              })
+              post.pollType === "Single select"
+                ? this.props.navigation.navigate("UpdateSingleSelectPoll", {
+                    postId: post.docId,
+                  })
+                : this.props.navigation.navigate("UpdateMultipleSelectPoll", {
+                    postId: post.docId,
+                  })
             }
           >
             Change my vote

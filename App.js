@@ -22,7 +22,7 @@ import RegisterScreen from "./screens/RegisterScreen";
 import LoginScreen from "./screens/LoginScreen";
 import MessageScreen from "./screens/MessageScreen";
 import NotificationScreen from "./screens/NotificationScreen";
-import ProfileScreen from "./screens/ProfileScreen";
+import ProfileScreen2 from "./screens/ProfileScreen2";
 import PostScreen from "./screens/PostScreen";
 import AddChatScreen from "./screens/AddChatScreen";
 import ModalScreen from "./screens/ModalScreen";
@@ -36,7 +36,8 @@ import Searcher from "./screens/Searcher";
 import PersonSearcher from "./screens/PersonSearcher";
 import PollAddScreen from "./screens/PollAddScreen";
 import InformationalPost from "./screens/InformationalAddScreen";
-import UpdatePollScreen from "./screens/UpdatePollScreen";
+import UpdateSingleSelectPollScreen from "./screens/UpdateSingleSelectPollScreen";
+import UpdateMultipleSelectPollScreen from "./screens/UpdateMultipleSelectPollScreen";
 
 //Ignore warnings
 LogBox.ignoreAllLogs(true);
@@ -140,7 +141,7 @@ function MyTabs() {
       />
       <Tabs.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={ProfileScreen2}
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons
@@ -195,7 +196,14 @@ function MyStacks() {
         <Stack.Screen name="StreamChat" component={StreamChatScreen} />
         <Stack.Screen name="Poll" component={PollAddScreen} />
         <Stack.Screen name="Informational" component={InformationalPost} />
-        <Stack.Screen name="UpdatePoll" component={UpdatePollScreen} />
+        <Stack.Screen
+          name="UpdateSingleSelectPoll"
+          component={UpdateSingleSelectPollScreen}
+        />
+        <Stack.Screen
+          name="UpdateMultipleSelectPoll"
+          component={UpdateMultipleSelectPollScreen}
+        />
         <Stack.Screen
           options={{ headerShown: false }}
           name="Searcher"

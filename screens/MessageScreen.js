@@ -227,6 +227,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     margin: 16,
+    backgroundColor: "#1E90FF",
   },
   avatar: {
     width: 35,
@@ -235,7 +236,7 @@ const styles = StyleSheet.create({
   messagesHeader: {
     width: "100%",
     height: 40,
-    backgroundColor: "#6495ED",
+    backgroundColor: "#1E90FF",
     display: "flex",
     flexDirection: "row",
   },

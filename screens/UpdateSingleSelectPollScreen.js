@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import { Text, StyleSheet, Dimensions, View } from "react-native";
 import { useRoute } from "@react-navigation/core";
-import { Card, Paragraph, Button } from "react-native-paper";
+import { Card, Paragraph, Chip } from "react-native-paper";
 import { CheckBox } from "react-native-elements";
 import ProgressBar from "react-native-animated-progress";
 import firebase from "firebase";
@@ -9,7 +9,7 @@ import { AsyncStorage } from "react-native";
 
 const screenWidth = Dimensions.get("window").width;
 
-const UpdatePollScreen = ({ navigation }) => {
+const UpdateSingleSelectPollScreen = ({ navigation }) => {
   const route = useRoute();
   const postId = route.params.postId;
 
@@ -18,6 +18,13 @@ const UpdatePollScreen = ({ navigation }) => {
   const [totalVotes, setTotalVotes] = useState(0);
   const [selectedOption, setSelectedOption] = useState("");
   const [userId, setUserId] = useState("");
+  const [pollType, setPollType] = useState("");
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "Update Poll",
+    });
+  }, [navigation]);
 
   useEffect(() => {
     navigation.addListener("focus", async () => {
@@ -32,6 +39,7 @@ const UpdatePollScreen = ({ navigation }) => {
         .then((result) => {
           setTotalVotes(result.data().totalVotes);
           setText(result.data().text);
+          setPollType(result.data().pollType);
         });
 
       const Options = [];
@@ -53,22 +61,27 @@ const UpdatePollScreen = ({ navigation }) => {
 
       setOptions(Options);
 
-      await firebase
+      const selectedOption = await firebase
         .firestore()
         .collection("posts")
         .doc(postId)
         .collection("users")
         .doc(userId)
-        .get()
-        .then((result) => {
-          setSelectedOption(result.data().selectedOption);
-        });
+        .get();
+
+      if (selectedOption.exists) {
+        setSelectedOption(selectedOption.data().selectedOption);
+      } else {
+        setSelectedOption("");
+      }
     });
   }, []);
 
   const Vote = async (option) => {
     const increment = firebase.firestore.FieldValue.increment(1);
     const decrement = firebase.firestore.FieldValue.increment(-1);
+
+    //If the type of the pall is single select;
 
     //If the user has not voted at all;
     if (selectedOption === "") {
@@ -200,10 +213,18 @@ const UpdatePollScreen = ({ navigation }) => {
                     onPress={() => Vote(item.option)}
                   />
                   <Paragraph style={{ marginTop: 17 }}>{item.option}</Paragraph>
+                  <Chip
+                    mode="flat"
+                    style={{ right: 50, marginTop: 10, position: "absolute" }}
+                  >
+                    {item.votes} Votes
+                  </Chip>
                   <Paragraph
                     style={{ marginTop: 17, right: 0, position: "absolute" }}
                   >
-                    {Math.floor((item.votes / totalVotes) * 100)} %
+                    {totalVotes !== 0
+                      ? `${Math.floor((item.votes / totalVotes) * 100)} %`
+                      : "0 %"}
                   </Paragraph>
                 </View>
                 <ProgressBar
@@ -220,7 +241,7 @@ const UpdatePollScreen = ({ navigation }) => {
   );
 };
 
-export default UpdatePollScreen;
+export default UpdateSingleSelectPollScreen;
 
 const styles = StyleSheet.create({
   container: {

@@ -5,24 +5,10 @@ import { Center, VStack, Skeleton, HStack } from "native-base";
 const NotificationScreen = () => {
   const [text, seText] = useState("");
 
-  useEffect(() => {
-    const subscribe = async () => {
-      firebase
-        .firestore()
-        .collection("test")
-        .doc("testDoc")
-        .onSnapshot(() => {
-          console.log();
-        });
-    };
-
-    subscribe();
-  }, [text]);
-
   return (
     <Center w="100%">
       <VStack
-        w="90%"
+        w="100%"
         maxW="400"
         borderWidth="1"
         space={6}
@@ -35,13 +21,13 @@ const NotificationScreen = () => {
           borderColor: "coolGray.200",
         }}
       >
-        <Skeleton h="40" />
+        <Skeleton h="250" />
         <Skeleton
           borderWidth={1}
           borderColor="coolGray.200"
           endColor="warmGray.50"
-          size="20"
-          rounded="full"
+          size="150"
+          rounded="2xl"
           mt="-70"
         />
         <HStack space="2">
