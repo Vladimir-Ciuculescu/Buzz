@@ -240,9 +240,7 @@ export default class RegisterScreen extends React.Component {
               style={styles.yellowCircle}
             ></Image>
 
-            <Text style={styles.registerMessage}>
-              Register account {marian}
-            </Text>
+            <Text style={styles.registerMessage}>Register account</Text>
 
             <View style={styles.form}>
               <View>

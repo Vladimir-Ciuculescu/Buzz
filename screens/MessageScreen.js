@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState, use } from "react";
 import {
   View,
   StyleSheet,
@@ -12,7 +12,12 @@ import { AntDesign, Feather } from "@expo/vector-icons";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { TextInput } from "react-native";
 import { FAB } from "react-native-paper";
-import { OverlayProvider, useChatContext, ChannelList } from "stream-chat-expo";
+import {
+  OverlayProvider,
+  useChatContext,
+  ChannelList,
+  Chat,
+} from "stream-chat-expo";
 import API_KEY from "../StreamCredentials";
 import { StreamChat } from "stream-chat";
 
@@ -24,14 +29,14 @@ const MessageScreen = ({ navigation }) => {
   const [currentUser, setCurrentUser] = useState("");
   const [currentUserName, setCurrentUserName] = useState("");
   const [UserId, setUserId] = useState("");
-  const [isReady, SetIsReady] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [oneWeek, setOneWeek] = useState(new Date());
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    console.log("esef");
     const result = navigation.addListener("focus", () => {
       const fetchUser = async () => {
-        const user = await AsyncStorage.getItem("user");
         const userId = await AsyncStorage.getItem("userId");
         setUserId(userId);
 
@@ -43,10 +48,14 @@ const MessageScreen = ({ navigation }) => {
       fetchUser();
     });
 
+    setTimeout(() => {
+      setLoading(true);
+    }, 2000);
+
     return result;
   }, []);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       const fetchData = async () => {
         const user = await AsyncStorage.getItem("user");
@@ -170,7 +179,6 @@ const MessageScreen = ({ navigation }) => {
               onSelect={(channel) => enterChannel(channel)}
               PreviewTitle={CustomPreviewTitle}
             />
-
             <View style={styles.messagesHeader}>
               <Text style={{ alignSelf: "center", marginLeft: 10 }}>
                 Channels

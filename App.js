@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, LogBox, StatusBar, Platform } from "react-native";
 import { NativeBaseProvider, themeTools, extendTheme } from "native-base";
 import {
@@ -8,6 +8,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import firebase from "firebase";
+
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -231,6 +232,14 @@ const DrawerNavigator = () => {
 };
 
 const Application = () => {
+  const [token, setToken] = useState("");
+
+  // useEffect(() => {
+  //   firebase.messaging().getToken().then(setToken);
+  // }, []);
+
+  console.log(firebase);
+
   return (
     <NavigationContainer>
       <Chat client={client}>

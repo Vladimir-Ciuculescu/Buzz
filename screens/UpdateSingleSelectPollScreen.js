@@ -1,15 +1,17 @@
-import React, { useEffect, useState, useLayoutEffect } from "react";
-import { Text, StyleSheet, Dimensions, View } from "react-native";
+import React, { useEffect, useState, useLayoutEffect, useRef } from "react";
+import { Text, StyleSheet, Dimensions, View, Animated } from "react-native";
 import { useRoute } from "@react-navigation/core";
-import { Card, Paragraph, Chip } from "react-native-paper";
+import { Card, Paragraph, Chip, Provider, Button } from "react-native-paper";
 import { CheckBox } from "react-native-elements";
 import ProgressBar from "react-native-animated-progress";
 import firebase from "firebase";
 import { AsyncStorage } from "react-native";
+import RBSheet from "react-native-raw-bottom-sheet";
 
 const screenWidth = Dimensions.get("window").width;
 
 const UpdateSingleSelectPollScreen = ({ navigation }) => {
+  const refRBSheet = useRef();
   const route = useRoute();
   const postId = route.params.postId;
 
@@ -19,6 +21,8 @@ const UpdateSingleSelectPollScreen = ({ navigation }) => {
   const [selectedOption, setSelectedOption] = useState("");
   const [userId, setUserId] = useState("");
   const [pollType, setPollType] = useState("");
+  const [voters, setVoters] = useState([]);
+  const [votersIds, setVotersIds] = useState([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -199,45 +203,115 @@ const UpdateSingleSelectPollScreen = ({ navigation }) => {
     }
   };
 
+  const getOptionVoters = async (option) => {
+    refRBSheet.current.open();
+
+    //await firebase.firestore().collection("posts").doc(postId).collection("users")
+    const Ids = [];
+    await firebase
+      .firestore()
+      .collection("posts")
+      .doc(postId)
+      .collection("users")
+      .where("selectedOption", "==", option)
+      .get()
+      .then((querySnapShot) => {
+        querySnapShot.forEach((doc) => {
+          Ids.push(doc.id);
+        });
+      });
+    setVotersIds(Ids);
+  };
+
+  useEffect(() => {
+    const getVoters = async () => {
+      await firebase
+        .firestore()
+        .collection("accounts")
+        .where("userId", "in", votersIds)
+        .get()
+        .then((query) => {
+          query.forEach((doc) => {
+            setVoters((oldArray) => [
+              ...oldArray,
+              {
+                firstName: doc.data().firstName,
+                lastName: doc.data().lastName,
+              },
+            ]);
+            console.log(doc.id);
+          });
+        });
+    };
+
+    getVoters();
+  }, [votersIds]);
+
   return (
-    <View style={styles.container}>
-      <Card style={styles.cardPost}>
-        <Card.Title title={text} />
-        <Card.Content style={{ marginBottom: 10, marginLeft: 10 }}>
-          {options.map((item) => {
-            return (
-              <>
-                <View style={{ display: "flex", flexDirection: "row" }}>
-                  <CheckBox
-                    checked={item.option === selectedOption}
-                    onPress={() => Vote(item.option)}
+    <Provider>
+      <View style={styles.container}>
+        <Card style={styles.cardPost}>
+          <Card.Title title={text} />
+          <Card.Content style={{ marginBottom: 10, marginLeft: 10 }}>
+            {options.map((item) => {
+              return (
+                <>
+                  <View style={{ display: "flex", flexDirection: "row" }}>
+                    <CheckBox
+                      checked={item.option === selectedOption}
+                      onPress={() => Vote(item.option)}
+                    />
+                    <Paragraph style={{ marginTop: 17 }}>
+                      {item.option}
+                    </Paragraph>
+                    <Chip
+                      onPress={() => getOptionVoters(item.option)}
+                      mode="flat"
+                      style={{ right: 50, marginTop: 10, position: "absolute" }}
+                    >
+                      {item.votes} Votes
+                    </Chip>
+                    <Paragraph
+                      style={{ marginTop: 17, right: 0, position: "absolute" }}
+                    >
+                      {totalVotes !== 0
+                        ? `${Math.floor((item.votes / totalVotes) * 100)} %`
+                        : "0 %"}
+                    </Paragraph>
+                  </View>
+                  <ProgressBar
+                    backgroundColor="red"
+                    animated={true}
+                    progress={Math.floor((item.votes / totalVotes) * 100)}
                   />
-                  <Paragraph style={{ marginTop: 17 }}>{item.option}</Paragraph>
-                  <Chip
-                    mode="flat"
-                    style={{ right: 50, marginTop: 10, position: "absolute" }}
-                  >
-                    {item.votes} Votes
-                  </Chip>
-                  <Paragraph
-                    style={{ marginTop: 17, right: 0, position: "absolute" }}
-                  >
-                    {totalVotes !== 0
-                      ? `${Math.floor((item.votes / totalVotes) * 100)} %`
-                      : "0 %"}
-                  </Paragraph>
-                </View>
-                <ProgressBar
-                  backgroundColor="red"
-                  animated={true}
-                  progress={Math.floor((item.votes / totalVotes) * 100)}
-                />
-              </>
-            );
-          })}
-        </Card.Content>
-      </Card>
-    </View>
+                </>
+              );
+            })}
+          </Card.Content>
+          <Card.Actions></Card.Actions>
+        </Card>
+
+        <RBSheet
+          height={500}
+          ref={refRBSheet}
+          closeOnDragDown={true}
+          closeOnPressMask={false}
+          onClose={() => setVoters([])}
+          customStyles={{
+            wrapper: {
+              backgroundColor: "transparent",
+            },
+            draggableIcon: {
+              backgroundColor: "#000",
+            },
+          }}
+        >
+          {voters.map((item) => (
+            <Text>{item.firstName + item.lastName}</Text>
+          ))}
+        </RBSheet>
+      </View>
+    </Provider>
   );
 };
 
@@ -251,5 +325,21 @@ const styles = StyleSheet.create({
   cardPost: {
     marginTop: 30,
     width: screenWidth - 20,
+  },
+  root: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      height: -3,
+      width: 0,
+    },
+    shadowOpacity: 0.24,
+    shadowRadius: 4,
   },
 });

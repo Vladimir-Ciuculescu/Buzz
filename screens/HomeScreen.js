@@ -7,7 +7,14 @@ import {
   FlatList,
   Dimensions,
 } from "react-native";
-import { Snackbar, Card, Paragraph, Avatar, Button } from "react-native-paper";
+import {
+  Snackbar,
+  Card,
+  Paragraph,
+  Avatar,
+  Button,
+  Chip,
+} from "react-native-paper";
 import { Ionicons, AntDesign, Feather } from "@expo/vector-icons";
 import moment from "moment";
 import ImageModal from "react-native-image-modal";
@@ -235,6 +242,19 @@ export default class HomeScreen extends React.Component {
     return (
       <Card style={{ marginBottom: 20, width: screenWidth - 30 }}>
         <Card.Title title={post.text} />
+
+        <Chip
+          icon="poll"
+          style={{
+            width: "35%",
+            position: "absolute",
+            right: 0,
+            marginTop: 10,
+            marginRight: 10,
+          }}
+        >
+          {post.pollType}
+        </Chip>
         <Card.Content style={{ marginBottom: 10, marginLeft: -10 }}>
           {post.options.map((item) => (
             <>
