@@ -7,20 +7,9 @@ import {
   FlatList,
   Dimensions,
 } from "react-native";
-import {
-  Snackbar,
-  Card,
-  Paragraph,
-  Avatar,
-  Button,
-  Chip,
-} from "react-native-paper";
-import { Ionicons, AntDesign, Feather } from "@expo/vector-icons";
+import { Snackbar, Card, Avatar, Button, Chip } from "react-native-paper";
 import moment from "moment";
 import ImageModal from "react-native-image-modal";
-import ProgressBar from "react-native-animated-progress";
-import { CheckBox } from "react-native-elements";
-import { useRef } from "react";
 import firebase from "firebase";
 
 const screenWidth = Dimensions.get("window").width;
@@ -240,42 +229,53 @@ export default class HomeScreen extends React.Component {
       );
     }
     return (
-      <Card style={{ marginBottom: 20, width: screenWidth - 30 }}>
-        <Card.Title title={post.text} />
-
-        <Chip
-          icon="poll"
-          style={{
-            width: "35%",
-            position: "absolute",
-            right: 0,
-            marginTop: 10,
-            marginRight: 10,
-          }}
-        >
-          {post.pollType}
-        </Chip>
+      <Card style={styles.cardPost}>
         <Card.Content style={{ marginBottom: 10, marginLeft: -10 }}>
-          {post.options.map((item) => (
-            <>
-              <View style={{ display: "flex", flexDirection: "row" }}>
-                <CheckBox
-                  disabled={true}
-                  checked={item.option === post.selectedOption}
-                  onPress={() => this.Vote(post, item)}
-                />
-                <Paragraph style={{ marginTop: 20 }}>{item.option}</Paragraph>
-              </View>
-              <ProgressBar
-                backgroundColor="red"
-                animated={true}
-                progress={30}
+          <View style={{ flexDirection: "column" }}>
+            <View style={{ flexDirection: "row" }}>
+              <Avatar.Image
+                size={40}
+                source={{
+                  uri: post.avatar,
+                }}
               />
-            </>
-          ))}
+              <View style={{ flexDirection: "column", marginLeft: 10 }}>
+                <Text>{post.postOwner}</Text>
+                <Text style={styles.timestamp}>
+                  {moment(post.timestamp).fromNow()}
+                </Text>
+              </View>
+              <Chip
+                style={{
+                  width: "35%",
+                  position: "absolute",
+                  right: 0,
+                  marginRight: 10,
+                }}
+                icon="poll"
+              >
+                {post.pollType}
+              </Chip>
+            </View>
+            <Text style={styles.name}>{post.text}</Text>
+            <View
+              style={{
+                alignSelf: "center",
+              }}
+            >
+              <Card.Cover
+                style={{ width: screenWidth - 20, height: screenWidth - 20 }}
+                source={{
+                  uri: "https://avatars.slack-edge.com/2020-05-09/1112549471909_7543dde099089941d3c3_512.png",
+                }}
+              />
+            </View>
+          </View>
         </Card.Content>
-        <Card.Actions>
+        <Card.Actions style={{ justifyContent: "center" }}>
           <Button
+            mode="contained"
+            style={{ width: screenWidth - 80, marginTop: -20 }}
             onPress={() =>
               post.pollType === "Single select"
                 ? this.props.navigation.navigate("UpdateSingleSelectPoll", {
@@ -286,7 +286,7 @@ export default class HomeScreen extends React.Component {
                   })
             }
           >
-            Change my vote
+            Vote
           </Button>
         </Card.Actions>
       </Card>
@@ -314,7 +314,7 @@ export default class HomeScreen extends React.Component {
               this.setState({ visible: false });
             },
           }}
-          style={{ backgroundColor: "#258e25" }}
+          style={{ backgroundColor: "blue", width: screenWidth - 18 }}
           theme={{ colors: { accent: "white" } }}
           onDismiss={() => this.setState({ visible: false })}
           duration={2000}
@@ -325,23 +325,6 @@ export default class HomeScreen extends React.Component {
     );
   }
 }
-/*
-<Snackbar
-          visible={this.state.visible}
-          action={{
-            label: "Close",
-            onPress: () => {
-              this.setState({ visible: false });
-            },
-          }}
-          style={{ backgroundColor: "#258e25" }}
-          theme={{ colors: { accent: "white" } }}
-          onDismiss={() => this.setState({ visible: false })}
-          duration={2000}
-        >
-          Logged in as {this.state.user}
-        </Snackbar>
-*/
 
 const styles = StyleSheet.create({
   container: {
@@ -394,6 +377,8 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontWeight: "500",
     color: "#454D65",
+    marginTop: 15,
+    marginBottom: 10,
   },
   timestamp: {
     fontSize: 11,

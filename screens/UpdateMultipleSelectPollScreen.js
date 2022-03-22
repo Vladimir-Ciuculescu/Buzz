@@ -1,14 +1,16 @@
-import React, { useEffect, useState, useLayoutEffect } from "react";
+import React, { useEffect, useState, useLayoutEffect, useRef } from "react";
 import { AsyncStorage, StyleSheet, Dimensions, View } from "react-native";
 import { useRoute } from "@react-navigation/core";
 import firebase from "firebase";
-import { Card, Paragraph, Chip } from "react-native-paper";
-import { CheckBox } from "react-native-elements";
+import { Card, Paragraph, Chip, List } from "react-native-paper";
+import { CheckBox, Avatar } from "react-native-elements";
 import ProgressBar from "react-native-animated-progress";
+import RBSheet from "react-native-raw-bottom-sheet";
 
 const screenWidth = Dimensions.get("window").width;
 
 const UpdateMultipleSelectPollScreen = ({ navigation }) => {
+  const refRBSheet = useRef();
   const route = useRoute();
   const postId = route.params.postId;
 
@@ -18,6 +20,8 @@ const UpdateMultipleSelectPollScreen = ({ navigation }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [userId, setUserId] = useState("");
   const [pollType, setPollType] = useState("");
+  const [voters, setVoters] = useState([]);
+  const [votersIds, setVotersIds] = useState([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -42,8 +46,6 @@ const UpdateMultipleSelectPollScreen = ({ navigation }) => {
         });
 
       const Options = [];
-
-      console.log(totalVotes);
 
       await firebase
         .firestore()
@@ -85,6 +87,16 @@ const UpdateMultipleSelectPollScreen = ({ navigation }) => {
       setTotalVotes(totalVotes - 1);
       setSelectedOptions(selectedOptions.filter((item) => item !== option));
 
+      const modifiedOption = options.find((item) => item.option === option);
+
+      setOptions((oldOptions) => {
+        return oldOptions.map((item) => {
+          return item === modifiedOption
+            ? { option: item.option, votes: item.votes - 1 }
+            : item;
+        });
+      });
+
       await firebase
         .firestore()
         .collection("posts")
@@ -104,6 +116,14 @@ const UpdateMultipleSelectPollScreen = ({ navigation }) => {
       setSelectedOptions((oldOptions) => [...oldOptions, option]);
       setTotalVotes(totalVotes + 1);
 
+      setOptions((oldOptions) => {
+        return oldOptions.map((item) => {
+          return item.option === option
+            ? { option: item.option, votes: item.votes + 1 }
+            : item;
+        });
+      });
+
       await firebase
         .firestore()
         .collection("posts")
@@ -121,6 +141,50 @@ const UpdateMultipleSelectPollScreen = ({ navigation }) => {
         });
     }
   };
+
+  const getOptionVoters = async (option) => {
+    const Ids = [];
+    await firebase
+      .firestore()
+      .collection("posts")
+      .doc(postId)
+      .collection("users")
+      .where("selectedOptions", "array-contains", option)
+      .get()
+      .then((querySnapShot) => {
+        querySnapShot.forEach((doc) => {
+          Ids.push(doc.id);
+          console.log("awdwad", doc.id);
+        });
+      });
+    setVotersIds(Ids);
+
+    refRBSheet.current.open();
+  };
+
+  useEffect(() => {
+    const getVoters = async () => {
+      await firebase
+        .firestore()
+        .collection("accounts")
+        .where("userId", "in", votersIds)
+        .get()
+        .then((query) => {
+          query.forEach((doc) => {
+            setVoters((oldArray) => [
+              ...oldArray,
+              {
+                firstName: doc.data().firstName,
+                lastName: doc.data().lastName,
+                avatar: doc.data().avatar,
+              },
+            ]);
+          });
+        });
+    };
+
+    getVoters();
+  }, [votersIds]);
 
   useEffect(() => {
     const updateSelectedOptions = async () => {
@@ -152,16 +216,12 @@ const UpdateMultipleSelectPollScreen = ({ navigation }) => {
                     onPress={() => Vote(item.option)}
                   />
                   <Paragraph style={{ marginTop: 17 }}>{item.option}</Paragraph>
-                  <Paragraph
-                    style={{ marginTop: 17, right: 0, position: "absolute" }}
-                  >
-                    {totalVotes !== 0
-                      ? `${Math.floor((item.votes / totalVotes) * 100)} %`
-                      : "0 %"}
-                  </Paragraph>
+
                   <Chip
+                    disabled={item.votes === 0}
+                    onPress={() => getOptionVoters(item.option)}
                     mode="flat"
-                    style={{ right: 50, marginTop: 10, position: "absolute" }}
+                    style={{ right: 0, marginTop: 10, position: "absolute" }}
                   >
                     {item.votes} Votes
                   </Chip>
@@ -176,6 +236,30 @@ const UpdateMultipleSelectPollScreen = ({ navigation }) => {
           })}
         </Card.Content>
       </Card>
+      <RBSheet
+        height={500}
+        ref={refRBSheet}
+        closeOnDragDown={true}
+        closeOnPressMask={true}
+        onClose={() => setVoters([])}
+        customStyles={{
+          wrapper: {
+            backgroundColor: "transparent",
+          },
+          draggableIcon: {
+            backgroundColor: "#000",
+          },
+        }}
+      >
+        <View style={{ marginLeft: 20 }}>
+          {voters.map((item) => (
+            <List.Item
+              title={item.firstName + " " + item.lastName}
+              left={() => <Avatar rounded source={{ uri: item.avatar }} />}
+            />
+          ))}
+        </View>
+      </RBSheet>
     </View>
   );
 };

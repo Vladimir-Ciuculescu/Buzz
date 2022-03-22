@@ -161,18 +161,6 @@ const PostScreen = ({ navigation }) => {
               <Text style={{ marginLeft: 20, fontSize: 20, marginTop: 13 }}>
                 {fullName}
               </Text>
-
-              {/* <View style={styles.options}>
-                <TouchableOpacity onPress={pickImage}>
-                  <FontAwesome name="photo" size={24} color="black" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={openCamera}
-                  style={{ marginLeft: 20 }}
-                >
-                  <Entypo name="camera" size={24} color="black" />
-                </TouchableOpacity>
-              </View> */}
             </View>
             <Text
               style={{

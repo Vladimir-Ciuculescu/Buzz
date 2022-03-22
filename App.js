@@ -232,14 +232,6 @@ const DrawerNavigator = () => {
 };
 
 const Application = () => {
-  const [token, setToken] = useState("");
-
-  // useEffect(() => {
-  //   firebase.messaging().getToken().then(setToken);
-  // }, []);
-
-  console.log(firebase);
-
   return (
     <NavigationContainer>
       <Chat client={client}>

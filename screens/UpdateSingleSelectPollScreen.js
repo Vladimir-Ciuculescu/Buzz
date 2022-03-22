@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useLayoutEffect, useRef } from "react";
 import { Text, StyleSheet, Dimensions, View, Animated } from "react-native";
 import { useRoute } from "@react-navigation/core";
-import { Card, Paragraph, Chip, Provider, Button } from "react-native-paper";
-import { CheckBox } from "react-native-elements";
+import { Card, Paragraph, Chip, Provider, List } from "react-native-paper";
+import { CheckBox, Avatar } from "react-native-elements";
 import ProgressBar from "react-native-animated-progress";
 import firebase from "firebase";
 import { AsyncStorage } from "react-native";
@@ -204,9 +204,6 @@ const UpdateSingleSelectPollScreen = ({ navigation }) => {
   };
 
   const getOptionVoters = async (option) => {
-    refRBSheet.current.open();
-
-    //await firebase.firestore().collection("posts").doc(postId).collection("users")
     const Ids = [];
     await firebase
       .firestore()
@@ -221,6 +218,8 @@ const UpdateSingleSelectPollScreen = ({ navigation }) => {
         });
       });
     setVotersIds(Ids);
+
+    refRBSheet.current.open();
   };
 
   useEffect(() => {
@@ -237,9 +236,9 @@ const UpdateSingleSelectPollScreen = ({ navigation }) => {
               {
                 firstName: doc.data().firstName,
                 lastName: doc.data().lastName,
+                avatar: doc.data().avatar,
               },
             ]);
-            console.log(doc.id);
           });
         });
     };
@@ -265,6 +264,7 @@ const UpdateSingleSelectPollScreen = ({ navigation }) => {
                       {item.option}
                     </Paragraph>
                     <Chip
+                      disabled={item.votes === 0}
                       onPress={() => getOptionVoters(item.option)}
                       mode="flat"
                       style={{ right: 50, marginTop: 10, position: "absolute" }}
@@ -295,7 +295,7 @@ const UpdateSingleSelectPollScreen = ({ navigation }) => {
           height={500}
           ref={refRBSheet}
           closeOnDragDown={true}
-          closeOnPressMask={false}
+          closeOnPressMask={true}
           onClose={() => setVoters([])}
           customStyles={{
             wrapper: {
@@ -306,9 +306,14 @@ const UpdateSingleSelectPollScreen = ({ navigation }) => {
             },
           }}
         >
-          {voters.map((item) => (
-            <Text>{item.firstName + item.lastName}</Text>
-          ))}
+          <View style={{ marginLeft: 20 }}>
+            {voters.map((item) => (
+              <List.Item
+                title={item.firstName + " " + item.lastName}
+                left={() => <Avatar rounded source={{ uri: item.avatar }} />}
+              />
+            ))}
+          </View>
         </RBSheet>
       </View>
     </Provider>
