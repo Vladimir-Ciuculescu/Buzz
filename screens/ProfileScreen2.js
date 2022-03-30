@@ -75,188 +75,146 @@ const ProfileScreen2 = ({ navigation, color }) => {
     fetchUser();
   }, []);
 
-  if (loadingEditProfile) {
-    return (
-      <Center w="100%">
-        <VStack
-          w="100%"
-          maxW="400"
-          borderWidth="1"
-          space={6}
-          rounded="md"
-          alignItems="center"
-          _dark={{
-            borderColor: "coolGray.500",
+  return (
+    <ParallaxScrollView
+      backgroundColor="white"
+      renderForeground={() => (
+        <Image
+          source={{
+            uri: "https://engineering.fb.com/wp-content/uploads/2016/04/yearinreview.jpg",
           }}
-          _light={{
-            borderColor: "coolGray.200",
-          }}
-        >
-          <Skeleton h="250" />
-          <Skeleton
-            borderWidth={1}
-            borderColor="coolGray.200"
-            endColor="warmGray.50"
-            size="150"
-            rounded="2xl"
-            mt="-70"
-          />
-          <HStack space="2">
-            <Skeleton size="5" rounded="full" />
-            <Skeleton size="5" rounded="full" />
-            <Skeleton size="5" rounded="full" />
-            <Skeleton size="5" rounded="full" />
-            <Skeleton size="5" rounded="full" />
-          </HStack>
-          <Skeleton.Text lines={3} alignItems="center" px="12" />
-          <Skeleton mb="3" w="40" rounded="20" />
-        </VStack>
-      </Center>
-    );
-  } else {
-    return (
-      <ParallaxScrollView
-        backgroundColor="white"
-        renderForeground={() => (
+        />
+      )}
+      renderBackground={() => (
+        <View>
           <Image
+            style={{
+              height: "100%",
+              width: "100%",
+              opacity: 0.5,
+              zIndex: -1,
+            }}
             source={{
-              uri: "https://engineering.fb.com/wp-content/uploads/2016/04/yearinreview.jpg",
+              uri: avatar,
             }}
           />
-        )}
-        renderBackground={() => (
-          <View>
+          <View
+            style={{
+              backgroundColor: "transparent",
+              position: "absolute",
+              opacity: 0.5,
+              width: "100%",
+              height: "100%",
+            }}
+          ></View>
+        </View>
+      )}
+      parallaxHeaderHeight={250}
+    >
+      <View>
+        <View style={styles.profilePicture}>
+          <Shadow>
             <Image
               style={{
-                height: "100%",
-                width: "100%",
-                opacity: 0.5,
-                zIndex: -1,
+                alignSelf: "center",
+                borderRadius: 20,
+                borderWidth: 1,
+                borderColor: "white",
               }}
+              height={150}
+              width={150}
               source={{
                 uri: avatar,
               }}
             />
-            <View
-              style={{
-                backgroundColor: "transparent",
-                position: "absolute",
-                opacity: 0.5,
-                width: "100%",
-                height: "100%",
-              }}
-            ></View>
-          </View>
-        )}
-        parallaxHeaderHeight={250}
-      >
-        <View>
-          <View style={styles.profilePicture}>
-            <Shadow>
-              <Image
-                style={{
-                  alignSelf: "center",
-                  borderRadius: 20,
-                  borderWidth: 1,
-                  borderColor: "white",
-                }}
-                height={150}
-                width={150}
-                source={{
-                  uri: avatar,
-                }}
-              />
-            </Shadow>
-          </View>
+          </Shadow>
+        </View>
 
-          <View style={styles.container}>
-            <View style={styles.accountHeader}>
-              <View style={styles.captionSection}>
-                <Title
-                  style={{ fontSize: 24, marginTop: 15, alignSelf: "center" }}
-                >
-                  {user}
-                </Title>
-              </View>
-              <View style={styles.accountInfo}>
-                <View style={{ flexDirection: "row" }}>
-                  <Feather name="mail" size={24} color="black" />
-                  <Text style={{ marginLeft: 5, textAlignVertical: "center" }}>
-                    {email}
-                  </Text>
-                </View>
+        <View style={styles.container}>
+          <View style={styles.accountHeader}>
+            <View style={styles.captionSection}>
+              <Title
+                style={{ fontSize: 24, marginTop: 15, alignSelf: "center" }}
+              >
+                {user}
+              </Title>
+            </View>
+            <View style={styles.accountInfo}>
+              <View style={{ flexDirection: "row" }}>
+                <Feather name="mail" size={24} color="black" />
+                <Text style={{ marginLeft: 5, textAlignVertical: "center" }}>
+                  {email}
+                </Text>
               </View>
             </View>
-
-            <Button
-              icon="pencil"
-              mode="contained"
-              style={styles.editProfile}
-              onPress={() => settoggleEditProfile(true)}
-            >
-              Edit Profile Picture
-            </Button>
-
-            <Modal animationType="slide" visible={toggleEditProfile}>
-              <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View>
-                  <View style={styles.headerSection}>
-                    <TouchableOpacity
-                      onPress={() => settoggleEditProfile(false)}
-                    >
-                      <Text style={{ fontSize: 16 }}>Cancel</Text>
-                    </TouchableOpacity>
-
-                    <Text style={{ fontSize: 16, fontWeight: "700" }}>
-                      Edit Profile
-                    </Text>
-
-                    <TouchableOpacity onPress={() => this.updateProfile()}>
-                      {loadingEditProfile ? (
-                        <ActivityIndicator color="green"></ActivityIndicator>
-                      ) : (
-                        <Text
-                          style={{
-                            fontSize: 16,
-                            color: "#65a84d",
-                            fontWeight: "700",
-                          }}
-                        >
-                          Done x``
-                        </Text>
-                      )}
-                    </TouchableOpacity>
-                  </View>
-
-                  <View style={styles.photoSection}>
-                    <TouchableOpacity style={styles.avatar}>
-                      {avatar ? (
-                        <Image
-                          source={{ uri: avatar }}
-                          style={{ height: 100, width: 100, borderRadius: 50 }}
-                        />
-                      ) : (
-                        <Image
-                          source={require("./../assets/profile.png")}
-                          style={{ height: 100, width: 100 }}
-                        />
-                      )}
-                    </TouchableOpacity>
-                    <Image source={{ uri: avatar }} />
-                    <TouchableOpacity onPress={() => {}}>
-                      <Text style={{ color: "#65a84d" }}>
-                        Choose a profile picture
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </TouchableWithoutFeedback>
-            </Modal>
           </View>
+
+          <Button
+            icon="pencil"
+            mode="contained"
+            style={styles.editProfile}
+            onPress={() => settoggleEditProfile(true)}
+          >
+            Edit Profile Picture
+          </Button>
+
+          <Modal animationType="slide" visible={toggleEditProfile}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View>
+                <View style={styles.headerSection}>
+                  <TouchableOpacity onPress={() => settoggleEditProfile(false)}>
+                    <Text style={{ fontSize: 16 }}>Cancel</Text>
+                  </TouchableOpacity>
+
+                  <Text style={{ fontSize: 16, fontWeight: "700" }}>
+                    Edit Profile
+                  </Text>
+
+                  <TouchableOpacity onPress={() => this.updateProfile()}>
+                    {loadingEditProfile ? (
+                      <ActivityIndicator color="green"></ActivityIndicator>
+                    ) : (
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          color: "#65a84d",
+                          fontWeight: "700",
+                        }}
+                      >
+                        Done x``
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.photoSection}>
+                  <TouchableOpacity style={styles.avatar}>
+                    {avatar ? (
+                      <Image
+                        source={{ uri: avatar }}
+                        style={{ height: 100, width: 100, borderRadius: 50 }}
+                      />
+                    ) : (
+                      <Image
+                        source={require("./../assets/profile.png")}
+                        style={{ height: 100, width: 100 }}
+                      />
+                    )}
+                  </TouchableOpacity>
+                  <Image source={{ uri: avatar }} />
+                  <TouchableOpacity onPress={() => {}}>
+                    <Text style={{ color: "#65a84d" }}>
+                      Choose a profile picture
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </Modal>
         </View>
-      </ParallaxScrollView>
-    );
-  }
+      </View>
+    </ParallaxScrollView>
+  );
 };
 
 export default ProfileScreen2;

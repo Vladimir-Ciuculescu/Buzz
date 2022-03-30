@@ -49,9 +49,9 @@ export default class ProfileScreen extends Component {
   }
 
   componentDidMount() {
-    this.props.navigation.addListener("state", () => {
-      this.getUser();
-    });
+    //this.props.navigation.addListener("state", () => {
+    this.getUser();
+    //});
   }
 
   Logout = async () => {

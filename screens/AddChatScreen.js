@@ -1,5 +1,11 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  StatusBar,
+} from "react-native";
 import { Input } from "react-native-elements";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Feather } from "@expo/vector-icons";
@@ -55,6 +61,7 @@ const AddChatScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       <Input
         autoCapitalize="none"
         placeholder="Enter the chat name"
