@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,16 +9,36 @@ import {
   AsyncStorage,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Divider, Drawer, Switch } from "react-native-paper";
+import { Drawer, Switch, DefaultTheme } from "react-native-paper";
 import API_KEY from "../StreamCredentials";
 import { StreamChat } from "stream-chat";
+import { useSelector, useDispatch } from "react-redux";
+import { changeTheme } from "../redux/theme/theme";
+import { useColorScheme } from "react-native";
+import { DarkTheme, NavigationContainer } from "@react-navigation/native";
+
+const tema = {
+  ...DefaultTheme,
+  roundness: 2,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: "#3498db",
+    accent: "#f1c40f",
+  },
+};
 
 const client = StreamChat.getInstance(API_KEY);
 
 const windowHeight = Dimensions.get("window").height;
 
-const SettingsScreen = ({ navigation }) => {
-  const [toggleSwitch, setToggleSwitch] = useState(false);
+const SettingsScreen = ({ navigation, color, anticolor }) => {
+  const { mode } = useSelector((state) => state.theme);
+  const dispatch = useDispatch();
+  const [theme, setTheme] = useState(mode);
+
+  const [toggleSwitch, setToggleSwitch] = useState(
+    mode === "light" ? true : false
+  );
 
   const LogOut = () => {
     Alert.alert("Logout", "Are you sure you want to log out ?", [
@@ -38,24 +58,51 @@ const SettingsScreen = ({ navigation }) => {
     ]);
   };
 
-  const onToggleSwitch = () => setToggleSwitch(!toggleSwitch);
+  useEffect(() => {
+    if (toggleSwitch === true) {
+      setTheme("light");
+    } else {
+      setTheme("dark");
+    }
+  }, [toggleSwitch]);
+
+  const onToggleSwitch = () => {
+    console.log(theme);
+    setToggleSwitch(!toggleSwitch);
+    if (theme === "dark") {
+      setTheme("light");
+      dispatch(changeTheme("light"));
+    } else {
+      setTheme("dark");
+      dispatch(changeTheme("dark"));
+    }
+  };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: color }}>
       <Drawer.Section
         title="Preferences"
-        style={{ marginTop: windowHeight - 400 }}
+        style={{
+          marginTop: windowHeight - 400,
+          backgroundColor: color,
+        }}
       >
         <View style={styles.preference}>
-          <Text>Theme</Text>
+          <Text style={{ color: anticolor }}>Dark Theme</Text>
           <Switch value={toggleSwitch} onValueChange={onToggleSwitch} />
         </View>
       </Drawer.Section>
-      <Drawer.Section style={{ marginTop: 200 }}>
-        <TouchableOpacity onPress={LogOut}>
+      <Drawer.Section
+        style={{
+          marginTop: 200,
+          backgroundColor: color,
+        }}
+      >
+        <TouchableOpacity style={{ backgroundColor: color }} onPress={LogOut}>
           <Drawer.Item
+            style={{ backgroundColor: color, color: "red" }}
             icon={() => (
-              <Ionicons name="exit-outline" size={24} color="black" />
+              <Ionicons name="exit-outline" size={24} color={anticolor} />
             )}
             label="Sign out"
           />

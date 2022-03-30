@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, LogBox, StatusBar, Platform } from "react-native";
+import { Text, View, LogBox, StatusBar, StyleSheet } from "react-native";
 import { NativeBaseProvider, themeTools, extendTheme } from "native-base";
 import {
   AntDesign,
@@ -42,6 +42,7 @@ import UpdateMultipleSelectPollScreen from "./screens/UpdateMultipleSelectPollSc
 import { Provider } from "react-redux";
 import { store, persistor } from "./redux/store";
 import { PersistGate } from "redux-persist/integration/react";
+import { useSelector, connect } from "react-redux";
 
 //Ignore warnings
 LogBox.ignoreAllLogs(true);
@@ -68,12 +69,22 @@ const client = StreamChat.getInstance(API_KEY);
 const Tabs = createBottomTabNavigator();
 
 function MyTabs() {
+  const { mode } = useSelector((state) => state.theme);
+
   return (
     <Tabs.Navigator
       screenOptions={{
-        tabBarActiveTintColor: "blue",
+        tabBarActiveTintColor: "#1a75ff",
         tabBarInactiveTintColor: "grey",
+        headerTintColor: `${mode === "light" ? "#303030" : "white"}`,
+        headerStyle: {
+          backgroundColor: `${mode === "light" ? "white" : "#101010"}`,
+        },
+        tabBarStyle: {
+          backgroundColor: `${mode === "light" ? "white" : "#101010"}`,
+        },
       }}
+      t
     >
       <Tabs.Screen
         name="HomeScreen"
@@ -83,7 +94,7 @@ function MyTabs() {
             <Ionicons
               name={focused ? "ios-home" : "ios-home-outline"}
               size={24}
-              color={focused ? "blue" : "grey"}
+              color={focused ? "#1a75ff" : "grey"}
             />
           ),
         }}
@@ -98,7 +109,7 @@ function MyTabs() {
                 focused ? "message-processing" : "message-processing-outline"
               }
               size={24}
-              color={focused ? "blue" : "grey"}
+              color={focused ? "#1a75ff" : "grey"}
             />
           ),
         }}
@@ -112,7 +123,7 @@ function MyTabs() {
             <AntDesign
               name="pluscircle"
               size={35}
-              color="blue"
+              color="#1a75ff"
               style={{
                 shadowColor: "#E9446A",
                 shadowOffset: { width: 0, height: 0 },
@@ -138,20 +149,25 @@ function MyTabs() {
             <Fontisto
               name={focused ? "bell-alt" : "bell"}
               size={24}
-              color={focused ? "blue" : "grey"}
+              color={focused ? "#1a75ff" : "grey"}
             />
           ),
         }}
       />
       <Tabs.Screen
         name="Profile"
-        component={ProfileScreen2}
+        component={(props) => (
+          <ProfileScreen2
+            {...props}
+            color={mode === "light" ? "black" : "white"}
+          />
+        )}
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons
               name={focused ? "person" : "person-outline"}
               size={24}
-              color={focused ? "blue" : "grey"}
+              color={focused ? "#1a75ff" : "grey"}
             />
           ),
         }}
@@ -224,9 +240,17 @@ function MyStacks() {
 }
 
 const DrawerNavigator = () => {
+  const { mode } = useSelector((state) => state.theme);
+
   return (
     <Drawer.Navigator
-      drawerContent={SettingsScreen}
+      drawerContent={(props) => (
+        <SettingsScreen
+          {...props}
+          anticolor={mode === "light" ? "#181818" : "white"}
+          color={mode === "light" ? "white" : "#181818"}
+        />
+      )}
       screenOptions={{ headerShown: false, swipeEdgeWidth: 0 }}
     >
       <Drawer.Screen name="MyStacks" component={MyStacks} />
@@ -234,22 +258,31 @@ const DrawerNavigator = () => {
   );
 };
 
+const Buzz = () => {
+  const { mode } = useSelector((state) => state.theme);
+  return (
+    <>
+      <StatusBar
+        animated={true}
+        backgroundColor="#61dafb"
+        barStyle={mode === "light" ? "dark-content" : "light-content"}
+        showHideTransition="fade"
+        hidden={false}
+      />
+      <NavigationContainer>
+        <Chat client={client}>
+          <DrawerNavigator></DrawerNavigator>
+        </Chat>
+      </NavigationContainer>
+    </>
+  );
+};
+
 const Application = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <NavigationContainer>
-          <Chat client={client}>
-            <StatusBar
-              style={{ height: 50 }}
-              translucent
-              barStyle={
-                Platform.OS === "ios" ? "dark-content" : "light-content"
-              }
-            ></StatusBar>
-            <DrawerNavigator></DrawerNavigator>
-          </Chat>
-        </NavigationContainer>
+        <Buzz />
       </PersistGate>
     </Provider>
   );

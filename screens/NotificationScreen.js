@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import firebase from "firebase";
 import { Center, VStack, Skeleton, HStack } from "native-base";
 import * as Device from "expo-device";
@@ -15,11 +15,10 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const NotificationScreen = () => {
-  const { mode } = useSelector((state) => state.theme);
+const NotificationScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [theme, setTheme] = useState(mode);
-
+  const { mode } = useSelector((state) => state.theme);
   const [text, seText] = useState("");
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
@@ -57,7 +56,7 @@ const NotificationScreen = () => {
         flex: 1,
         alignItems: "center",
         justifyContent: "space-around",
-        backgroundColor: theme === "light" ? "red" : "black",
+        backgroundColor: mode === "light" ? "red" : "black",
       }}
     >
       <Text>Your expo push token: {expoPushToken}</Text>
@@ -74,7 +73,6 @@ const NotificationScreen = () => {
       <Button
         title="Press to Send Notification"
         onPress={() => {
-          console.log(theme);
           if (theme === "dark") {
             setTheme("light");
             dispatch(changeTheme("light"));

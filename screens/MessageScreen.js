@@ -34,7 +34,6 @@ const MessageScreen = ({ navigation }) => {
   const [oneWeek, setOneWeek] = useState(new Date());
 
   useEffect(() => {
-    console.log("esef");
     const result = navigation.addListener("focus", () => {
       const fetchUser = async () => {
         const userId = await AsyncStorage.getItem("userId");
@@ -78,9 +77,7 @@ const MessageScreen = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Chats",
-      headerStyle: {
-        backgroundColor: "#1E90FF",
-      },
+
       headerLeft: () => (
         <View style={{ marginLeft: 20 }}>
           <Avatar

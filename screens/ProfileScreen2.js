@@ -31,7 +31,7 @@ import { Center, VStack, Skeleton, HStack } from "native-base";
 
 const client = StreamChat.getInstance(API_KEY);
 
-const ProfileScreen2 = ({ navigation }) => {
+const ProfileScreen2 = ({ navigation, color }) => {
   const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
   const [avatar, setAvatar] = useState("");
@@ -49,7 +49,7 @@ const ProfileScreen2 = ({ navigation }) => {
           style={{ marginLeft: 10 }}
           onPress={() => navigation.openDrawer()}
         >
-          <Feather name="menu" size={24} color="black" />
+          <Feather name="menu" size={24} color={color} />
         </TouchableOpacity>
       ),
     });
