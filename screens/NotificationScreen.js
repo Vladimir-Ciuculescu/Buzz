@@ -4,6 +4,8 @@ import { Center, VStack, Skeleton, HStack } from "native-base";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Text, View, Button, Platform } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
+import { changeTheme } from "../redux/theme/theme";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -14,6 +16,10 @@ Notifications.setNotificationHandler({
 });
 
 const NotificationScreen = () => {
+  const { mode } = useSelector((state) => state.theme);
+  const dispatch = useDispatch();
+  const [theme, setTheme] = useState(mode);
+
   const [text, seText] = useState("");
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
@@ -51,6 +57,7 @@ const NotificationScreen = () => {
         flex: 1,
         alignItems: "center",
         justifyContent: "space-around",
+        backgroundColor: theme === "light" ? "red" : "black",
       }}
     >
       <Text>Your expo push token: {expoPushToken}</Text>
@@ -66,9 +73,18 @@ const NotificationScreen = () => {
       </View>
       <Button
         title="Press to Send Notification"
-        onPress={async () => {
-          await sendPushNotification(expoPushToken);
+        onPress={() => {
+          console.log(theme);
+          if (theme === "dark") {
+            setTheme("light");
+            dispatch(changeTheme("light"));
+          } else {
+            setTheme("dark");
+            dispatch(changeTheme("dark"));
+          }
         }}
+        // async () => {
+        // await sendPushNotification(expoPushToken);}
       />
     </View>
     // <Center w="100%">

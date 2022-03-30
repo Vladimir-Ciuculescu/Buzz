@@ -39,6 +39,9 @@ import PollAddScreen from "./screens/PollAddScreen";
 import InformationalPost from "./screens/InformationalAddScreen";
 import UpdateSingleSelectPollScreen from "./screens/UpdateSingleSelectPollScreen";
 import UpdateMultipleSelectPollScreen from "./screens/UpdateMultipleSelectPollScreen";
+import { Provider } from "react-redux";
+import { store, persistor } from "./redux/store";
+import { PersistGate } from "redux-persist/integration/react";
 
 //Ignore warnings
 LogBox.ignoreAllLogs(true);
@@ -233,16 +236,22 @@ const DrawerNavigator = () => {
 
 const Application = () => {
   return (
-    <NavigationContainer>
-      <Chat client={client}>
-        <StatusBar
-          style={{ height: 50 }}
-          translucent
-          barStyle={Platform.OS === "ios" ? "dark-content" : "light-content"}
-        ></StatusBar>
-        <DrawerNavigator></DrawerNavigator>
-      </Chat>
-    </NavigationContainer>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <NavigationContainer>
+          <Chat client={client}>
+            <StatusBar
+              style={{ height: 50 }}
+              translucent
+              barStyle={
+                Platform.OS === "ios" ? "dark-content" : "light-content"
+              }
+            ></StatusBar>
+            <DrawerNavigator></DrawerNavigator>
+          </Chat>
+        </NavigationContainer>
+      </PersistGate>
+    </Provider>
   );
 };
 

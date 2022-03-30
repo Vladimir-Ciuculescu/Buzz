@@ -87,6 +87,9 @@
     "react-navigation-drawer": "^2.7.1",
     "react-navigation-stack": "^2.10.4",
     "react-navigation-tabs": "^2.11.1",
+    "react-redux": "^7.2.6",
+    "redux": "^4.1.2",
+    "redux-persist": "^6.0.0",
     "stream-chat-expo": "^3.10.2",
     "stream-chat-react-native": "^3.10.2",
     "stream-chat-react-native-core": "^3.10.2"
