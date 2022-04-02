@@ -37,6 +37,7 @@ const InformationalAddScreen = ({ navigation }) => {
   const [startCamera, setStartCamera] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
   const [type, setType] = useState(Camera.Constants.Type.back);
+  const [userId, setUserId] = useState("");
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -64,6 +65,7 @@ const InformationalAddScreen = ({ navigation }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      const userId = await AsyncStorage.getItem("userId");
       const avatar = await AsyncStorage.getItem("avatar");
       const user = await AsyncStorage.getItem("user");
       const query = firebase.firestore().collection("accounts").doc(user).get();
@@ -72,6 +74,7 @@ const InformationalAddScreen = ({ navigation }) => {
       setFullName(firstName + " " + lastName);
       setAvatar((await query).data().avatar);
       setAvatar(avatar);
+      setUserId(userId);
     };
 
     fetchUser();
@@ -88,6 +91,8 @@ const InformationalAddScreen = ({ navigation }) => {
     setLoadingPost(false);
     setText("");
 
+    await firebase.firestore().collection("notifications").add({});
+
     Alert.alert("Success", "Post succesfully uploaded", [
       {
         text: "OK",
@@ -97,7 +102,6 @@ const InformationalAddScreen = ({ navigation }) => {
   };
 
   const pickImage = async () => {
-    //const avatar = await AsyncStorage.getItem("avatar");
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,

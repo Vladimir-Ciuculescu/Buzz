@@ -64,44 +64,6 @@ const PostScreen = ({ navigation }) => {
     });
   });
 
-  const handlePost = async () => {
-    setLoadingPost(true);
-    await Fire.shared.addPost({
-      text: text.trim(),
-      localUri: image,
-    });
-
-    setText("");
-    setImage(null);
-    setLoadingPost(false);
-
-    Alert.alert("Success", "Post succesfully uploaded", [
-      {
-        text: "OK",
-        onPress: () => props.navigation.goBack(),
-      },
-    ]);
-  };
-
-  const pickImage = async () => {
-    const avatar = await AsyncStorage.getItem("avatar");
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 4],
-    });
-    if (!result.cancelled) {
-      setImage(result.uri);
-    }
-  };
-
-  const openCamera = async () => {
-    const { status } = await Camera.requestCameraPermissionsAsync();
-    if (status === "granted") {
-      setStartCamera(true);
-    }
-  };
-
   const takePicture = async () => {
     const options = { quality: 0.7, base64: true };
     const data = await cameraRef.current.takePictureAsync(options);
@@ -111,13 +73,6 @@ const PostScreen = ({ navigation }) => {
       await cameraRef.current.pausePreview();
       setIsPreview(true);
     }
-  };
-
-  const LeftContent = (props) => <Avatar.Icon {...props} icon="folder" />;
-
-  const cancelPreview = async () => {
-    await cameraRef.current.resumePreview();
-    setIsPreview(false);
   };
 
   return (
