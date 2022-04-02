@@ -4,7 +4,7 @@ import firebase from "firebase";
 class Fire {
   constructor() {}
 
-  addPost = async ({ text, localUri }) => {
+  addPost = async ({ text, localUri, postId }) => {
     const remoteUri = await this.uploadPhotoAsync(localUri);
 
     const userId = await AsyncStorage.getItem("userId");
@@ -20,6 +20,7 @@ class Fire {
           image: remoteUri,
           avatar: avatar,
           type: "informational",
+          postId,
         })
         .then((ref) => {
           res(ref);

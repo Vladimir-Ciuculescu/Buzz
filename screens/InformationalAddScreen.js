@@ -23,6 +23,8 @@ import {
 import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import Fire from "../Fire";
+import { v4 as uuidv4 } from "uuid";
+import "react-native-get-random-values";
 
 import firebase from "firebase";
 
@@ -49,7 +51,7 @@ const InformationalAddScreen = ({ navigation }) => {
         ) : (
           <View style={{ marginRight: 20 }}>
             <TouchableOpacity
-              disabled={text === "" && image === null ? true : false}
+              disabled={image === null ? true : false}
               onPress={handlePost}
             >
               <Text
@@ -83,15 +85,25 @@ const InformationalAddScreen = ({ navigation }) => {
   const handlePost = async () => {
     setLoadingPost(true);
 
+    const uniqueId = uuidv4();
+
     await Fire.shared.addPost({
       text: text.trim(),
       localUri: image,
+      postId: uniqueId,
     });
     setImage(null);
     setLoadingPost(false);
     setText("");
 
-    await firebase.firestore().collection("notifications").add({});
+    await firebase.firestore().collection("notifications").add({
+      owner: fullName,
+      uid: userId,
+      notificationId: uniqueId,
+      notificationType: "informational",
+      avatar: avatar,
+      timestamp: Date.now(),
+    });
 
     Alert.alert("Success", "Post succesfully uploaded", [
       {

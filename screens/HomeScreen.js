@@ -106,8 +106,6 @@ export default class HomeScreen extends React.Component {
               .doc(this.state.userId)
               .get();
 
-            //const docSelectedOptionRef = await firebase.firestore().collection("posts").doc(doc.id).collection("users").doc()
-
             if (selectedOption.exists) {
               post = {
                 text: doc.data().text,

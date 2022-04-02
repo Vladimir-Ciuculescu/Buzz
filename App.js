@@ -42,7 +42,8 @@ import UpdateMultipleSelectPollScreen from "./screens/UpdateMultipleSelectPollSc
 import { Provider } from "react-redux";
 import { store, persistor } from "./redux/store";
 import { PersistGate } from "redux-persist/integration/react";
-import { useSelector, connect } from "react-redux";
+import { useSelector } from "react-redux";
+import InformationalPostScreen from "./screens/InformationalPostScreen";
 
 //Ignore warnings
 LogBox.ignoreAllLogs(true);
@@ -216,6 +217,7 @@ function MyStacks() {
         <Stack.Screen name="StreamChat" component={StreamChatScreen} />
         <Stack.Screen name="Poll" component={PollAddScreen} />
         <Stack.Screen name="Informational" component={InformationalPost} />
+        <Stack.Screen name="InfoPost" component={InformationalPostScreen} />
         <Stack.Screen
           name="UpdateSingleSelectPoll"
           component={UpdateSingleSelectPollScreen}
