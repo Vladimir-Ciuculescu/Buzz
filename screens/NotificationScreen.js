@@ -17,6 +17,7 @@ const NotificationScreen = ({ navigation }) => {
     const notifications = await firebase
       .firestore()
       .collection("notifications")
+      .orderBy("timestamp", "asc")
       .get();
 
     notifications.forEach((doc) => {
@@ -47,23 +48,38 @@ const NotificationScreen = ({ navigation }) => {
   }, []);
 
   return (
-    <FlatList
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
-      data={notifications}
-      renderItem={(item) => (
-        <NotificationCard
-          navigation={navigation}
-          avatar={item.item.avatar}
-          owner={item.item.owner}
-          notificationType={item.item.notificationType}
-          timestamp={item.item.timestamp}
-          notificationId={item.item.notificationId}
+    <View>
+      {notifications.length ? (
+        <FlatList
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          data={notifications}
+          renderItem={(item) => (
+            <NotificationCard
+              navigation={navigation}
+              avatar={item.item.avatar}
+              owner={item.item.owner}
+              notificationType={item.item.notificationType}
+              timestamp={item.item.timestamp}
+              notificationId={item.item.notificationId}
+            />
+          )}
+          refreshing={loadingRefresh}
+          onRefresh={() => refreshScreen()}
         />
+      ) : (
+        <Text
+          style={{
+            textAlign: "center",
+            marginTop: 40,
+            fontSize: 20,
+            fontWeight: "bold",
+          }}
+        >
+          Nothing new for now
+        </Text>
       )}
-      refreshing={loadingRefresh}
-      onRefresh={() => refreshScreen()}
-    />
+    </View>
   );
 };
 

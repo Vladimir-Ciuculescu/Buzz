@@ -16,7 +16,7 @@ const InformationalPostScreen = () => {
   const [text, setText] = useState("");
   const [timestamp, setTimestamp] = useState(0);
 
-  const { postId } = route.params;
+  const { postId, owner } = route.params;
 
   console.log(postId);
 
@@ -52,7 +52,7 @@ const InformationalPostScreen = () => {
                 }}
               />
               <View style={{ flexDirection: "column", marginLeft: 10 }}>
-                <Text>awdawdaw</Text>
+                <Text>{owner}</Text>
                 <Text style={styles.timestamp}>
                   {moment(timestamp).fromNow()}
                 </Text>

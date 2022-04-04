@@ -119,6 +119,7 @@ export default class HomeScreen extends React.Component {
                 totalVotes: doc.data().totalVotes,
                 selectedOption: selectedOption.data().selectedOption,
                 pollType: doc.data().pollType,
+                postId: doc.data().postId,
               };
             } else {
               post = {
@@ -133,6 +134,7 @@ export default class HomeScreen extends React.Component {
                 totalVotes: doc.data().totalVotes,
                 selectedOption: "",
                 pollType: doc.data().pollType,
+                postId: doc.data().postId,
               };
             }
           }

@@ -12,24 +12,50 @@ import {
 import { Headline, TextInput, List, Chip } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
 import firebase from "firebase";
-import SegmentedControl from "@react-native-segmented-control/segmented-control";
+import { v4 as uuidv4 } from "uuid";
 
 const PollAddScreen = ({ navigation }) => {
   const [subjectInput, setSubjectInput] = useState("");
+  const [userId, setUserId] = useState("");
   const [options, setOptions] = useState([]);
   const [optionInput, setOptionInput] = useState("");
   const [docId, setDocId] = useState("");
   const [loading, setLoading] = useState(false);
   const [pollType, setPollType] = useState("Single select");
+  const [fullName, setFullName] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const [uniqueId, setUniqueId] = useState("");
 
   const Types = [
     { type: "Single select", icon: "info" },
     { type: "Multiple select", icon: "info" },
   ];
 
+  useEffect(() => {
+    const getUser = async () => {
+      const user = await AsyncStorage.getItem("user");
+      const avatar = await AsyncStorage.getItem("avatar");
+
+      const query = await firebase
+        .firestore()
+        .collection("accounts")
+        .doc(user)
+        .get();
+
+      setFullName(query.data().firstName + " " + query.data().lastName);
+      setAvatar(avatar);
+    };
+
+    getUser();
+  }, []);
+
   const handlePost = async () => {
     setLoading(true);
     const userId = await AsyncStorage.getItem("userId");
+    setUserId(userId);
+
+    const UniqueId = uuidv4();
+    setUniqueId(UniqueId);
 
     await firebase
       .firestore()
@@ -41,10 +67,13 @@ const PollAddScreen = ({ navigation }) => {
         uid: userId,
         timestamp: Date.now(),
         pollType: pollType,
+        postId: UniqueId,
       })
       .then((docRef) => {
         setDocId(docRef.id);
       });
+
+    console.log(docId);
 
     setLoading(false);
 
@@ -60,6 +89,21 @@ const PollAddScreen = ({ navigation }) => {
       },
     ]);
   };
+
+  useEffect(() => {
+    const addNotification = async () => {
+      await firebase.firestore().collection("notifications").doc(docId).set({
+        owner: fullName,
+        uid: userId,
+        notificationId: docId,
+        notificationType: "poll",
+        avatar: avatar,
+        timestamp: Date.now(),
+      });
+    };
+
+    addNotification();
+  }, [docId]);
 
   useEffect(() => {
     options.map((item) => {

@@ -19,6 +19,7 @@ import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import API_KEY from "../StreamCredentials";
 import { StreamChat } from "stream-chat";
+import { dispatch, useDispatch } from "react-redux";
 
 import { HelperText, TextInput } from "react-native-paper";
 
@@ -59,36 +60,6 @@ export default class LoginScreen extends React.Component {
     this.props.navigation.navigate("Register", { marian: "smth" });
   };
 
-  registerForPushNotificationsAsync = async () => {
-    let token;
-    if (Constants.isDevice) {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== "granted") {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-      if (finalStatus !== "granted") {
-        alert("Failed to get push token for push notification!");
-        return;
-      }
-      token = (await Notifications.getExpoPushTokenAsync()).data;
-      this.setState({ deviceToken: token });
-    }
-
-    if (Platform.OS === "android") {
-      Notifications.setNotificationChannelAsync("default", {
-        name: "default",
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#FF231F7C",
-      });
-    }
-
-    return token;
-  };
-
   getData = async () => {
     try {
       const value = await AsyncStorage.getItem("token");
@@ -117,7 +88,6 @@ export default class LoginScreen extends React.Component {
 
   handleLogin = async () => {
     const { email, password } = this.state;
-    let userId = "";
 
     var validateAllFields = true;
 

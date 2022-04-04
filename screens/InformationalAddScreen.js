@@ -92,9 +92,6 @@ const InformationalAddScreen = ({ navigation }) => {
       localUri: image,
       postId: uniqueId,
     });
-    setImage(null);
-    setLoadingPost(false);
-    setText("");
 
     await firebase.firestore().collection("notifications").add({
       owner: fullName,
@@ -104,6 +101,10 @@ const InformationalAddScreen = ({ navigation }) => {
       avatar: avatar,
       timestamp: Date.now(),
     });
+
+    setImage(null);
+    setLoadingPost(false);
+    setText("");
 
     Alert.alert("Success", "Post succesfully uploaded", [
       {

@@ -1,4 +1,5 @@
 import themeReducer from "./theme/theme";
+import userReducer from "./user/user";
 import { createStore, combineReducers } from "redux";
 import { AsyncStorage } from "react-native";
 import { persistStore, persistReducer } from "redux-persist";
@@ -11,11 +12,8 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   theme: persistReducer(persistConfig, themeReducer),
+  user: persistReducer(persistConfig, userReducer),
 });
-
-// export const configureStore = () => {
-//   return createStore(rootReducer);
-// };
 
 export const store = createStore(rootReducer);
 
