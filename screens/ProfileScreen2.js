@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 
 import { StreamChat } from "stream-chat";
@@ -20,21 +21,22 @@ import { StreamChat } from "stream-chat";
 import { Button, Title } from "react-native-paper";
 import firebase from "firebase";
 import { Feather, AntDesign, Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
-import Fire from "../Fire";
 import ParallaxScrollView from "react-native-parallax-scroll-view";
 import { Shadow } from "react-native-shadow-2";
 import { useState, useEffect } from "react";
-import { useRoute } from "@react-navigation/core";
 import API_KEY from "../StreamCredentials";
-import { Center, VStack, Skeleton, HStack } from "native-base";
+import { useSelector } from "react-redux";
+
+const windowHeight = Dimensions.get("window").height;
 
 const client = StreamChat.getInstance(API_KEY);
 
-const ProfileScreen2 = ({ navigation, color }) => {
+const ProfileScreen2 = ({ navigation, color, anticolor }) => {
+  const { name, avatar } = useSelector((state) => state.user);
+
   const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
-  const [avatar, setAvatar] = useState("");
+  //const [avatar, setAvatar] = useState("");
   const [toggleEditProfile, settoggleEditProfile] = useState("");
   const [firstName, setfirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -49,7 +51,7 @@ const ProfileScreen2 = ({ navigation, color }) => {
           style={{ marginLeft: 10 }}
           onPress={() => navigation.openDrawer()}
         >
-          <Feather name="menu" size={24} color={color} />
+          <Feather name="menu" size={24} color={anticolor} />
         </TouchableOpacity>
       ),
     });
@@ -64,11 +66,11 @@ const ProfileScreen2 = ({ navigation, color }) => {
       const firstName = (await query).data().firstName;
       const lastName = (await query).data().lastName;
       const fullName = firstName + " " + lastName;
-      const avatar = (await query).data().avatar;
+      //const avatar = (await query).data().avatar;
       setUser(fullName);
       setfirstName(firstName);
       setLastName(lastName);
-      setAvatar(avatar);
+      //setAvatar(avatar);
       setLoadingEditProfile(false);
     };
 
@@ -77,7 +79,7 @@ const ProfileScreen2 = ({ navigation, color }) => {
 
   return (
     <ParallaxScrollView
-      backgroundColor="white"
+      backgroundColor={color}
       renderForeground={() => (
         <Image
           source={{
@@ -111,7 +113,7 @@ const ProfileScreen2 = ({ navigation, color }) => {
       )}
       parallaxHeaderHeight={250}
     >
-      <View>
+      <View style={{ backgroundColor: color, height: windowHeight }}>
         <View style={styles.profilePicture}>
           <Shadow>
             <Image
@@ -134,15 +136,27 @@ const ProfileScreen2 = ({ navigation, color }) => {
           <View style={styles.accountHeader}>
             <View style={styles.captionSection}>
               <Title
-                style={{ fontSize: 24, marginTop: 15, alignSelf: "center" }}
+                style={{
+                  fontSize: 24,
+                  marginTop: 15,
+                  alignSelf: "center",
+                  color: anticolor,
+                }}
               >
-                {user}
+                {name}
               </Title>
             </View>
             <View style={styles.accountInfo}>
-              <View style={{ flexDirection: "row" }}>
-                <Feather name="mail" size={24} color="black" />
-                <Text style={{ marginLeft: 5, textAlignVertical: "center" }}>
+              <View style={{ flexDirection: "row", marginLeft: 20 }}>
+                <Feather name="mail" size={24} color={anticolor} />
+                <Text
+                  style={{
+                    marginLeft: 10,
+                    marginTop: 3,
+                    textAlignVertical: "center",
+                    color: anticolor,
+                  }}
+                >
                   {email}
                 </Text>
               </View>
@@ -160,34 +174,42 @@ const ProfileScreen2 = ({ navigation, color }) => {
 
           <Modal animationType="slide" visible={toggleEditProfile}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-              <View>
+              <View style={{ backgroundColor: color }}>
                 <View style={styles.headerSection}>
                   <TouchableOpacity onPress={() => settoggleEditProfile(false)}>
-                    <Text style={{ fontSize: 16 }}>Cancel</Text>
+                    <Text style={{ fontSize: 16, color: anticolor }}>
+                      Cancel
+                    </Text>
                   </TouchableOpacity>
 
-                  <Text style={{ fontSize: 16, fontWeight: "700" }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: "700",
+                      color: anticolor,
+                    }}
+                  >
                     Edit Profile
                   </Text>
 
                   <TouchableOpacity onPress={() => this.updateProfile()}>
                     {loadingEditProfile ? (
-                      <ActivityIndicator color="green"></ActivityIndicator>
+                      <ActivityIndicator color="#1a75ff"></ActivityIndicator>
                     ) : (
                       <Text
                         style={{
                           fontSize: 16,
-                          color: "#65a84d",
+                          color: "#1a75ff",
                           fontWeight: "700",
                         }}
                       >
-                        Done x``
+                        Done
                       </Text>
                     )}
                   </TouchableOpacity>
                 </View>
 
-                <View style={styles.photoSection}>
+                <View style={[styles.photoSection, { backgroundColor: color }]}>
                   <TouchableOpacity style={styles.avatar}>
                     {avatar ? (
                       <Image
@@ -203,7 +225,7 @@ const ProfileScreen2 = ({ navigation, color }) => {
                   </TouchableOpacity>
                   <Image source={{ uri: avatar }} />
                   <TouchableOpacity onPress={() => {}}>
-                    <Text style={{ color: "#65a84d" }}>
+                    <Text style={{ color: "#1a75ff" }}>
                       Choose a profile picture
                     </Text>
                   </TouchableOpacity>
@@ -259,7 +281,7 @@ const styles = StyleSheet.create({
   editProfile: {
     marginHorizontal: 30,
     marginTop: 20,
-    backgroundColor: "#65a84d",
+    backgroundColor: "#1a75ff",
   },
   headerSection: {
     flexDirection: "row",
@@ -272,7 +294,8 @@ const styles = StyleSheet.create({
   },
   photoSection: {
     alignItems: "center",
-    marginTop: 20,
+    paddingTop: 20,
+    height: windowHeight,
   },
   firstNameSection: {
     paddingHorizontal: 20,

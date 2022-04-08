@@ -154,7 +154,6 @@ const UpdateMultipleSelectPollScreen = ({ navigation }) => {
       .then((querySnapShot) => {
         querySnapShot.forEach((doc) => {
           Ids.push(doc.id);
-          console.log("awdwad", doc.id);
         });
       });
     setVotersIds(Ids);

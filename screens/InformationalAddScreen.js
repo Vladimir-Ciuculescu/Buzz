@@ -100,6 +100,7 @@ const InformationalAddScreen = ({ navigation }) => {
       notificationType: "informational",
       avatar: avatar,
       timestamp: Date.now(),
+      pollText: text,
     });
 
     setImage(null);

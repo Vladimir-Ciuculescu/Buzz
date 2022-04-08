@@ -21,6 +21,7 @@ import HomeScreen from "./screens/HomeScreen";
 import LoadingScreen from "./screens/LoadingScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import LoginScreen from "./screens/LoginScreen";
+import LoginScreen2 from "./screens/LoginScreen2";
 import MessageScreen from "./screens/MessageScreen";
 import NotificationScreen from "./screens/NotificationScreen";
 import ProfileScreen2 from "./screens/ProfileScreen2";
@@ -89,7 +90,13 @@ function MyTabs() {
     >
       <Tabs.Screen
         name="HomeScreen"
-        component={HomeScreen}
+        component={(props) => (
+          <HomeScreen
+            {...props}
+            anticolor={mode === "light" ? "#101010" : "white"}
+            color={mode === "light" ? "white" : "#101010"}
+          />
+        )}
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons
@@ -144,7 +151,13 @@ function MyTabs() {
 
       <Tabs.Screen
         name="Notifications"
-        component={NotificationScreen}
+        component={(props) => (
+          <NotificationScreen
+            {...props}
+            anticolor={mode === "light" ? "#101010" : "white"}
+            color={mode === "light" ? "white" : "#101010"}
+          />
+        )}
         options={{
           tabBarIcon: ({ focused }) => (
             <Fontisto
@@ -160,7 +173,8 @@ function MyTabs() {
         component={(props) => (
           <ProfileScreen2
             {...props}
-            color={mode === "light" ? "black" : "white"}
+            anticolor={mode === "light" ? "#101010" : "white"}
+            color={mode === "light" ? "white" : "#101010"}
           />
         )}
         options={{
@@ -182,6 +196,8 @@ const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
 function MyStacks() {
+  const { mode } = useSelector((state) => state.theme);
+
   const theme = extendTheme({
     components: {
       Heading: {
@@ -200,7 +216,7 @@ function MyStacks() {
         <Stack.Screen
           options={{ headerLeft: null }}
           name="Login"
-          component={LoginScreen}
+          component={LoginScreen2}
         />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen
@@ -211,7 +227,16 @@ function MyStacks() {
         <Stack.Screen name="Loading" component={LoadingScreen} />
         <Stack.Screen name="AddChat" component={AddChatScreen} />
         <Stack.Group>
-          <Stack.Screen name="Modal" component={PostScreen} />
+          <Stack.Screen
+            name="Modal"
+            component={(props) => (
+              <PostScreen
+                {...props}
+                anticolor={mode === "light" ? "#101010" : "white"}
+                color={mode === "light" ? "white" : "#101010"}
+              />
+            )}
+          />
         </Stack.Group>
         <Stack.Screen name="PublicChat" component={PublicChatScreen} />
         <Stack.Screen name="StreamChat" component={StreamChatScreen} />
@@ -249,8 +274,8 @@ const DrawerNavigator = () => {
       drawerContent={(props) => (
         <SettingsScreen
           {...props}
-          anticolor={mode === "light" ? "#181818" : "white"}
-          color={mode === "light" ? "white" : "#181818"}
+          anticolor={mode === "light" ? "#101010" : "white"}
+          color={mode === "light" ? "white" : "#101010"}
         />
       )}
       screenOptions={{ headerShown: false, swipeEdgeWidth: 0 }}

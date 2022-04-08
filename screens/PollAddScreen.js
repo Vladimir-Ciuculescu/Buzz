@@ -13,6 +13,7 @@ import { Headline, TextInput, List, Chip } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
 import firebase from "firebase";
 import { v4 as uuidv4 } from "uuid";
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
 
 const PollAddScreen = ({ navigation }) => {
   const [subjectInput, setSubjectInput] = useState("");
@@ -73,8 +74,6 @@ const PollAddScreen = ({ navigation }) => {
         setDocId(docRef.id);
       });
 
-    console.log(docId);
-
     setLoading(false);
 
     setSubjectInput("");
@@ -97,8 +96,10 @@ const PollAddScreen = ({ navigation }) => {
         uid: userId,
         notificationId: docId,
         notificationType: "poll",
+        notificationPollType: pollType,
         avatar: avatar,
         timestamp: Date.now(),
+        pollText: subjectInput,
       });
     };
 
@@ -158,16 +159,8 @@ const PollAddScreen = ({ navigation }) => {
 
   return (
     <View>
-      <View
-        style={{
-          marginTop: 10,
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginHorizontal: 70,
-        }}
-      >
-        {Types.map((item) => (
+      <View style={{ marginTop: 20 }}>
+        {/* {Types.map((item) => (
           <Chip
             mode="outlined"
             icon="poll"
@@ -177,7 +170,12 @@ const PollAddScreen = ({ navigation }) => {
           >
             {item.type}
           </Chip>
-        ))}
+        ))} */}
+        <SegmentedControl
+          style={{ marginHorizontal: 20 }}
+          selectedIndex={0}
+          values={["Connections", "Channels"]}
+        />
       </View>
       <Input
         style={styles.Input}

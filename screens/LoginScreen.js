@@ -46,12 +46,6 @@ export default class LoginScreen extends React.Component {
     };
   }
 
-  componentDidMount() {
-    this.registerForPushNotificationsAsync().then((token) => {
-      this.setState({ deviceToken: token });
-    });
-  }
-
   ToRegister = () => {
     this.setState({ email: "" });
     this.setState({ password: "" });

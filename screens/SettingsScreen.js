@@ -9,23 +9,11 @@ import {
   AsyncStorage,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Drawer, Switch, DefaultTheme } from "react-native-paper";
+import { Drawer, Switch } from "react-native-paper";
 import API_KEY from "../StreamCredentials";
 import { StreamChat } from "stream-chat";
 import { useSelector, useDispatch } from "react-redux";
 import { changeTheme } from "../redux/theme/theme";
-import { useColorScheme } from "react-native";
-import { DarkTheme, NavigationContainer } from "@react-navigation/native";
-
-const tema = {
-  ...DefaultTheme,
-  roundness: 2,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: "#3498db",
-    accent: "#f1c40f",
-  },
-};
 
 const client = StreamChat.getInstance(API_KEY);
 
@@ -37,7 +25,7 @@ const SettingsScreen = ({ navigation, color, anticolor }) => {
   const [theme, setTheme] = useState(mode);
 
   const [toggleSwitch, setToggleSwitch] = useState(
-    mode === "light" ? true : false
+    mode === "light" ? false : true
   );
 
   const LogOut = () => {
@@ -58,21 +46,13 @@ const SettingsScreen = ({ navigation, color, anticolor }) => {
     ]);
   };
 
-  useEffect(() => {
-    if (toggleSwitch === true) {
-      setTheme("light");
-    } else {
-      setTheme("dark");
-    }
-  }, [toggleSwitch]);
-
   const onToggleSwitch = () => {
-    console.log(theme);
-    setToggleSwitch(!toggleSwitch);
     if (theme === "dark") {
+      setToggleSwitch(false);
       setTheme("light");
       dispatch(changeTheme("light"));
     } else {
+      setToggleSwitch(true);
       setTheme("dark");
       dispatch(changeTheme("dark"));
     }
@@ -81,7 +61,7 @@ const SettingsScreen = ({ navigation, color, anticolor }) => {
   return (
     <View style={{ flex: 1, backgroundColor: color }}>
       <Drawer.Section
-        title="Preferences"
+        title={<Text style={{ color: anticolor }}>Preferences</Text>}
         style={{
           marginTop: windowHeight - 400,
           backgroundColor: color,
@@ -89,7 +69,11 @@ const SettingsScreen = ({ navigation, color, anticolor }) => {
       >
         <View style={styles.preference}>
           <Text style={{ color: anticolor }}>Dark Theme</Text>
-          <Switch value={toggleSwitch} onValueChange={onToggleSwitch} />
+          <Switch
+            color="#1a75ff"
+            value={toggleSwitch}
+            onValueChange={onToggleSwitch}
+          />
         </View>
       </Drawer.Section>
       <Drawer.Section
@@ -104,7 +88,7 @@ const SettingsScreen = ({ navigation, color, anticolor }) => {
             icon={() => (
               <Ionicons name="exit-outline" size={24} color={anticolor} />
             )}
-            label="Sign out"
+            label={<Text style={{ color: anticolor }}>Sign out</Text>}
           />
         </TouchableOpacity>
       </Drawer.Section>

@@ -11,6 +11,7 @@ import { Snackbar, Card, Avatar, Button, Chip } from "react-native-paper";
 import moment from "moment";
 import ImageModal from "react-native-image-modal";
 import firebase from "firebase";
+import { color } from "react-native-reanimated";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -29,6 +30,8 @@ export default class HomeScreen extends React.Component {
       togglePost: false,
       toggle: false,
       userId: "",
+      color: this.props.color,
+      anticolor: this.props.anticolor,
     };
     this.getPosts();
   }
@@ -187,7 +190,7 @@ export default class HomeScreen extends React.Component {
   renderPost = (post) => {
     if (post.type === "informational") {
       return (
-        <Card style={styles.cardPost}>
+        <Card style={[styles.cardPost, { backgroundColor: this.state.color }]}>
           <Card.Content style={{ marginBottom: 10, marginLeft: -10 }}>
             <View style={{ flexDirection: "column" }}>
               <View style={{ flexDirection: "row" }}>
@@ -198,7 +201,9 @@ export default class HomeScreen extends React.Component {
                   }}
                 />
                 <View style={{ flexDirection: "column", marginLeft: 10 }}>
-                  <Text>{post.postOwner}</Text>
+                  <Text style={{ color: this.props.anticolor }}>
+                    {post.postOwner}
+                  </Text>
                   <Text style={styles.timestamp}>
                     {moment(post.timestamp).fromNow()}
                   </Text>
@@ -229,7 +234,7 @@ export default class HomeScreen extends React.Component {
       );
     }
     return (
-      <Card style={styles.cardPost}>
+      <Card style={[styles.cardPost, { backgroundColor: this.state.color }]}>
         <Card.Content style={{ marginBottom: 10, marginLeft: -10 }}>
           <View style={{ flexDirection: "column" }}>
             <View style={{ flexDirection: "row" }}>
@@ -240,7 +245,9 @@ export default class HomeScreen extends React.Component {
                 }}
               />
               <View style={{ flexDirection: "column", marginLeft: 10 }}>
-                <Text>{post.postOwner}</Text>
+                <Text style={{ color: this.props.anticolor }}>
+                  {post.postOwner}
+                </Text>
                 <Text style={styles.timestamp}>
                   {moment(post.timestamp).fromNow()}
                 </Text>
@@ -295,7 +302,15 @@ export default class HomeScreen extends React.Component {
 
   render() {
     return (
-      <View style={Style.container}>
+      <View
+        style={[
+          Style.container,
+          {
+            backgroundColor:
+              this.state.color === "#101010" ? "#181818" : "white",
+          },
+        ]}
+      >
         <FlatList
           showsVerticalScrollIndicator={false}
           style={styles.feed}
@@ -402,7 +417,6 @@ const styles = StyleSheet.create({
 const Style = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f6f8fa",
     width: screenWidth + 10,
   },
   contentsContainer: {

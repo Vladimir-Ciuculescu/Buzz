@@ -1,6 +1,7 @@
 const SET_USER_EMAIL = "SET_USER_EMAIL";
 const SET_USER_NAME = "SET_USER_NAME";
 const SET_USER_AVATAR = "SET_USER_AVATAR";
+const SET_USER_ID = "SET_USER_ID";
 
 export const setUserEmail = (email) => ({
   type: SET_USER_EMAIL,
@@ -17,10 +18,16 @@ export const setUserAvatar = (avatar) => ({
   payload: avatar,
 });
 
+export const setUserId = (userId) => ({
+  type: SET_USER_ID,
+  payload: userId,
+});
+
 const INITIAL_STATE = {
   name: "",
   email: "",
   avatar: "",
+  userId: "",
 };
 
 const userReducer = (state = INITIAL_STATE, action) => {
@@ -31,6 +38,8 @@ const userReducer = (state = INITIAL_STATE, action) => {
       return { ...state, name: action.payload };
     case SET_USER_AVATAR:
       return { ...state, avatar: action.payload };
+    case SET_USER_ID:
+      return { ...state, userId: action.payload };
     default:
       return state;
   }
