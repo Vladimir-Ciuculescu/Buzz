@@ -29,10 +29,10 @@ import { useSelector } from "react-redux";
 
 const windowHeight = Dimensions.get("window").height;
 
-const client = StreamChat.getInstance(API_KEY);
-
 const ProfileScreen2 = ({ navigation, color, anticolor }) => {
   const { name, avatar } = useSelector((state) => state.user);
+
+  console.log(name, avatar);
 
   const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
