@@ -11,7 +11,6 @@ import { Snackbar, Card, Avatar, Button, Chip } from "react-native-paper";
 import moment from "moment";
 import ImageModal from "react-native-image-modal";
 import firebase from "firebase";
-import { color } from "react-native-reanimated";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -34,6 +33,10 @@ export default class HomeScreen extends React.Component {
       anticolor: this.props.anticolor,
     };
     this.getPosts();
+  }
+
+  componentDidMount() {
+    console.log(this.state.color);
   }
 
   getPosts = async () => {
@@ -190,7 +193,15 @@ export default class HomeScreen extends React.Component {
   renderPost = (post) => {
     if (post.type === "informational") {
       return (
-        <Card style={[styles.cardPost, { backgroundColor: this.state.color }]}>
+        <Card
+          style={[
+            styles.cardPost,
+            {
+              backgroundColor:
+                this.state.color === "#101010" ? "#202020" : "white",
+            },
+          ]}
+        >
           <Card.Content style={{ marginBottom: 10, marginLeft: -10 }}>
             <View style={{ flexDirection: "column" }}>
               <View style={{ flexDirection: "row" }}>
@@ -209,7 +220,16 @@ export default class HomeScreen extends React.Component {
                   </Text>
                 </View>
               </View>
-              <Text style={styles.name}>{post.text}</Text>
+              <Text
+                style={[
+                  styles.name,
+                  {
+                    color: this.state.color === "#101010" ? "white" : "black",
+                  },
+                ]}
+              >
+                {post.text}
+              </Text>
               <View
                 style={{
                   alignSelf: "center",
@@ -234,7 +254,15 @@ export default class HomeScreen extends React.Component {
       );
     }
     return (
-      <Card style={[styles.cardPost, { backgroundColor: this.state.color }]}>
+      <Card
+        style={[
+          styles.cardPost,
+          {
+            backgroundColor:
+              this.state.color === "#101010" ? "#202020" : "white",
+          },
+        ]}
+      >
         <Card.Content style={{ marginBottom: 10, marginLeft: -10 }}>
           <View style={{ flexDirection: "column" }}>
             <View style={{ flexDirection: "row" }}>
@@ -254,17 +282,31 @@ export default class HomeScreen extends React.Component {
               </View>
               <Chip
                 style={{
-                  width: "35%",
+                  width: "37%",
                   position: "absolute",
                   right: 0,
                   marginRight: 10,
+                  backgroundColor:
+                    this.state.color === "#101010" ? "#404040" : "#D0D0D0",
                 }}
                 icon="poll"
+                selectedColor={
+                  this.state.color === "#101010" ? "white" : "black"
+                }
               >
                 {post.pollType}
               </Chip>
             </View>
-            <Text style={styles.name}>{post.text}</Text>
+            <Text
+              style={[
+                styles.name,
+                {
+                  color: this.state.color === "#101010" ? "white" : "black",
+                },
+              ]}
+            >
+              {post.text}
+            </Text>
             <View
               style={{
                 alignSelf: "center",
@@ -282,7 +324,7 @@ export default class HomeScreen extends React.Component {
         <Card.Actions style={{ justifyContent: "center" }}>
           <Button
             mode="contained"
-            style={{ width: screenWidth - 80, marginTop: -20 }}
+            style={{ width: screenWidth - 80, marginTop: -10 }}
             onPress={() =>
               post.pollType === "Single select"
                 ? this.props.navigation.navigate("UpdateSingleSelectPoll", {
@@ -307,7 +349,7 @@ export default class HomeScreen extends React.Component {
           Style.container,
           {
             backgroundColor:
-              this.state.color === "#101010" ? "#181818" : "white",
+              this.state.color === "#101010" ? "#101010" : "transparent",
           },
         ]}
       >

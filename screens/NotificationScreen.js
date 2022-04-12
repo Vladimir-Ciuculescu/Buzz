@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import firebase from "firebase";
 import NotificationCard from "../components/NotificationCard";
 
-import { Text, View, FlatList, StyleSheet } from "react-native";
+import {
+  Text,
+  View,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 
 const NotificationScreen = ({ navigation, color, anticolor }) => {
@@ -93,17 +99,11 @@ const NotificationScreen = ({ navigation, color, anticolor }) => {
           onRefresh={() => refreshScreen()}
         />
       ) : (
-        <Text
-          style={{
-            textAlign: "center",
-            marginTop: 40,
-            fontSize: 20,
-            fontWeight: "bold",
-            color: anticolor,
-          }}
-        >
-          Nothing new for now
-        </Text>
+        <ActivityIndicator
+          style={{ marginTop: 20 }}
+          color={color === "#101010" ? "white" : "black"}
+          size="large"
+        ></ActivityIndicator>
       )}
     </View>
   );

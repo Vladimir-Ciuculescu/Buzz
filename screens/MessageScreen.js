@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Text,
   ScrollView,
+  useColorScheme,
 } from "react-native";
 import { Avatar } from "react-native-elements";
 import { AntDesign, Feather } from "@expo/vector-icons";

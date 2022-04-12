@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useLayoutEffect } from "react";
 import {
   Text,
   View,
@@ -13,66 +13,70 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   ActivityIndicator,
-  ImageBackground,
+  Dimensions,
 } from "react-native";
-import API_KEY from "../StreamCredentials";
-import { StreamChat } from "stream-chat";
 
 import { Button, Title } from "react-native-paper";
 import firebase from "firebase";
-import firetore from "firebase/firestore";
-import { Feather, AntDesign, Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
-import Fire from "../Fire";
+import { Feather } from "@expo/vector-icons";
 import ParallaxScrollView from "react-native-parallax-scroll-view";
 import { Shadow } from "react-native-shadow-2";
-import { DrawerActions } from "@react-navigation/native";
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import * as ImagePicker from "expo-image-picker";
+import Fire from "../Fire";
+import { setUserAvatar } from "../redux/user/user";
+import { useDispatch } from "react-redux";
 
-const client = StreamChat.getInstance(API_KEY);
+const windowHeight = Dimensions.get("window").height;
 
-export default class ProfileScreen extends Component {
-  constructor(props) {
-    super(props);
+const ProfileScreen2 = ({ navigation, color, anticolor }) => {
+  const { name, avatar } = useSelector((state) => state.user);
 
-    this.state = {
-      user: "",
-      email: "",
-      avatar: "",
-      toggleEditProfile: false,
-      avatar: null,
-      firstName: "",
-      lastName: "",
-      phoneNumber: null,
-      country: "uk",
-      loadingEditProfile: false,
+  const dispatch = useDispatch();
+
+  const [user, setUser] = useState("");
+  const [email, setEmail] = useState("");
+  const [Avatar, setAvatar] = useState(avatar);
+  const [toggleEditProfile, settoggleEditProfile] = useState("");
+  const [firstName, setfirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [loadingEditProfile, setLoadingEditProfile] = useState(false);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "Profile",
+      headerLeft: () => (
+        <TouchableOpacity
+          style={{ marginLeft: 10 }}
+          onPress={() => navigation.openDrawer()}
+        >
+          <Feather name="menu" size={24} color={anticolor} />
+        </TouchableOpacity>
+      ),
+    });
+  });
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoadingEditProfile(true);
+      const user = await AsyncStorage.getItem("user");
+      setEmail(user);
+      const query = firebase.firestore().collection("accounts").doc(user).get();
+      const firstName = (await query).data().firstName;
+      const lastName = (await query).data().lastName;
+      const fullName = firstName + " " + lastName;
+      setUser(fullName);
+      setfirstName(firstName);
+      setLastName(lastName);
+      setLoadingEditProfile(false);
     };
-  }
 
-  componentDidMount() {
-    //this.props.navigation.addListener("state", () => {
-    this.getUser();
-    //});
-  }
+    fetchUser();
+  }, []);
 
-  Logout = async () => {
-    Alert.alert("Logout", "Are you sure you want to log out ?", [
-      {
-        text: "No",
-        style: "default",
-      },
-      {
-        text: "Yes",
-        style: "destructive",
-        onPress: async () => {
-          await AsyncStorage.removeItem("user");
-          await client.disconnectUser();
-          this.props.navigation.navigate("Login", { screen: "LoginScreen" });
-        },
-      },
-    ]);
-  };
-
-  PickAvatar = async () => {
+  const pickAvatar = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -80,266 +84,197 @@ export default class ProfileScreen extends Component {
     });
 
     if (!result.cancelled) {
-      //this.setState({ avatar: result.uri });
-      this.setState({ avatar: result.uri });
+      setAvatar(result.uri);
     }
   };
 
-  updateProfile = async () => {
-    this.setState({ loadingEditProfile: true });
+  const updateProfile = async () => {
+    setLoadingEditProfile(true);
 
     await Fire.shared.addAvatar({
-      localUri: this.state.avatar,
-      user: this.state.email,
+      localUri: Avatar,
+      user: email,
     });
 
-    const userId = await AsyncStorage.getItem("userId");
+    await firebase.firestore().collection("accounts").doc(email).update({
+      firstName: firstName,
+      lastName: lastName,
+      phoneNumber: phoneNumber,
+    });
 
-    await firebase
-      .firestore()
-      .collection("accounts")
-      .doc(this.state.email)
-      .update({
-        firstName: this.state.firstName,
-        lastName: this.state.lastName,
-        phoneNumber: this.state.phoneNumber,
-      });
+    dispatch(setUserAvatar(Avatar));
 
-    this.setState({ loadingEditProfile: false });
-
-    this.setState({ toggleEditProfile: false });
+    setLoadingEditProfile(false);
+    settoggleEditProfile(false);
   };
 
-  getUser = async () => {
-    const user = await AsyncStorage.getItem("user");
-    this.setState({ email: user });
-    const query = firebase.firestore().collection("accounts").doc(user).get();
-    const firstName = (await query).data().firstName;
-    const lastName = (await query).data().lastName;
-    const fullName = firstName + " " + lastName;
-    const avatar = (await query).data().avatar;
-    this.setState({ user: fullName });
-    this.setState({ firstName: firstName });
-    this.setState({ lastName: lastName });
-    this.setState({ avatar: avatar });
-  };
-
-  render() {
-    return (
-      <ParallaxScrollView
-        backgroundColor="white"
-        renderForeground={() => (
+  return (
+    <ParallaxScrollView
+      backgroundColor={color}
+      renderForeground={() => (
+        <Image
+          source={{
+            uri: "https://engineering.fb.com/wp-content/uploads/2016/04/yearinreview.jpg",
+          }}
+        />
+      )}
+      renderBackground={() => (
+        <View>
           <Image
+            style={{
+              height: "100%",
+              width: "100%",
+              opacity: 0.5,
+              zIndex: -1,
+            }}
             source={{
-              uri: "https://engineering.fb.com/wp-content/uploads/2016/04/yearinreview.jpg",
+              uri: Avatar,
             }}
           />
-        )}
-        renderBackground={() => (
-          <View>
+          <View
+            style={{
+              backgroundColor: "transparent",
+              position: "absolute",
+              opacity: 0.5,
+              width: "100%",
+              height: "100%",
+            }}
+          ></View>
+        </View>
+      )}
+      parallaxHeaderHeight={250}
+    >
+      <View style={{ backgroundColor: color, height: windowHeight }}>
+        <View style={styles.profilePicture}>
+          <Shadow>
             <Image
               style={{
-                height: "100%",
-                width: "100%",
-                opacity: 0.5,
-                zIndex: -1,
+                alignSelf: "center",
+                borderRadius: 20,
+                borderWidth: 1,
+                borderColor: "white",
               }}
+              height={150}
+              width={150}
               source={{
-                uri: this.state.avatar,
+                uri: Avatar,
               }}
             />
-            <View
-              style={{
-                backgroundColor: "transparent",
-                position: "absolute",
-                opacity: 0.5,
-                width: "100%",
-                height: "100%",
-              }}
-            ></View>
-          </View>
-        )}
-        parallaxHeaderHeight={250}
-      >
-        <View>
-          <View style={styles.profilePicture}>
-            <Shadow>
-              <Image
-                style={{
-                  alignSelf: "center",
-                  borderRadius: 20,
-                  borderWidth: 1,
-                  borderColor: "white",
-                }}
-                height={150}
-                width={150}
-                source={{
-                  uri: this.state.avatar,
-                }}
-              />
-            </Shadow>
-          </View>
+          </Shadow>
+        </View>
 
-          <View style={styles.container}>
-            <View style={styles.accountHeader}>
-              <View style={styles.captionSection}>
-                <Title
-                  style={{ fontSize: 24, marginTop: 15, alignSelf: "center" }}
+        <View style={styles.container}>
+          <View style={styles.accountHeader}>
+            <View style={styles.captionSection}>
+              <Title
+                style={{
+                  fontSize: 24,
+                  marginTop: 15,
+                  alignSelf: "center",
+                  color: anticolor,
+                }}
+              >
+                {name}
+              </Title>
+            </View>
+            <View style={styles.accountInfo}>
+              <View style={{ flexDirection: "row", marginLeft: 20 }}>
+                <Feather name="mail" size={24} color={anticolor} />
+                <Text
+                  style={{
+                    marginLeft: 10,
+                    marginTop: 3,
+                    textAlignVertical: "center",
+                    color: anticolor,
+                  }}
                 >
-                  {this.state.user}
-                </Title>
-              </View>
-              <View style={styles.accountInfo}>
-                <View style={{ flexDirection: "row" }}>
-                  <Feather name="mail" size={24} color="black" />
-                  <Text style={{ marginLeft: 5, textAlignVertical: "center" }}>
-                    {this.state.email}
-                  </Text>
-                </View>
+                  {email}
+                </Text>
               </View>
             </View>
-
-            <Button
-              icon="pencil"
-              mode="contained"
-              style={styles.editProfile}
-              onPress={() =>
-                this.setState({
-                  toggleEditProfile: true,
-                })
-              }
-            >
-              Edit Profie photo
-            </Button>
-
-            <Button mode="contained" color="red" onPress={() => this.Logout()}>
-              Log out
-            </Button>
-            <Button onPress={() => this.props.navigation.openDrawer()}>
-              Settings
-            </Button>
-
-            <Modal animationType="slide" visible={this.state.toggleEditProfile}>
-              <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View>
-                  <View style={styles.headerSection}>
-                    <TouchableOpacity
-                      onPress={() =>
-                        this.setState({ toggleEditProfile: false })
-                      }
-                    >
-                      <Text style={{ fontSize: 16 }}>Cancel</Text>
-                    </TouchableOpacity>
-
-                    <Text style={{ fontSize: 16, fontWeight: "700" }}>
-                      Edit Profile
-                    </Text>
-
-                    <TouchableOpacity onPress={() => this.updateProfile()}>
-                      {this.state.loadingEditProfile ? (
-                        <ActivityIndicator color="green"></ActivityIndicator>
-                      ) : (
-                        <Text
-                          style={{
-                            fontSize: 16,
-                            color: "#65a84d",
-                            fontWeight: "700",
-                          }}
-                        >
-                          Done
-                        </Text>
-                      )}
-                    </TouchableOpacity>
-                  </View>
-
-                  <View style={styles.photoSection}>
-                    <TouchableOpacity style={styles.avatar}>
-                      {this.state.avatar ? (
-                        <Image
-                          source={{ uri: this.state.avatar }}
-                          style={{ height: 100, width: 100, borderRadius: 50 }}
-                        />
-                      ) : (
-                        <Image
-                          source={require("./../assets/profile.png")}
-                          style={{ height: 100, width: 100 }}
-                        />
-                      )}
-                    </TouchableOpacity>
-                    <Image source={{ uri: this.state.avatar }} />
-                    <TouchableOpacity onPress={this.PickAvatar}>
-                      <Text style={{ color: "#65a84d" }}>
-                        Choose a profile picture
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  {/* <View style={styles.firstNameSection}>
-                    <Text
-                      style={{
-                        color: "#A9A9A9",
-                        paddingBottom: 10,
-                        fontSize: 18,
-                      }}
-                    >
-                      First Name
-                    </Text>
-                    <TextInput
-                      style={styles.changeTextInput}
-                      value={this.state.firstName}
-                      placeholder="First Name"
-                      onChangeText={(e) => this.setState({ firstName: e })}
-                    />
-                  </View> */}
-
-                  {/* <View style={styles.lastNameSection}>
-                    <Text
-                      style={{
-                        color: "#A9A9A9",
-                        paddingBottom: 10,
-                        fontSize: 18,
-                      }}
-                    >
-                      Second Name
-                    </Text>
-                    <TextInput
-                      style={styles.changeTextInput}
-                      value={this.state.lastName}
-                      placeholder="Second Name"
-                      onChangeText={(e) => this.setState({ secondName: e })}
-                    />
-                  </View> */}
-
-                  {/* <View style={styles.phoneNumber}>
-                    <Text
-                      style={{
-                        color: "#A9A9A9",
-                        paddingBottom: 10,
-                        fontSize: 18,
-                      }}
-                    >
-                      Phone number
-                    </Text>
-                    <TextInput
-                      style={styles.changeTextInput}
-                      value={this.state.phoneNumber}
-                      keyboardType="numeric"
-                      onChangeText={(e) => this.setState({ phoneNumber: e })}
-                    />
-                  </View> */}
-                </View>
-              </TouchableWithoutFeedback>
-            </Modal>
           </View>
+
+          <Button
+            icon="pencil"
+            mode="contained"
+            style={styles.editProfile}
+            onPress={() => settoggleEditProfile(true)}
+          >
+            Edit Profile Picture
+          </Button>
+
+          <Modal animationType="slide" visible={toggleEditProfile}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View style={{ backgroundColor: color }}>
+                <View style={styles.headerSection}>
+                  <TouchableOpacity onPress={() => settoggleEditProfile(false)}>
+                    <Text style={{ fontSize: 16, color: anticolor }}>
+                      Cancel
+                    </Text>
+                  </TouchableOpacity>
+
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: "700",
+                      color: anticolor,
+                    }}
+                  >
+                    Edit Profile
+                  </Text>
+
+                  <TouchableOpacity onPress={() => updateProfile()}>
+                    {loadingEditProfile ? (
+                      <ActivityIndicator color="#1a75ff"></ActivityIndicator>
+                    ) : (
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          color: "#1a75ff",
+                          fontWeight: "700",
+                        }}
+                      >
+                        Done
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+
+                <View style={[styles.photoSection, { backgroundColor: color }]}>
+                  <TouchableOpacity style={styles.avatar}>
+                    {Avatar ? (
+                      <Image
+                        source={{ uri: Avatar }}
+                        style={{ height: 100, width: 100, borderRadius: 50 }}
+                      />
+                    ) : (
+                      <Image
+                        source={require("./../assets/profile.png")}
+                        style={{ height: 100, width: 100 }}
+                      />
+                    )}
+                  </TouchableOpacity>
+                  <Image source={{ uri: Avatar }} />
+                  <TouchableOpacity
+                    onPress={() => {
+                      pickAvatar();
+                    }}
+                  >
+                    <Text style={{ color: "#1a75ff" }}>
+                      Choose a profile picture
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </Modal>
         </View>
-      </ParallaxScrollView>
-    );
-  }
-}
+      </View>
+    </ParallaxScrollView>
+  );
+};
 
-/*
-
-*/
+export default ProfileScreen2;
 
 const styles = StyleSheet.create({
   container: {
@@ -381,7 +316,7 @@ const styles = StyleSheet.create({
   editProfile: {
     marginHorizontal: 30,
     marginTop: 20,
-    backgroundColor: "#65a84d",
+    backgroundColor: "#1a75ff",
   },
   headerSection: {
     flexDirection: "row",
@@ -394,7 +329,8 @@ const styles = StyleSheet.create({
   },
   photoSection: {
     alignItems: "center",
-    marginTop: 20,
+    paddingTop: 20,
+    height: windowHeight,
   },
   firstNameSection: {
     paddingHorizontal: 20,

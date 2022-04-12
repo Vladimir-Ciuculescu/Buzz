@@ -14,18 +14,11 @@ import {
   Platform,
 } from "react-native";
 import { AsyncStorage } from "react-native";
-import Constants from "expo-constants";
-import * as Notifications from "expo-notifications";
 import API_KEY from "../StreamCredentials";
 import { StreamChat } from "stream-chat";
 import { useDispatch } from "react-redux";
 import { HelperText, TextInput } from "react-native-paper";
-import {
-  setUserAvatar,
-  setUserEmail,
-  setUserName,
-  //setUserId,
-} from "../redux/user/user";
+import { setUserAvatar, setUserEmail, setUserName } from "../redux/user/user";
 
 const client = StreamChat.getInstance(API_KEY);
 
@@ -102,6 +95,8 @@ const LoginScreen2 = ({ navigation }) => {
         if (email === doc.data().email && password === doc.data().password) {
           existentAccount = true;
 
+          dispatch(setUserId(doc.data().userId));
+
           dispatch(
             setUserName(doc.data().firstName + " " + doc.data().lastName)
           );
@@ -109,7 +104,6 @@ const LoginScreen2 = ({ navigation }) => {
           setFirstName(doc.data().firstName);
           setLastName(doc.data().lastName);
           setUserId(doc.data().userId);
-          //setAvatar(doc.data().avatar);
           setEmail("");
           setPassword("");
         }

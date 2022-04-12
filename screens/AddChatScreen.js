@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   StatusBar,
 } from "react-native";
+import { Button } from "react-native-paper";
 import { Input } from "react-native-elements";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Feather } from "@expo/vector-icons";
@@ -72,20 +73,36 @@ const AddChatScreen = ({ navigation }) => {
         <Feather name="hash" size={24} color="black" />
         <Text style={{ fontSize: 22 }}>{chatName}</Text>
       </View>
-      <TouchableOpacity
+      <Button
         onPress={createChat}
         disabled={input === "" ? true : false}
+        style={styles.addChat}
+        mode="contained"
       >
         {loading ? (
           <ActivityIndicator color="#FFF" size="large"></ActivityIndicator>
         ) : (
-          <Text>Add a new chat</Text>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "700",
+              color: "white",
+            }}
+          >
+            Add a new chat
+          </Text>
         )}
-      </TouchableOpacity>
+      </Button>
     </View>
   );
 };
 
 export default AddChatScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  addChat: {
+    marginHorizontal: 30,
+    marginTop: 20,
+    backgroundColor: "#1a75ff",
+  },
+});

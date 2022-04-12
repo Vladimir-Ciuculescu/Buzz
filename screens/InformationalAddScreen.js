@@ -25,10 +25,12 @@ import * as ImagePicker from "expo-image-picker";
 import Fire from "../Fire";
 import { v4 as uuidv4 } from "uuid";
 import "react-native-get-random-values";
+import { useSelector } from "react-redux";
 
 import firebase from "firebase";
 
 const InformationalAddScreen = ({ navigation }) => {
+  const { mode } = useSelector((state) => state.theme);
   const { width } = useWindowDimensions();
   const cameraRef = useRef();
   const [text, setText] = useState("");
@@ -45,6 +47,11 @@ const InformationalAddScreen = ({ navigation }) => {
     navigation.setOptions({
       tabBarVisible: true,
       title: "Make a post",
+      headerStyle: {
+        backgroundColor: mode === "light" ? "white" : "#282828",
+      },
+      headerTintColor: mode === "light" ? "black" : "white",
+
       headerRight: () =>
         loadingPost ? (
           <ActivityIndicator size="small" style={{ marginRight: 10 }} />
@@ -153,7 +160,12 @@ const InformationalAddScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: mode === "light" ? "transparent" : "#101010" },
+      ]}
+    >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         {startCamera ? (
           <Camera ref={cameraRef} style={styles.camera} type={type}>
@@ -224,17 +236,33 @@ const InformationalAddScreen = ({ navigation }) => {
             >
               <Avatar style={styles.avatar} rounded source={{ uri: avatar }} />
 
-              <Text style={{ marginLeft: 20, fontSize: 17 }}>{fullName}</Text>
+              <Text
+                style={{
+                  marginLeft: 20,
+                  fontSize: 17,
+                  color: mode === "light" ? "dark" : "white",
+                }}
+              >
+                {fullName}
+              </Text>
 
               <View style={styles.options}>
                 <TouchableOpacity onPress={pickImage}>
-                  <FontAwesome name="photo" size={24} color="black" />
+                  <FontAwesome
+                    name="photo"
+                    size={24}
+                    color={mode === "light" ? "black" : "white"}
+                  />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={openCamera}
                   style={{ marginLeft: 20 }}
                 >
-                  <Entypo name="camera" size={24} color="black" />
+                  <Entypo
+                    name="camera"
+                    size={24}
+                    color={mode === "light" ? "black" : "white"}
+                  />
                 </TouchableOpacity>
               </View>
             </View>
@@ -242,6 +270,7 @@ const InformationalAddScreen = ({ navigation }) => {
               style={{ marginTop: 30, marginLeft: 40 }}
               placeholder="What's on your mind ?"
               onChangeText={(e) => setText(e)}
+              placeholderTextColor={mode === "light" ? "black" : "white"}
             />
             <View
               style={{

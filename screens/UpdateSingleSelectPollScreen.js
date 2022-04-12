@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect, useRef } from "react";
-import { Text, StyleSheet, Dimensions, View, Animated } from "react-native";
+import { Text, StyleSheet, Dimensions, View, StatusBar } from "react-native";
 import { useRoute } from "@react-navigation/core";
 import { Card, Paragraph, Chip, Provider, List } from "react-native-paper";
 import { CheckBox, Avatar } from "react-native-elements";
@@ -7,10 +7,12 @@ import ProgressBar from "react-native-animated-progress";
 import firebase from "firebase";
 import { AsyncStorage } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
+import { useSelector } from "react-redux";
 
 const screenWidth = Dimensions.get("window").width;
 
 const UpdateSingleSelectPollScreen = ({ navigation }) => {
+  const { mode } = useSelector((state) => state.theme);
   const refRBSheet = useRef();
   const route = useRoute();
   const postId = route.params.postId;
@@ -27,6 +29,10 @@ const UpdateSingleSelectPollScreen = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Update Poll",
+      headerStyle: {
+        backgroundColor: mode === "light" ? "white" : "#282828",
+      },
+      headerTintColor: mode === "light" ? "black" : "white",
     });
   }, [navigation]);
 
@@ -247,76 +253,115 @@ const UpdateSingleSelectPollScreen = ({ navigation }) => {
   }, [votersIds]);
 
   return (
-    <Provider>
-      <View style={styles.container}>
-        <Card style={styles.cardPost}>
-          <Card.Title title={text} />
-          <Card.Content style={{ marginBottom: 10, marginLeft: 10 }}>
-            {options.map((item) => {
-              return (
-                <>
-                  <View style={{ display: "flex", flexDirection: "row" }}>
-                    <CheckBox
-                      checked={item.option === selectedOption}
-                      onPress={() => Vote(item.option)}
-                    />
-                    <Paragraph style={{ marginTop: 17 }}>
-                      {item.option}
-                    </Paragraph>
-                    <Chip
-                      disabled={item.votes === 0}
-                      onPress={() => getOptionVoters(item.option)}
-                      mode="flat"
-                      style={{ right: 50, marginTop: 10, position: "absolute" }}
-                    >
-                      {item.votes} Votes
-                    </Chip>
-                    <Paragraph
-                      style={{ marginTop: 17, right: 0, position: "absolute" }}
-                    >
-                      {totalVotes !== 0
-                        ? `${Math.floor((item.votes / totalVotes) * 100)} %`
-                        : "0 %"}
-                    </Paragraph>
-                  </View>
-                  <ProgressBar
-                    backgroundColor="red"
-                    animated={true}
-                    progress={Math.floor((item.votes / totalVotes) * 100)}
-                  />
-                </>
-              );
-            })}
-          </Card.Content>
-          <Card.Actions></Card.Actions>
-        </Card>
-
-        <RBSheet
-          height={500}
-          ref={refRBSheet}
-          closeOnDragDown={true}
-          closeOnPressMask={true}
-          onClose={() => setVoters([])}
-          customStyles={{
-            wrapper: {
-              backgroundColor: "transparent",
-            },
-            draggableIcon: {
-              backgroundColor: "#000",
-            },
-          }}
+    <>
+      <StatusBar
+        animated={true}
+        backgroundColor="#61dafb"
+        barStyle={mode === "light" ? "dark-content" : "light-content"}
+        showHideTransition="fade"
+        hidden={false}
+      />
+      <Provider>
+        <View
+          style={[
+            styles.container,
+            { backgroundColor: mode === "light" ? "transparent" : "#101010" },
+          ]}
         >
-          <View style={{ marginLeft: 20 }}>
-            {voters.map((item) => (
-              <List.Item
-                title={item.firstName + " " + item.lastName}
-                left={() => <Avatar rounded source={{ uri: item.avatar }} />}
-              />
-            ))}
-          </View>
-        </RBSheet>
-      </View>
-    </Provider>
+          <Card
+            style={[
+              styles.cardPost,
+              { backgroundColor: mode === "light" ? "white" : "#202020" },
+            ]}
+          >
+            <Card.Title
+              title={text}
+              titleStyle={{ color: mode === "light" ? "black" : "white" }}
+            />
+            <Card.Content style={{ marginBottom: 10, marginLeft: 10 }}>
+              {options.map((item) => {
+                return (
+                  <>
+                    <View style={{ display: "flex", flexDirection: "row" }}>
+                      <CheckBox
+                        checked={item.option === selectedOption}
+                        onPress={() => Vote(item.option)}
+                      />
+                      <Paragraph
+                        style={{
+                          marginTop: 17,
+                          color: mode === "light" ? "black" : "white",
+                        }}
+                      >
+                        {item.option}
+                      </Paragraph>
+                      <Chip
+                        disabled={item.votes === 0}
+                        onPress={() => getOptionVoters(item.option)}
+                        mode="flat"
+                        style={{
+                          right: 50,
+                          marginTop: 10,
+                          position: "absolute",
+                          backgroundColor:
+                            mode === "light" ? "#D0D0D0" : "#404040",
+                        }}
+                        selectedColor={mode === "light" ? "black" : "white"}
+                      >
+                        {item.votes} Votes
+                      </Chip>
+                      <Paragraph
+                        style={{
+                          marginTop: 17,
+                          right: 0,
+                          position: "absolute",
+                          color: mode === "light" ? "black" : "white",
+                        }}
+                      >
+                        {totalVotes !== 0
+                          ? `${Math.floor((item.votes / totalVotes) * 100)} %`
+                          : "0 %"}
+                      </Paragraph>
+                    </View>
+                    <ProgressBar
+                      backgroundColor="#61dafb"
+                      animated={true}
+                      progress={Math.floor((item.votes / totalVotes) * 100)}
+                    />
+                  </>
+                );
+              })}
+            </Card.Content>
+            <Card.Actions></Card.Actions>
+          </Card>
+
+          <RBSheet
+            height={500}
+            ref={refRBSheet}
+            closeOnDragDown={true}
+            closeOnPressMask={true}
+            onClose={() => setVoters([])}
+            customStyles={{
+              wrapper: {
+                backgroundColor: "transparent",
+              },
+              draggableIcon: {
+                backgroundColor: "#000",
+              },
+            }}
+          >
+            <View style={{ marginLeft: 20 }}>
+              {voters.map((item) => (
+                <List.Item
+                  title={item.firstName + " " + item.lastName}
+                  left={() => <Avatar rounded source={{ uri: item.avatar }} />}
+                />
+              ))}
+            </View>
+          </RBSheet>
+        </View>
+      </Provider>
+    </>
   );
 };
 

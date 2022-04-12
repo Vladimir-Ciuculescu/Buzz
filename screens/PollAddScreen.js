@@ -8,14 +8,18 @@ import {
   ActivityIndicator,
   Alert,
   AsyncStorage,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { Headline, TextInput, List, Chip } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
 import firebase from "firebase";
 import { v4 as uuidv4 } from "uuid";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
+import { useSelector } from "react-redux";
 
 const PollAddScreen = ({ navigation }) => {
+  const { mode } = useSelector((state) => state.theme);
   const [subjectInput, setSubjectInput] = useState("");
   const [userId, setUserId] = useState("");
   const [options, setOptions] = useState([]);
@@ -154,34 +158,56 @@ const PollAddScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         ),
+      title: "Make a post",
+      headerStyle: {
+        backgroundColor: mode === "light" ? "white" : "#282828",
+      },
+      headerTintColor: mode === "light" ? "black" : "white",
     });
   });
 
   return (
-    <View>
-      <View style={{ marginTop: 20 }}>
-        {/* {Types.map((item) => (
+    <View
+      style={{
+        backgroundColor: mode === "light" ? "transparent" : "#101010",
+        flex: 1,
+      }}
+    >
+      <View
+        style={{
+          marginTop: 20,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginHorizontal: 70,
+          backgroundColor: mode === "light" ? "transparent" : "#101010",
+        }}
+      >
+        {Types.map((item) => (
           <Chip
-            mode="outlined"
+            mode="flat"
             icon="poll"
             selected={item.type === pollType}
-            selectedColor="blue"
             onPress={() => setPollType(item.type)}
+            style={{
+              backgroundColor: mode === "light" ? "#D0D0D0" : "#404040",
+            }}
+            selectedColor={mode === "light" ? "black" : "white"}
           >
             {item.type}
           </Chip>
-        ))} */}
-        <SegmentedControl
+        ))}
+        {/* <SegmentedControl
           style={{ marginHorizontal: 20 }}
           selectedIndex={0}
           values={["Connections", "Channels"]}
-        />
+        /> */}
       </View>
       <Input
-        style={styles.Input}
+        style={[styles.Input, { color: mode === "light" ? "black" : "white" }]}
         value={subjectInput}
         onChangeText={(e) => setSubjectInput(e)}
         placeholder="Propose something"
+        placeholderTextColor={mode === "light" ? "black" : "white"}
       />
       {options.map((option) => (
         <View
@@ -190,6 +216,7 @@ const PollAddScreen = ({ navigation }) => {
             flexDirection: "row",
             marginLeft: 30,
             marginBottom: 10,
+            backgroundColor: "red",
           }}
         >
           <Text style={{ marginBottom: 10, fontWeight: "700" }}>{option}</Text>
@@ -209,24 +236,22 @@ const PollAddScreen = ({ navigation }) => {
         </View>
       ))}
       <TextInput
-        theme={{
-          colors: {
-            primary: "blue",
-            underlineColor: "transparent",
-          },
-        }}
+        activeUnderlineColor={"red"}
+        outlineColor={mode === "light" ? "black" : "white"}
+        activeOutlineColor={mode === "light" ? "black" : "white"}
         onChangeText={(e) => {
           setOptionInput(e);
         }}
+        placeholderTextColor={mode === "light" ? "black" : "white"}
         multiline
         mode="outlined"
         value={optionInput}
         label="Add option"
-        style={styles.subjectInput}
+        style={[styles.subjectInput, { backgroundColor: "#404040" }]}
         right={
           <TextInput.Icon
             disabled={optionInput !== "" ? false : true}
-            color="blue"
+            color={mode === "light" ? "black" : "white"}
             name="plus"
             onPress={() => {
               setOptions((prevoptions) => [...prevoptions, optionInput]);

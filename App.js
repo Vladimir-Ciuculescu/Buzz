@@ -24,7 +24,7 @@ import LoginScreen from "./screens/LoginScreen";
 import LoginScreen2 from "./screens/LoginScreen2";
 import MessageScreen from "./screens/MessageScreen";
 import NotificationScreen from "./screens/NotificationScreen";
-import ProfileScreen2 from "./screens/ProfileScreen2";
+import ProfileScreen from "./screens/ProfileScreen";
 import PostScreen from "./screens/PostScreen";
 import AddChatScreen from "./screens/AddChatScreen";
 import ModalScreen from "./screens/ModalScreen";
@@ -80,7 +80,7 @@ function MyTabs() {
         tabBarInactiveTintColor: "grey",
         headerTintColor: `${mode === "light" ? "#303030" : "white"}`,
         headerStyle: {
-          backgroundColor: `${mode === "light" ? "white" : "#101010"}`,
+          backgroundColor: `${mode === "light" ? "white" : "#282828"}`,
         },
         tabBarStyle: {
           backgroundColor: `${mode === "light" ? "white" : "#101010"}`,
@@ -171,7 +171,7 @@ function MyTabs() {
       <Tabs.Screen
         name="Profile"
         component={(props) => (
-          <ProfileScreen2
+          <ProfileScreen
             {...props}
             anticolor={mode === "light" ? "#101010" : "white"}
             color={mode === "light" ? "white" : "#101010"}

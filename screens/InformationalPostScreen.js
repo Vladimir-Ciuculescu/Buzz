@@ -18,8 +18,6 @@ const InformationalPostScreen = () => {
 
   const { postId, owner } = route.params;
 
-  console.log(postId);
-
   useEffect(() => {
     const getPost = async () => {
       const result = await firebase
