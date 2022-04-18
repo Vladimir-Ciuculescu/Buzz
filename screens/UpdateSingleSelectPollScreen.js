@@ -324,7 +324,7 @@ const UpdateSingleSelectPollScreen = ({ navigation }) => {
                       </Paragraph>
                     </View>
                     <ProgressBar
-                      backgroundColor="#61dafb"
+                      backgroundColor="#1a75ff"
                       animated={true}
                       progress={Math.floor((item.votes / totalVotes) * 100)}
                     />

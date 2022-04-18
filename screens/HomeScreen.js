@@ -371,7 +371,7 @@ export default class HomeScreen extends React.Component {
               this.setState({ visible: false });
             },
           }}
-          style={{ backgroundColor: "blue", width: screenWidth - 18 }}
+          style={{ backgroundColor: "#1a75ff", width: screenWidth - 18 }}
           theme={{ colors: { accent: "white" } }}
           onDismiss={() => this.setState({ visible: false })}
           duration={2000}

@@ -37,7 +37,7 @@ const ProfileScreen2 = ({ navigation, color, anticolor }) => {
 
   const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
-  const [Avatar, setAvatar] = useState(avatar);
+  const [Avatar, setAvatar] = useState("");
   const [toggleEditProfile, settoggleEditProfile] = useState("");
   const [firstName, setfirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -62,6 +62,9 @@ const ProfileScreen2 = ({ navigation, color, anticolor }) => {
     const fetchUser = async () => {
       setLoadingEditProfile(true);
       const user = await AsyncStorage.getItem("user");
+      const avatar = await AsyncStorage.getItem("avatar");
+      setAvatar(avatar);
+      console.log(Avatar);
       setEmail(user);
       const query = firebase.firestore().collection("accounts").doc(user).get();
       const firstName = (await query).data().firstName;
@@ -174,7 +177,7 @@ const ProfileScreen2 = ({ navigation, color, anticolor }) => {
                   color: anticolor,
                 }}
               >
-                {name}
+                {user}
               </Title>
             </View>
             <View style={styles.accountInfo}>

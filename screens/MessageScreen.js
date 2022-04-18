@@ -21,10 +21,10 @@ import {
 } from "stream-chat-expo";
 import API_KEY from "../StreamCredentials";
 import { StreamChat } from "stream-chat";
-
-const client = StreamChat.getInstance(API_KEY);
+import { useSelector } from "react-redux";
 
 const MessageScreen = ({ navigation }) => {
+  const { mode } = useSelector((state) => state.theme);
   const { client } = useChatContext();
   const [avatar, setAvatar] = useState("");
   const [currentUser, setCurrentUser] = useState("");
@@ -86,7 +86,6 @@ const MessageScreen = ({ navigation }) => {
             title={client.user.id.charAt(0)}
             rounded
             source={{ uri: avatar }}
-            overlayContainerStyle={{ backgroundColor: "red" }}
           />
         </View>
       ),
@@ -142,15 +141,11 @@ const MessageScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider
+      style={{ backgroundColor: mode === "dark" ? "#101010" : "transparent" }}
+    >
       <OverlayProvider>
         <ScrollView>
-          <TextInput
-            onFocus={OpenSearcher}
-            placeholder="Looking for someone ?"
-            style={styles.searchPersonInput}
-          />
-
           <View>
             <View style={styles.messagesHeader}>
               <Text style={{ alignSelf: "center", marginLeft: 10 }}>
@@ -189,7 +184,12 @@ const MessageScreen = ({ navigation }) => {
                   marginRight: 10,
                 }}
               >
-                <AntDesign name="plus" size={24} color="black" />
+                <AntDesign
+                  name="plus"
+                  size={24}
+                  color="black"
+                  onPress={OpenSearcher}
+                />
               </TouchableOpacity>
             </View>
             <ChannelList

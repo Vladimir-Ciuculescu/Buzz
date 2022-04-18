@@ -14,6 +14,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   KeyboardAvoidingView,
+  StatusBar,
 } from "react-native";
 
 import { TextInput, HelperText } from "react-native-paper";
@@ -37,6 +38,7 @@ export default class RegisterScreen extends React.Component {
     passwordError: "",
     repeatPasswordError: "",
     verified: false,
+    mode: this.props.mode,
   };
 
   ToLogin = () => {
@@ -222,13 +224,26 @@ export default class RegisterScreen extends React.Component {
   };
 
   render() {
-    const { marian } = this.props.route.params;
     return (
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : null}
-        style={styles.container}
+        style={[
+          styles.container,
+          {
+            backgroundColor:
+              this.state.mode === "light" ? "transparent" : "#101010",
+          },
+        ]}
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : null}
       >
+        <StatusBar
+          animated={true}
+          barStyle={
+            this.state.mode === "light" ? "dark-content" : "light-content"
+          }
+          showHideTransition="fade"
+          hidden={false}
+        />
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView>
             <Image
@@ -240,21 +255,39 @@ export default class RegisterScreen extends React.Component {
               style={styles.yellowCircle}
             ></Image>
 
-            <Text style={styles.registerMessage}>Register account</Text>
+            <Text
+              style={[
+                styles.registerMessage,
+                { color: this.state.mode === "light" ? "black" : "white" },
+              ]}
+            >
+              Register account
+            </Text>
 
             <View style={styles.form}>
               <View>
                 <TextInput
+                  outlineColor={this.state.mode === "light" ? "black" : "white"}
                   theme={{
                     colors: {
                       primary: "#258e25",
-                      underlineColor: "transparent",
+                      text: this.state.mode === "light" ? "black" : "white",
+                      placeholder:
+                        this.state.mode === "light" ? "black" : "white",
                     },
                   }}
+                  style={{
+                    backgroundColor:
+                      this.state.mode === "light" ? "white" : "#404040",
+                  }}
+                  underlineColor="#f5f5f5"
+                  underlineColorAndroid="#f5f5f5"
+                  placeholderTextColor={
+                    this.state.mode === "light" ? "black" : "white"
+                  }
                   mode="outlined"
                   onBlur={() => this.capitalizeFirstLetter("firstName")}
                   label="First name"
-                  underlineColorAndroid="transparent"
                   onChangeText={(firstName) => this.setState({ firstName })}
                   value={this.state.firstName}
                 ></TextInput>
@@ -265,16 +298,27 @@ export default class RegisterScreen extends React.Component {
 
               <View style={{ marginTop: 10 }}>
                 <TextInput
+                  outlineColor={this.state.mode === "light" ? "black" : "white"}
                   theme={{
                     colors: {
                       primary: "#258e25",
-                      underlineColor: "transparent",
+                      text: this.state.mode === "light" ? "black" : "white",
+                      placeholder:
+                        this.state.mode === "light" ? "black" : "white",
                     },
                   }}
+                  style={{
+                    backgroundColor:
+                      this.state.mode === "light" ? "white" : "#404040",
+                  }}
+                  underlineColor="#f5f5f5"
+                  underlineColorAndroid="#f5f5f5"
+                  placeholderTextColor={
+                    this.state.mode === "light" ? "black" : "white"
+                  }
                   mode="outlined"
                   label="Last name"
                   onBlur={() => this.capitalizeFirstLetter("lastName")}
-                  underlineColorAndroid="transparent"
                   onChangeText={(lastName) => this.setState({ lastName })}
                   value={this.state.lastName}
                 ></TextInput>
@@ -283,33 +327,60 @@ export default class RegisterScreen extends React.Component {
 
               <View style={{ marginTop: 10 }}>
                 <TextInput
+                  outlineColor={this.state.mode === "light" ? "black" : "white"}
                   theme={{
                     colors: {
                       primary: "#258e25",
-                      underlineColor: "transparent",
+                      text: this.state.mode === "light" ? "black" : "white",
+                      placeholder:
+                        this.state.mode === "light" ? "black" : "white",
                     },
                   }}
+                  style={{
+                    backgroundColor:
+                      this.state.mode === "light" ? "white" : "#404040",
+                  }}
+                  underlineColor="#f5f5f5"
+                  underlineColorAndroid="#f5f5f5"
+                  placeholderTextColor={
+                    this.state.mode === "light" ? "black" : "white"
+                  }
                   mode="outlined"
                   label="Email "
-                  underlineColorAndroid="transparent"
                   onChangeText={(email) => this.setState({ email })}
                   value={this.state.email}
-                  right={<TextInput.Icon name="email" />}
+                  right={
+                    <TextInput.Icon
+                      name="email"
+                      color={this.state.mode === "light" ? "black" : "white"}
+                    />
+                  }
                 />
                 <HelperText type="error">{this.state.emailError}</HelperText>
               </View>
 
               <View style={{ marginTop: 10 }}>
                 <TextInput
+                  outlineColor={this.state.mode === "light" ? "black" : "white"}
                   theme={{
                     colors: {
                       primary: "#258e25",
-                      underlineColor: "transparent",
+                      text: this.state.mode === "light" ? "black" : "white",
+                      placeholder:
+                        this.state.mode === "light" ? "black" : "white",
                     },
                   }}
+                  style={{
+                    backgroundColor:
+                      this.state.mode === "light" ? "white" : "#404040",
+                  }}
+                  underlineColor="#f5f5f5"
+                  underlineColorAndroid="#f5f5f5"
+                  placeholderTextColor={
+                    this.state.mode === "light" ? "black" : "white"
+                  }
                   mode="outlined"
                   label="Password"
-                  underlineColorAndroid="transparent"
                   onChangeText={(password) => this.setState({ password })}
                   value={this.state.password}
                   secureTextEntry={this.state.visiblePassword}
@@ -322,6 +393,7 @@ export default class RegisterScreen extends React.Component {
                           visiblePassword: !this.state.visiblePassword,
                         })
                       }
+                      color={this.state.mode === "light" ? "black" : "white"}
                     />
                   }
                 ></TextInput>
@@ -330,15 +402,26 @@ export default class RegisterScreen extends React.Component {
 
               <View style={{ marginTop: 10 }}>
                 <TextInput
+                  outlineColor={this.state.mode === "light" ? "black" : "white"}
                   theme={{
                     colors: {
                       primary: "#258e25",
-                      underlineColor: "transparent",
+                      text: "white",
+                      placeholder:
+                        this.state.mode === "light" ? "black" : "white",
                     },
                   }}
+                  style={{
+                    backgroundColor:
+                      this.state.mode === "light" ? "white" : "#404040",
+                  }}
+                  underlineColor="#f5f5f5"
+                  underlineColorAndroid="#f5f5f5"
+                  placeholderTextColor={
+                    this.state.mode === "light" ? "black" : "white"
+                  }
                   mode="outlined"
                   label="Repeat password"
-                  underlineColorAndroid="transparent"
                   onChangeText={(repeatPassword) =>
                     this.setState({ repeatPassword })
                   }
@@ -356,6 +439,7 @@ export default class RegisterScreen extends React.Component {
                             !this.state.visibleRepeatPassword,
                         })
                       }
+                      color={this.state.mode === "light" ? "black" : "white"}
                     />
                   }
                 ></TextInput>
@@ -393,7 +477,11 @@ export default class RegisterScreen extends React.Component {
                 }}
                 onPress={() => this.ToLogin()}
               >
-                <Text>
+                <Text
+                  style={{
+                    color: this.state.mode === "light" ? "black" : "white",
+                  }}
+                >
                   Already have an account ?,{" "}
                   <Text style={{ color: "#258e25", fontWeight: "700" }}>
                     Login here

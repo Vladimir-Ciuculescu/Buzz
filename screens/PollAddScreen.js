@@ -136,7 +136,7 @@ const PollAddScreen = ({ navigation }) => {
           <ActivityIndicator
             size="small"
             style={{ marginRight: 10 }}
-            color="#6201ef"
+            color={mode === "light" ? "black" : "white"}
           ></ActivityIndicator>
         ) : (
           <View style={{ marginRight: 20 }}>
@@ -151,6 +151,7 @@ const PollAddScreen = ({ navigation }) => {
                   color: "blue",
                   opacity:
                     subjectInput !== "" && options.length !== 0 ? 1 : 0.2,
+                  color: mode === "light" ? "black" : "white",
                 }}
               >
                 Post
@@ -167,100 +168,125 @@ const PollAddScreen = ({ navigation }) => {
   });
 
   return (
-    <View
-      style={{
-        backgroundColor: mode === "light" ? "transparent" : "#101010",
-        flex: 1,
-      }}
-    >
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View
         style={{
-          marginTop: 20,
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginHorizontal: 70,
           backgroundColor: mode === "light" ? "transparent" : "#101010",
+          flex: 1,
         }}
       >
-        {Types.map((item) => (
-          <Chip
-            mode="flat"
-            icon="poll"
-            selected={item.type === pollType}
-            onPress={() => setPollType(item.type)}
-            style={{
-              backgroundColor: mode === "light" ? "#D0D0D0" : "#404040",
-            }}
-            selectedColor={mode === "light" ? "black" : "white"}
-          >
-            {item.type}
-          </Chip>
-        ))}
-        {/* <SegmentedControl
-          style={{ marginHorizontal: 20 }}
-          selectedIndex={0}
-          values={["Connections", "Channels"]}
-        /> */}
-      </View>
-      <Input
-        style={[styles.Input, { color: mode === "light" ? "black" : "white" }]}
-        value={subjectInput}
-        onChangeText={(e) => setSubjectInput(e)}
-        placeholder="Propose something"
-        placeholderTextColor={mode === "light" ? "black" : "white"}
-      />
-      {options.map((option) => (
         <View
           style={{
-            display: "flex",
+            marginTop: 20,
             flexDirection: "row",
-            marginLeft: 30,
-            marginBottom: 10,
-            backgroundColor: "red",
+            justifyContent: "space-between",
+            marginHorizontal: 70,
+            backgroundColor: mode === "light" ? "transparent" : "#101010",
           }}
         >
-          <Text style={{ marginBottom: 10, fontWeight: "700" }}>{option}</Text>
-          <AntDesign
-            style={{
-              position: "absolute",
-              right: 0,
-              marginRight: 30,
-            }}
-            name="close"
-            size={24}
-            color="black"
-            onPress={() =>
-              setOptions(options.filter((item) => item !== option))
-            }
-          />
+          {Types.map((item) => (
+            <Chip
+              icon="poll"
+              selected={item.type === pollType}
+              onPress={() => setPollType(item.type)}
+              style={{
+                backgroundColor: mode === "light" ? "#D0D0D0" : "#404040",
+                borderColor:
+                  mode === "light"
+                    ? item.type === pollType
+                      ? "black"
+                      : "white"
+                    : item.type !== pollType
+                    ? "black"
+                    : "white",
+              }}
+              selectedColor={mode === "light" ? "black" : "white"}
+            >
+              {item.type}
+            </Chip>
+          ))}
         </View>
-      ))}
-      <TextInput
-        activeUnderlineColor={"red"}
-        outlineColor={mode === "light" ? "black" : "white"}
-        activeOutlineColor={mode === "light" ? "black" : "white"}
-        onChangeText={(e) => {
-          setOptionInput(e);
-        }}
-        placeholderTextColor={mode === "light" ? "black" : "white"}
-        multiline
-        mode="outlined"
-        value={optionInput}
-        label="Add option"
-        style={[styles.subjectInput, { backgroundColor: "#404040" }]}
-        right={
-          <TextInput.Icon
-            disabled={optionInput !== "" ? false : true}
-            color={mode === "light" ? "black" : "white"}
-            name="plus"
-            onPress={() => {
-              setOptions((prevoptions) => [...prevoptions, optionInput]);
-              setOptionInput("");
+        <Input
+          style={[
+            styles.Input,
+            { color: mode === "light" ? "black" : "white" },
+          ]}
+          value={subjectInput}
+          onChangeText={(e) => setSubjectInput(e)}
+          placeholder="Propose something"
+          placeholderTextColor={mode === "light" ? "black" : "white"}
+        />
+        {options.map((option) => (
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              marginLeft: 30,
+              marginBottom: 10,
             }}
-          />
-        }
-      ></TextInput>
-    </View>
+          >
+            <Text
+              style={{
+                marginBottom: 10,
+                fontWeight: "700",
+                color: mode === "light" ? "black" : "white",
+              }}
+            >
+              {option}
+            </Text>
+            <AntDesign
+              style={{
+                position: "absolute",
+                right: 0,
+                marginRight: 30,
+              }}
+              name="close"
+              size={24}
+              color={mode === "light" ? "black" : "white"}
+              onPress={() =>
+                setOptions(options.filter((item) => item !== option))
+              }
+            />
+          </View>
+        ))}
+        <TextInput
+          outlineColor={mode === "light" ? "black" : "white"}
+          activeOutlineColor={mode === "light" ? "black" : "white"}
+          onChangeText={(e) => {
+            setOptionInput(e);
+          }}
+          theme={{
+            colors: {
+              text: mode === "light" ? "black" : "white",
+              accent: "#ffffff",
+              placeholder: mode === "light" ? "black" : "white",
+            },
+          }}
+          underlineColor="#f5f5f5"
+          underlineColorAndroid="#f5f5f5"
+          placeholderTextColor={mode === "light" ? "black" : "white"}
+          multiline
+          mode="outlined"
+          value={optionInput}
+          label="Add option"
+          style={[
+            styles.subjectInput,
+            { backgroundColor: mode === "light" ? "white" : "#404040" },
+          ]}
+          right={
+            <TextInput.Icon
+              disabled={optionInput !== "" ? false : true}
+              color={mode === "light" ? "black" : "white"}
+              name="plus"
+              onPress={() => {
+                setOptions((prevoptions) => [...prevoptions, optionInput]);
+                setOptionInput("");
+              }}
+            />
+          }
+        ></TextInput>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 

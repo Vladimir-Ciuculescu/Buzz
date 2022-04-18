@@ -62,7 +62,10 @@ const InformationalAddScreen = ({ navigation }) => {
               onPress={handlePost}
             >
               <Text
-                style={{ opacity: image === null && text === "" ? 0.2 : 1 }}
+                style={{
+                  opacity: image === null && text === "" ? 0.2 : 1,
+                  color: mode === "light" ? "black" : "white",
+                }}
               >
                 Post
               </Text>

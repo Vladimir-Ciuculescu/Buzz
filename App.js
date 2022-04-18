@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Text, View, LogBox, StatusBar, StyleSheet } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Text,
+  View,
+  LogBox,
+  StatusBar,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
 import { NativeBaseProvider, themeTools, extendTheme } from "native-base";
 import {
   AntDesign,
@@ -8,12 +15,12 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import firebase from "firebase";
-
+import "react-native-gesture-handler";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { AsyncStorage } from "react-native";
 //screens
@@ -77,6 +84,7 @@ function MyTabs() {
     <Tabs.Navigator
       screenOptions={{
         tabBarActiveTintColor: "#1a75ff",
+
         tabBarInactiveTintColor: "grey",
         headerTintColor: `${mode === "light" ? "#303030" : "white"}`,
         headerStyle: {
@@ -86,7 +94,6 @@ function MyTabs() {
           backgroundColor: `${mode === "light" ? "white" : "#101010"}`,
         },
       }}
-      t
     >
       <Tabs.Screen
         name="HomeScreen"
@@ -198,27 +205,38 @@ const Stack = createStackNavigator();
 function MyStacks() {
   const { mode } = useSelector((state) => state.theme);
 
-  const theme = extendTheme({
-    components: {
-      Heading: {
-        baseStyle: (props) => {
-          return {
-            color: themeTools.mode("red.300", "blue.300")(props),
-          };
-        },
-      },
-    },
-  });
-
   return (
-    <NativeBaseProvider theme={theme}>
-      <Stack.Navigator initialRouteName="Loading">
+    <NativeBaseProvider>
+      <Stack.Navigator
+        screenOptions={{
+          tabBarActiveTintColor: "#1a75ff",
+
+          tabBarInactiveTintColor: "grey",
+          headerTintColor: `${mode === "light" ? "#303030" : "white"}`,
+          headerStyle: {
+            backgroundColor: `${mode === "light" ? "white" : "#282828"}`,
+          },
+          tabBarStyle: {
+            backgroundColor: `${mode === "light" ? "white" : "#101010"}`,
+          },
+        }}
+        initialRouteName="Loading"
+      >
         <Stack.Screen
           options={{ headerLeft: null }}
           name="Login"
-          component={LoginScreen2}
+          component={(props) => <LoginScreen mode={mode} {...props} />}
         />
-        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen
+          options={{
+            headerStyle: {
+              backgroundColor: mode === "light" ? "white" : "#282828",
+            },
+            headerTintColor: mode === "light" ? "black" : "white",
+          }}
+          name="Register"
+          component={(props) => <RegisterScreen {...props} mode={mode} />}
+        />
         <Stack.Screen
           options={{ headerShown: false, gestureEnabled: false }}
           name="App"
@@ -254,11 +272,24 @@ function MyStacks() {
         <Stack.Screen
           options={{ headerShown: false }}
           name="Searcher"
+          // component={(props) => (
+          //   <Searcher
+          //     {...props}
+          //     anticolor={mode === "light" ? "#101010" : "white"}
+          //     color={mode === "light" ? "white" : "#101010"}
+          //   />
+          // )}
           component={Searcher}
         />
         <Stack.Screen
           name="PersonSearcher"
-          component={PersonSearcher}
+          component={(props) => (
+            <PersonSearcher
+              {...props}
+              anticolor={mode === "light" ? "#101010" : "white"}
+              color={mode === "light" ? "white" : "#101010"}
+            />
+          )}
           options={{ presentation: "modal" }}
         />
       </Stack.Navigator>

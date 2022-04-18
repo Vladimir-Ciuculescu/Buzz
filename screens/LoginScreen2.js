@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import firebase from "firebase";
 import {
   View,
@@ -19,11 +19,14 @@ import { StreamChat } from "stream-chat";
 import { useDispatch } from "react-redux";
 import { HelperText, TextInput } from "react-native-paper";
 import { setUserAvatar, setUserEmail, setUserName } from "../redux/user/user";
+import { useSelector } from "react-redux";
 
 const client = StreamChat.getInstance(API_KEY);
 
 const LoginScreen2 = ({ navigation }) => {
   const dispatch = useDispatch();
+
+  const { mode } = useSelector((state) => state.theme);
 
   const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
@@ -48,6 +51,15 @@ const LoginScreen2 = ({ navigation }) => {
 
     navigation.navigate("Register");
   };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerStyle: {
+        backgroundColor: mode === "light" ? "white" : "#282828",
+      },
+      headerTintColor: mode === "light" ? "black" : "white",
+    });
+  });
 
   const connectChatUser = async (id, name, image) => {
     await client.connectUser(
@@ -141,7 +153,10 @@ const LoginScreen2 = ({ navigation }) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : null}
-      style={styles.container}
+      style={[
+        styles.container,
+        { backgroundColor: mode === "light" ? "transparent" : "#101010" },
+      ]}
       keyboardVerticalOffset={Platform.OS === "ios" ? 90 : null}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -155,25 +170,42 @@ const LoginScreen2 = ({ navigation }) => {
             style={styles.logo}
           ></Image>
 
-          <Text style={styles.greeting}>
+          <Text
+            style={[
+              styles.greeting,
+              { color: mode === "light" ? "black" : "white" },
+            ]}
+          >
             {`Hello partner, \n Welcome back !`}
           </Text>
 
           <View style={styles.form}>
             <View>
               <TextInput
+                outlineColor={mode === "light" ? "black" : "white"}
                 theme={{
                   colors: {
                     primary: "#258e25",
-                    underlineColor: "transparent",
+                    text: mode === "light" ? "black" : "white",
+                    placeholder: mode === "light" ? "black" : "white",
                   },
                 }}
+                style={{
+                  backgroundColor: mode === "light" ? "white" : "#404040",
+                }}
+                underlineColor="#f5f5f5"
+                underlineColorAndroid="#f5f5f5"
+                placeholderTextColor={mode === "light" ? "black" : "white"}
                 mode="outlined"
                 label="Email address"
                 onChangeText={(email) => setEmail(email)}
                 value={email}
                 right={
-                  <TextInput.Icon forceTextInputFocus={false} name="email" />
+                  <TextInput.Icon
+                    forceTextInputFocus={false}
+                    name="email"
+                    color={mode === "light" ? "black" : "white"}
+                  />
                 }
               />
               <HelperText type="error">{emailError}</HelperText>
@@ -181,12 +213,20 @@ const LoginScreen2 = ({ navigation }) => {
 
             <View>
               <TextInput
+                outlineColor={mode === "light" ? "black" : "white"}
                 theme={{
                   colors: {
                     primary: "#258e25",
-                    underlineColor: "transparent",
+                    text: mode === "light" ? "black" : "white",
+                    placeholder: mode === "light" ? "black" : "white",
                   },
                 }}
+                style={{
+                  backgroundColor: mode === "light" ? "white" : "#404040",
+                }}
+                underlineColor="#f5f5f5"
+                underlineColorAndroid="#f5f5f5"
+                placeholderTextColor={mode === "light" ? "black" : "white"}
                 mode="outlined"
                 label="Password"
                 onChangeText={(password) => setPassword(password)}
@@ -197,6 +237,7 @@ const LoginScreen2 = ({ navigation }) => {
                     forceTextInputFocus={false}
                     name={visiblePassword ? "eye-off" : "eye"}
                     onPress={() => setVisiblePassword(!visiblePassword)}
+                    color={mode === "light" ? "black" : "white"}
                   />
                 }
               />
@@ -235,7 +276,7 @@ const LoginScreen2 = ({ navigation }) => {
               }}
               onPress={() => toRegister()}
             >
-              <Text>
+              <Text style={{ color: mode === "light" ? "black" : "white" }}>
                 New to Buzz ?,{" "}
                 <Text style={{ color: "#258e25", fontWeight: "700" }}>
                   Sign Up here !

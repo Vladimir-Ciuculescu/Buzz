@@ -43,6 +43,7 @@ export default class LoginScreen extends React.Component {
       firstName: "",
       lastName: "",
       userId: "",
+      mode: this.props.mode,
     };
   }
 
@@ -182,7 +183,13 @@ export default class LoginScreen extends React.Component {
     return (
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : null}
-        style={styles.container}
+        style={[
+          styles.container,
+          {
+            backgroundColor:
+              this.state.mode === "light" ? "transparent" : "#101010",
+          },
+        ]}
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : null}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -196,7 +203,12 @@ export default class LoginScreen extends React.Component {
               style={styles.logo}
             ></Image>
 
-            <Text style={styles.greeting}>
+            <Text
+              style={[
+                styles.greeting,
+                { color: this.state.mode === "light" ? "black" : "white" },
+              ]}
+            >
               {`Hello partner, \n Welcome back !`}
             </Text>
 
@@ -206,15 +218,30 @@ export default class LoginScreen extends React.Component {
                   theme={{
                     colors: {
                       primary: "#258e25",
-                      underlineColor: "transparent",
+                      text: this.state.mode === "light" ? "black" : "white",
+                      placeholder:
+                        this.state.mode === "light" ? "black" : "white",
                     },
                   }}
+                  style={{
+                    backgroundColor:
+                      this.state.mode === "light" ? "white" : "#404040",
+                  }}
+                  underlineColor="#f5f5f5"
+                  underlineColorAndroid="#f5f5f5"
+                  placeholderTextColor={
+                    this.state.mode === "light" ? "black" : "white"
+                  }
                   mode="outlined"
                   label="Email address"
                   onChangeText={(email) => this.setState({ email })}
                   value={this.state.email}
                   right={
-                    <TextInput.Icon forceTextInputFocus={false} name="email" />
+                    <TextInput.Icon
+                      forceTextInputFocus={false}
+                      name="email"
+                      color={this.state.mode === "light" ? "black" : "white"}
+                    />
                   }
                 />
                 <HelperText type="error">{this.state.emailError}</HelperText>
@@ -225,9 +252,20 @@ export default class LoginScreen extends React.Component {
                   theme={{
                     colors: {
                       primary: "#258e25",
-                      underlineColor: "transparent",
+                      text: this.state.mode === "light" ? "black" : "white",
+                      placeholder:
+                        this.state.mode === "light" ? "black" : "white",
                     },
                   }}
+                  style={{
+                    backgroundColor:
+                      this.state.mode === "light" ? "white" : "#404040",
+                  }}
+                  underlineColor="#f5f5f5"
+                  underlineColorAndroid="#f5f5f5"
+                  placeholderTextColor={
+                    this.state.mode === "light" ? "black" : "white"
+                  }
                   mode="outlined"
                   label="Password"
                   onChangeText={(password) => this.setState({ password })}
@@ -242,6 +280,7 @@ export default class LoginScreen extends React.Component {
                           visiblePassword: !this.state.visiblePassword,
                         })
                       }
+                      color={this.state.mode === "light" ? "black" : "white"}
                     />
                   }
                 />
@@ -280,7 +319,11 @@ export default class LoginScreen extends React.Component {
                 }}
                 onPress={() => this.ToRegister()}
               >
-                <Text>
+                <Text
+                  style={{
+                    color: this.state.mode === "light" ? "black" : "white",
+                  }}
+                >
                   New to Buzz ?,{" "}
                   <Text style={{ color: "#258e25", fontWeight: "700" }}>
                     Sign Up here !

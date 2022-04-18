@@ -13,20 +13,21 @@ import { useEffect, useLayoutEffect } from "react";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { useState } from "react";
 import { useChatContext } from "stream-chat-expo";
-import SegmentedControl from "@react-native-segmented-control/segmented-control";
+import { useSelector } from "react-redux";
 const windowWidth = Dimensions.get("window").width;
 
-const Searcher = ({ navigation }) => {
+const Searcher = ({ navigation, anticolor, color }) => {
+  const { mode } = useSelector((state) => state.theme);
   const { client } = useChatContext();
   const [input, setInput] = useState("");
   const [allChanels, setAllChannels] = useState([]);
   const [channelsResponse, setChannelsResponse] = useState([]);
-  const [option, setOption] = useState("");
 
   useLayoutEffect(() => {
     navigation.setOptions({
       presentation: "modal",
-      title: "New message",
+      headerTintColor: anticolor,
+      headerStyle: { backgroundColor: color },
     });
   });
 
@@ -34,6 +35,7 @@ const Searcher = ({ navigation }) => {
     const fetchChannels = async () => {
       StatusBar.setHidden(false);
       const response = await client.queryChannels({ member_count: { $ne: 2 } });
+      console.log(response);
       setAllChannels(
         response.map((item) => ({
           name: item.data.name,
@@ -78,20 +80,33 @@ const Searcher = ({ navigation }) => {
           style={{ paddingLeft: 20 }}
           name="hash"
           size={24}
-          color="black"
+          color={mode === "dark" ? "white" : "black"}
         />
 
-        <Text style={{ fontSize: 16, paddingLeft: 10 }}>{item.name}</Text>
+        <Text
+          style={{
+            fontSize: 16,
+            paddingLeft: 10,
+            color: mode === "dark" ? "white" : "black",
+          }}
+        >
+          {item.name}
+        </Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
-    <View>
+    <View
+      style={{
+        backgroundColor: mode === "dark" ? "#101010" : "transparent",
+        flex: 1,
+      }}
+    >
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
         <TextInput
           autoCapitalize="none"
-          placeholder="Looking for something / someone ?"
+          placeholder="Looking for a channel ?"
           style={styles.searchPersonInput}
           onChangeText={(e) => searchChannel(e)}
         />
@@ -99,16 +114,14 @@ const Searcher = ({ navigation }) => {
           style={{ alignSelf: "center", paddingLeft: 15, paddingTop: 25 }}
           onPress={() => navigation.goBack()}
         >
-          <AntDesign name="close" size={24} color="black" />
+          <AntDesign
+            name="close"
+            size={24}
+            color={mode === "dark" ? "white" : "black"}
+          />
         </TouchableOpacity>
       </View>
       <View style={styles.results}>
-        <SegmentedControl
-          values={["Connections", "Channels"]}
-          selectedIndex={0}
-          onValueChange={(val) => setOption(val)}
-        />
-
         <FlatList
           data={channelsResponse}
           renderItem={renderChannel}

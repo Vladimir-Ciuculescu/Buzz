@@ -13,9 +13,10 @@ import { useLayoutEffect } from "react";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { useEffect } from "react";
 import { useChatContext } from "stream-chat-expo";
-import firebase from "firebase";
+import { useSelector } from "react-redux";
 
-const PersonSearcher = ({ navigation }) => {
+const PersonSearcher = ({ navigation, color, anticolor }) => {
+  const { mode } = useSelector((state) => state.theme);
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [input, setInput] = useState("");
@@ -26,12 +27,17 @@ const PersonSearcher = ({ navigation }) => {
   useEffect(() => {
     const fetchPersons = async () => {
       const response = await client.queryUsers({ id: { $ne: client.userID } });
+
       const id = await AsyncStorage.getItem("userId");
       setUserId(id);
 
-      const results = response.users;
+      const results = response.users.filter(
+        (item) => item.id !== "vladimir-ciuculescu"
+      );
+
+      const filteredResults = results;
       setUsers(
-        results.map((item) => ({
+        filteredResults.map((item) => ({
           name: item.name,
           image: item.image,
           id: item.id.toLowerCase().replace("-", " "),
@@ -44,15 +50,21 @@ const PersonSearcher = ({ navigation }) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      title: "What's on your mind ?",
+      headerTintColor: anticolor,
       presentation: "modal",
-      title: "New message",
+      headerStyle: { backgroundColor: color },
       headerBackTitleVisible: false,
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={{ marginLeft: 10 }}
         >
-          <AntDesign name="close" size={24} color="black" />
+          <AntDesign
+            name="close"
+            size={24}
+            color={mode === "dark" ? "white" : "black"}
+          />
         </TouchableOpacity>
       ),
     });
@@ -166,6 +178,7 @@ const PersonSearcher = ({ navigation }) => {
             paddingLeft: 15,
             alignSelf: "center",
             fontWeight: "bold",
+            color: mode === "dark" ? "white" : "black",
           }}
         >
           {Name}
@@ -175,19 +188,46 @@ const PersonSearcher = ({ navigation }) => {
   };
 
   return (
-    <View>
-      <View style={{ flexDirection: "row", justifyContent: "center" }}>
-        <Text style={{ alignSelf: "center", marginLeft: 10 }}>To: </Text>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: mode === "dark" ? "#101010" : "transparent",
+      }}
+    >
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          backgroundColor: mode === "dark" ? "#101010" : "transparent",
+        }}
+      >
+        <Text
+          style={{
+            alignSelf: "center",
+            marginLeft: 10,
+            backgroundColor: mode === "dark" ? "#101010" : "transparent",
+            color: mode === "dark" ? "white" : "black",
+          }}
+        >
+          To:{" "}
+        </Text>
         <TextInput
           autoCapitalize="none"
           placeholder="Start a new conversation with someone"
-          style={styles.searchPersonInput}
+          style={[
+            styles.searchPersonInput,
+            {
+              backgroundColor: mode === "dark" ? "#101010" : "transparent",
+            },
+          ]}
           onChangeText={(e) => searchPerson(e)}
+          placeholderTextColor={mode === "dark" ? "white" : "black"}
         />
       </View>
       <Divider width={1} color="grey" />
-      <View style={styles.results}>
+      <View>
         <FlatList
+          style={{ paddingLeft: 30 }}
           data={filteredUsers}
           renderItem={renderUser}
           keyExtractor={(item) => item.id}

@@ -273,7 +273,7 @@ const UpdateMultipleSelectPollScreen = ({ navigation }) => {
                     </Chip>
                   </View>
                   <ProgressBar
-                    backgroundColor="red"
+                    backgroundColor="#1a75ff"
                     animated={true}
                     progress={Math.floor((item.votes / totalVotes) * 100)}
                   />
