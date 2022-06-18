@@ -215,6 +215,7 @@ const PollAddScreen = ({ navigation }) => {
           onChangeText={(e) => setSubjectInput(e)}
           placeholder="Propose something"
           placeholderTextColor={mode === "light" ? "black" : "white"}
+          numberOfLines={2}
         />
         {options.map((option) => (
           <View

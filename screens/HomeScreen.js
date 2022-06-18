@@ -35,10 +35,6 @@ export default class HomeScreen extends React.Component {
     this.getPosts();
   }
 
-  componentDidMount() {
-    console.log(this.state.color);
-  }
-
   getPosts = async () => {
     let result;
     await firebase

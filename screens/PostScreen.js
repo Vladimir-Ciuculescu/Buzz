@@ -55,27 +55,6 @@ const PostScreen = ({ navigation, color, anticolor }) => {
     <View style={[styles.container, { backgroundColor: color }]}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View>
-          <View
-            style={{
-              flexDirection: "row",
-              marginRight: 16,
-              marginLeft: 20,
-              marginTop: 20,
-            }}
-          >
-            <Avatar style={styles.avatar} rounded source={{ uri: avatar }} />
-
-            <Text
-              style={{
-                marginLeft: 20,
-                fontSize: 20,
-                marginTop: 13,
-                color: anticolor,
-              }}
-            >
-              {name}
-            </Text>
-          </View>
           <Text
             style={{
               marginLeft: 20,
@@ -110,7 +89,7 @@ const PostScreen = ({ navigation, color, anticolor }) => {
             style={{ marginHorizontal: 15, marginTop: 10 }}
           >
             <Card.Content>
-              <Title>Informational post</Title>
+              <Title>Add Informational post</Title>
             </Card.Content>
             <Card.Cover source={{ uri: "https://picsum.photos/700" }} />
           </Card>

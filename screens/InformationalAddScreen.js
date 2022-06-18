@@ -270,7 +270,11 @@ const InformationalAddScreen = ({ navigation }) => {
               </View>
             </View>
             <TextInput
-              style={{ marginTop: 30, marginLeft: 40 }}
+              style={{
+                marginTop: 30,
+                marginLeft: 40,
+                color: mode === "light" ? "black" : "white",
+              }}
               placeholder="What's on your mind ?"
               onChangeText={(e) => setText(e)}
               placeholderTextColor={mode === "light" ? "black" : "white"}

@@ -202,6 +202,7 @@ const ProfileScreen2 = ({ navigation, color, anticolor }) => {
             mode="contained"
             style={styles.editProfile}
             onPress={() => settoggleEditProfile(true)}
+            uppercase={false}
           >
             Edit Profile Picture
           </Button>

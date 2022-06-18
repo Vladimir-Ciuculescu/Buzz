@@ -58,15 +58,12 @@ const NotificationCard = ({
               <View style={{ flexDirection: "row" }}>
                 <Text
                   style={{
-                    fontWeight: "bold",
                     fontSize: 15,
                     marginTop: 10,
                     color: anticolor,
                   }}
                 >
                   {owner}
-                </Text>
-                <Text style={{ fontSize: 15, marginTop: 10, color: anticolor }}>
                   {notificationType === "informational"
                     ? " created a new informational post"
                     : " created a new poll"}

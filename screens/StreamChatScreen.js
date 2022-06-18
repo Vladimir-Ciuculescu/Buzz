@@ -22,7 +22,7 @@ const StreamChatScreen = ({ navigation }) => {
   }, [navigation]);
 
   if (!channel) {
-    return <Text>wadawdaw</Text>;
+    return <Text>Channel not found !</Text>;
   }
 
   return (

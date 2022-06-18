@@ -291,7 +291,17 @@ const UpdateMultipleSelectPollScreen = ({ navigation }) => {
           customStyles={{
             wrapper: {
               backgroundColor: "transparent",
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 12,
+              },
+              shadowOpacity: 0.58,
+              shadowRadius: 16.0,
+
+              elevation: 24,
             },
+
             draggableIcon: {
               backgroundColor: "#000",
             },

@@ -406,7 +406,7 @@ export default class RegisterScreen extends React.Component {
                   theme={{
                     colors: {
                       primary: "#258e25",
-                      text: "white",
+                      text: this.state.mode === "light" ? "black" : "white",
                       placeholder:
                         this.state.mode === "light" ? "black" : "white",
                     },

@@ -52,7 +52,7 @@ export default class LoginScreen extends React.Component {
     this.setState({ password: "" });
     this.setState({ emailError: "" });
     this.setState({ passwordError: "" });
-    this.props.navigation.navigate("Register", { marian: "smth" });
+    this.props.navigation.navigate("Register");
   };
 
   getData = async () => {
